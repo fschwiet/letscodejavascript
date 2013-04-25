@@ -1,3 +1,7 @@
+task("default", function() {
+    console.log("default");
+});
+
 desc("description");
 
 task("example", ["dependency"], function(){ 
