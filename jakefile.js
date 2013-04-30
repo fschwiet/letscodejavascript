@@ -1,3 +1,5 @@
+var assert = require('assert');
+
 task("default", ["lint"], function() {
 
 });
@@ -11,8 +13,9 @@ task("lint", function() {
   list.exclude("build");
 
   var runner = require("./build/lint/lint_runner.js");
-  runner.validateFileList(list);
 
+  var a = runner.validateFileList(list);
+  assert.ok(a, "lint failed");
 });
 
 desc("description");
