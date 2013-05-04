@@ -23,7 +23,8 @@ task("lint", function() {
 desc("test everything");
 
 task("test", function() {
-    console.log("testing");
+    var reporter = require('nodeunit').reporters.minimal;
+    reporter.run(['src/_server.js']);
 });
 
 desc("description");
