@@ -24,8 +24,11 @@ desc("test everything");
 
 task("test", function() {
     var reporter = require('nodeunit').reporters["default"];
-    reporter.run(['src/_server.js']);
-});
+    reporter.run(['src/_server.js'], null, function(failures) {
+        assert.ifError(failures);
+        complete();
+    });
+}, {async: true});
 
 desc("description");
 
