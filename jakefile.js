@@ -1,8 +1,10 @@
 var assert = require('assert');
 
-task("default", ["lint"], function() {
+task("default", ["lint", "test"], function() {
 
 });
+
+desc("lint");
 
 task("lint", function() {
 
@@ -16,6 +18,12 @@ task("lint", function() {
 
   var a = runner.validateFileList(list);
   assert.ok(a, "lint failed");
+});
+
+desc("test everything");
+
+task("test", function() {
+    console.log("testing");
 });
 
 desc("description");
