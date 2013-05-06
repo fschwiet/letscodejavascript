@@ -4,9 +4,11 @@
 
     var http = require('http');
 
-    var server = http.createServer();
+    var server;
 
     exports.start = function() { 
+
+        server = http.createServer();
 
         var index = 0;
 
@@ -20,7 +22,10 @@
     };
 
     exports.stop = function(callback) {
-        server.close(callback);
+        if (server) {
+            server.close(callback);
+            server = null;
+        }
     };
 })();
 
