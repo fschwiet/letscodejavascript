@@ -23,8 +23,14 @@ task("lint", function() {
 desc("test everything");
 
 task("test", function() {
+
+    var testList = new jake.FileList();
+    testList.include("**/_*.js");
+    testList.exclude("node_modules");
+    testList.exclude("build");
+
     var reporter = require('nodeunit').reporters["default"];
-    reporter.run(['src/_server.js'], null, function(failures) {
+    reporter.run(testList.toArray(), null, function(failures) {
         assert.ifError(failures);
         complete();
     });
