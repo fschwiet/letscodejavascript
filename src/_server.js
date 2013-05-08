@@ -12,7 +12,7 @@ exports.test_earlyStopCallsAreOk = function(test) {
 
 exports.test_canListenForRequests = function(test) {
 
-    server.start();
+    server.start(8080);
 
     var result = http.get("http://localhost:8080", function(response) {
         test.equal(response.statusCode, 200, "Expected 200 response code");
