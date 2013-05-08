@@ -6,7 +6,7 @@
 
     var server;
 
-    exports.start = function() { 
+    exports.start = function(port) { 
 
         server = http.createServer();
 
@@ -18,7 +18,7 @@
             response.end("<html><head><title>This is a test</title></head><body>hello, world</body></html>");
         });
 
-        server.listen(8080);
+        server.listen(port);
     };
 
     exports.stop = function(callback) {
