@@ -14,7 +14,9 @@
         var index = 0;
 
         server.on("request", function(request, response) {
-            if (request.url == "/file.html") {
+            if (request.url == "/") {
+                response.end("hello, world");
+            } else if (request.url == "/file.html") {
 
                 fs.readFile("./file.html", function(err,data) {
 
@@ -26,8 +28,9 @@
                     }
                 });
 
-            } else {
-                response.end("<html><head><title>This is a test</title></head><body>hello, world</body></html>");                   
+            } else {                
+                response.statusCode = 404;
+                response.end();
             }
         });
 
