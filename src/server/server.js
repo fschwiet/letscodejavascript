@@ -2,6 +2,8 @@
 (function() {
     "use strict";
 
+    var singlepageFile = "src/server/file.html";
+
     var http = require('http');
     var fs = require('fs');
 
@@ -18,7 +20,7 @@
                 response.end("hello, world");
             } else if (request.url == "/file.html") {
 
-                fs.readFile("./file.html", function(err,data) {
+                fs.readFile(singlepageFile, function(err,data) {
 
                     if (err) {
                         response.statusCode = 500;
