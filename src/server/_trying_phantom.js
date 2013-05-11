@@ -16,6 +16,7 @@
 
                     test.equal("success", status, "Should be able to get page");
                     ph.exit();
+                    server.stop();
                     test.done();
                 });
             });
