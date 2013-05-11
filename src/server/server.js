@@ -9,7 +9,7 @@
 
     var server;
 
-    exports.start = function(port) { 
+    exports.start = function(port, callback) { 
 
         server = http.createServer();
 
@@ -36,7 +36,7 @@
             }
         });
 
-        server.listen(port);
+        server.listen(port, callback);
     };
 
     exports.stop = function(callback) {
