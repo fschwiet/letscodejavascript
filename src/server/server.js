@@ -2,7 +2,7 @@
 (function() {
     "use strict";
 
-    var singlepageFile = "src/server/file.html";
+    var homepageFile = "src/server/homepage.html";
 
     var http = require('http');
     var fs = require('fs');
@@ -17,10 +17,7 @@
 
         server.on("request", function(request, response) {
             if (request.url == "/") {
-                response.end("hello, world");
-            } else if (request.url == "/file.html") {
-
-                fs.readFile(singlepageFile, function(err,data) {
+                fs.readFile(homepageFile, function(err,data) {
 
                     if (err) {
                         response.statusCode = 500;

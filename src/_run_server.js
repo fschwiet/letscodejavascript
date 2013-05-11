@@ -19,28 +19,31 @@
 
     exports.tearDown = function(done) {
         if (server !== null) {
-
-            server.on("close", done);
+            server.on("close", function() {
+                done();
+            });
             server.kill();
+            server = null;
+        } else {
+            done();
         }
     };
 
     exports.test_canRunServer = function(test) {
+
+        server.stderr.on('data', function (data) {
+            console.log(SCRIPT_NAME + ' stderr: ' + data);
+        });
 
         server.stdout.on('data', function (data) {
             console.log(SCRIPT_NAME + " stdout: " + data);
 
             if (data.indexOf("Server started") !== -1) {
                 testUtil.downloadFile("http://localhost:8080", function(statusCode, responseBody) {
-
-                    test.ok(responseBody.indexOf("homepage marker") !== -1, "Should have marker indicating homepage");
+                    test.ok(responseBody.indexOf("this is homepage.html") !== -1, "Should have marker indicating homepage");
                     test.done();
                 });
             }
-        });
-
-        server.stderr.on('data', function (data) {
-            console.log(SCRIPT_NAME + ' stderr: ' + data);
         });
     };
 })();

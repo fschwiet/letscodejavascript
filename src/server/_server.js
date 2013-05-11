@@ -13,30 +13,22 @@
         test.done();
     };
 
-    exports.test_canListenForRequests = function(test) {
-
-        server.start(8080, function() {
-            testUtil.downloadFile("http://localhost:8080", function(statusCode, responseBody) {
-                test.equal(statusCode, 200, "Expected 200 response code");
-                server.stop(test.done);
-            });
-        }); 
-    };
-
     exports.test_extraStopCallsAreOk = function(test) {
+        server.stop();
+        server.stop();
         server.stop();
         test.done();
     };
 
-    exports.test_canServeFile = function(test) {
+    exports.test_servesFileForHomepage = function(test) {
 
         server.start(8080, function() {
-            var url = "http://localhost:8080/file.html";
+            var url = "http://localhost:8080/";
 
             testUtil.downloadFile(url, function(statusCode, body) {
 
                 test.equal(statusCode, 200, "Expected 200 response code for url " + url);
-                test.notEqual(-1, body.indexOf("This is a file"));
+                test.notEqual(-1, body.indexOf("this is homepage.html"));
 
                 server.stop();
                 test.done();
