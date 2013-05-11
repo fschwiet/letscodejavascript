@@ -10,7 +10,7 @@
 
     exports.setUp = function(done) {
 
-        server = childProcess.spawn("node", ["./src/" + SCRIPT_NAME, "8080"]);
+        server = childProcess.spawn("node", ["./src/" + SCRIPT_NAME, "8081"]);
         server.stdout.setEncoding("utf8");
         server.stderr.setEncoding("utf8");
 
@@ -39,7 +39,7 @@
             console.log(SCRIPT_NAME + " stdout: " + data);
 
             if (data.indexOf("Server started") !== -1) {
-                testUtil.downloadFile("http://localhost:8080", function(statusCode, responseBody) {
+                testUtil.downloadFile("http://localhost:8081", function(statusCode, responseBody) {
                     test.ok(responseBody.indexOf("this is homepage.html") !== -1, "Should have marker indicating homepage");
                     test.done();
                 });
