@@ -6,14 +6,26 @@
 
     var SCRIPT_NAME = "run_server.js";
 
-    //  run app
-    //  verify page loads
+    var server = null;
 
-    exports.test_canRunServer = function(test) {
+    exports.setUp = function(done) {
 
-        var server = childProcess.spawn("node", ["./src/" + SCRIPT_NAME, "8080"]);
+        server = childProcess.spawn("node", ["./src/" + SCRIPT_NAME, "8080"]);
         server.stdout.setEncoding("utf8");
         server.stderr.setEncoding("utf8");
+
+        done();
+    };
+
+    exports.tearDown = function(done) {
+        if (server !== null) {
+
+            server.on("close", done);
+            server.kill();
+        }
+    };
+
+    exports.test_canRunServer = function(test) {
 
         server.stdout.on('data', function (data) {
             console.log(SCRIPT_NAME + " stdout: " + data);
