@@ -1,0 +1,15 @@
+GOALS
+- need data access
+- deploy to own server
+
+TODO
+- get MySQL installed via boxen
+- verify the MySQL setup works
+- get VPN working
+- clean install of Windows 8 on mini-server
+    - install node, npm
+    - MySQL
+- verify everything runs from miniserver
+
+
+- set up domain name
