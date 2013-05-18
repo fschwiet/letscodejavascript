@@ -5,10 +5,7 @@ task("default", ["lint", "test"], function() {
 });
 
 desc("lint");
-
 task("lint", function() {
-
-  
   var list = new jake.FileList();
   list.include("**/*.js");
   list.exclude("node_modules");
@@ -21,13 +18,12 @@ task("lint", function() {
 });
 
 desc("test everything");
-
 task("test", function() {
-
     var testList = new jake.FileList();
     testList.include("**/_*.js");
     testList.exclude("node_modules");
     testList.exclude("build");
+    testList.exclude("src/client/*");
 
     var reporter = require('nodeunit').reporters["default"];
     reporter.run(testList.toArray(), null, function(failures) {
