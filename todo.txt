@@ -1,9 +1,3 @@
-getting karma working on windows:
-   testacular requires an 'npm rebuild' on windows?
-
-
-
-
 GOALS
 - need data access
 - deploy to own server
