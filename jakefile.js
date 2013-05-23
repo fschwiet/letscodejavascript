@@ -1,4 +1,5 @@
 var assert = require('assert');
+var karma = require('./node_modules/karma/lib/runner.js');
 
 task("default", ["lint", "test"], function() {
 
@@ -20,9 +21,12 @@ task("lint", function() {
 });
 
 desc("test everything");
+// WARNING:  running client tests before server tests causes server tests to not finish
+task("test", ["testServer","testClient"]);
 
-task("test", function() {
+task("testServer", function() {
 
+console.log("runnign server tests");
     var testList = new jake.FileList();
     testList.include("**/_*.js");
     testList.exclude("node_modules");
@@ -35,6 +39,10 @@ task("test", function() {
         complete();
     });
 }, {async: true});
+
+task("testClient", function() {
+  karma.run({});
+});
 
 desc("description");
 
