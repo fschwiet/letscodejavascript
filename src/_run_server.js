@@ -10,9 +10,12 @@
 
     exports.setUp = function(done) {
 
-        server = childProcess.spawn("node", ["./src/" + SCRIPT_NAME, "8081"]);
+        server = childProcess.spawn("node", ["./src/" + SCRIPT_NAME], {
+            env : {
+                PORT: 8081
+            }
+        });
         server.stdout.setEncoding("utf8");
-        server.stderr.setEncoding("utf8");
 
         done();
     };
