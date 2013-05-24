@@ -26,7 +26,6 @@ task("test", ["testServer","testClient"]);
 
 task("testServer", function() {
 
-console.log("runnign server tests");
     var testList = new jake.FileList();
     testList.include("**/_*.js");
     testList.exclude("node_modules");
