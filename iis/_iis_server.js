@@ -1,16 +1,16 @@
 (function() {
     "use strict";
 
-    var testUtil = require("./test-util");
+    var testUtil = require("../src/test-util");
     var childProcess = require("child_process");
 
-    var SCRIPT_NAME = "iis_server.js";
+    var SCRIPT_NAME = "iis/iis_server.js";
 
     var server = null;
 
     exports.setUp = function(done) {
 
-        server = childProcess.spawn("node", ["./src/" + SCRIPT_NAME], {
+        server = childProcess.spawn("node", [SCRIPT_NAME], {
             env : {
                 PORT: 8081
             }

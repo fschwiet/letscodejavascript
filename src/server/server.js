@@ -14,9 +14,9 @@
 
         server = http.createServer();
 
-        server.listen(function(request, response) {
+        server.on('request', function(request, response) {
             if (request.url == "/") {
-                    fs.readFile(ps.resolve(__dirname, homepageFile), function(err,data) {
+                    fs.readFile(path.resolve(__dirname, homepageFile), function(err,data) {
 
                     if (err) {
                         response.statusCode = 500;
