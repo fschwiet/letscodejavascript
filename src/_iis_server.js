@@ -4,7 +4,7 @@
     var testUtil = require("./test-util");
     var childProcess = require("child_process");
 
-    var SCRIPT_NAME = "run_server.js";
+    var SCRIPT_NAME = "iis_server.js";
 
     var server = null;
 
