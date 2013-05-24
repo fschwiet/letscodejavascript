@@ -1,6 +1,8 @@
 (function() {
     "use strict";
 
+    var fs = require("fs");
+    var assert = require("assert");
     var testUtil = require("../src/test-util");
     var childProcess = require("child_process");
 
@@ -10,10 +12,13 @@
 
     exports.setUp = function(done) {
 
+        assert.ok(fs.existsSync(SCRIPT_NAME), "Could not find file " + SCRIPT_NAME);
+
+        var env = JSON.parse(JSON.stringify(process.env));
+        env.PORT = 8081;
+
         server = childProcess.spawn("node", [SCRIPT_NAME], {
-            env : {
-                PORT: 8081
-            }
+            env : env
         });
         server.stdout.setEncoding("utf8");
 
