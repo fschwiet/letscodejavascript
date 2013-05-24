@@ -2,10 +2,11 @@
 (function() {
     "use strict";
 
-    var homepageFile = "src/server/homepage.html";
+    var homepageFile = "homepage.html";
 
     var http = require('http');
     var fs = require('fs');
+    var path = require('path');
 
     var server;
 
@@ -13,11 +14,9 @@
 
         server = http.createServer();
 
-        var index = 0;
-
-        server.on("request", function(request, response) {
+        server.listen(function(request, response) {
             if (request.url == "/") {
-                fs.readFile(homepageFile, function(err,data) {
+                    fs.readFile(ps.resolve(__dirname, homepageFile), function(err,data) {
 
                     if (err) {
                         response.statusCode = 500;
