@@ -8,13 +8,13 @@ exports.validateSource = function(sourceCode, options, globals, description) {
 	description = description ? description + " " : "";
 	var pass = jshint(sourceCode, options, globals);
 	if (pass) {
-		console.log(description + "ok");
+		console.log("  " + description + "ok");
 	}
 	else {
 		console.log(description + "failed");
 		jshint.errors.forEach(function(error) {
-			console.log(error.line + ": " + error.evidence.trim());
-			console.log("   " + error.reason);
+			console.log("  " + error.line + ": " + error.evidence.trim());
+			console.log("    " + error.reason);
 		});
 	}
 	return pass;
@@ -26,6 +26,7 @@ exports.validateFile = function(filename, options, globals) {
 };
 
 exports.validateFileList = function(fileList, options, globals) {
+	console.log("linting files...");
 	var pass = true;
 	fileList.forEach(function(filename) {
 		pass = exports.validateFile(filename, options, globals) && pass;
