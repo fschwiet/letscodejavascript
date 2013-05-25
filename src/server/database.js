@@ -7,8 +7,9 @@ exports.createConnection = function() {
     
     var connection = mysql.createConnection({
       host     : hostname,
-      user     : 'me',
-      password : 'secret',
+      user     : 'root',
+      password : '',
+      port: 13306
     });
 
     connection.connect();
@@ -19,7 +20,7 @@ exports.getStatus = function(callback) {
 
     var connection = exports.createConnection();
 
-    connection.query("SELECT Version()", function(err, rows, fields) {
+    connection.query("SELECT version()", function(err, rows, fields) {
 
         if (err) {
             callback(err.toString() + " (" + hostname + ")");
