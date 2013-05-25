@@ -37,7 +37,7 @@
         }
     };
 
-    exports.test_canRunServer = function(test) {
+    function onceDatabaseIsRunning(callback) {
 
         server.stderr.on('data', function (data) {
             console.log(SCRIPT_NAME + ' stderr: ' + data);
@@ -47,11 +47,29 @@
             console.log(SCRIPT_NAME + " stdout: " + data);
 
             if (data.indexOf("Server started") !== -1) {
-                testUtil.downloadFile("http://localhost:8081", function(statusCode, responseBody) {
-                    test.ok(responseBody.indexOf("this is homepage.html") !== -1, "Should have marker indicating homepage");
-                    test.done();
-                });
+                callback();
             }
+        });
+    }
+
+    exports.test_canRunServer = function(test) {
+
+        onceDatabaseIsRunning(function() {
+            testUtil.downloadFile("http://localhost:8081", function(statusCode, responseBody) {
+                test.ok(responseBody.indexOf("this is homepage.html") !== -1, "Should have marker indicating homepage");
+                test.done();
+            });
+        });
+    };
+
+    exports.test_canReportDatabaseStatus = function(test) {
+
+        onceDatabaseIsRunning(function() {
+            testUtil.downloadFile("http://localhost:8081/status", function(statusCode, responseBody) {
+                test.ok(responseBody.indexOf("Database connected (localhost:temptestdb)") !== -1, 
+                    "Should have marker indicating database found");
+                test.done();
+            });
         });
     };
 })();

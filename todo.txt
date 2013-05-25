@@ -1,4 +1,3 @@
-* client-side tests should fail the build
 
 GOALS
 - need data access
