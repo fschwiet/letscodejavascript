@@ -8,6 +8,8 @@
     var fs = require('fs');
     var path = require('path');
 
+    var database = require("./database.js");
+
     var server;
 
     exports.start = function(port, callback) { 
@@ -27,8 +29,10 @@
                 });
 
             } else if (request.url == "/status"){
-                response.write("Database status: disconnected");
-                response.end();
+                database.getStatus(function(statusString) {
+                    response.write("Database status: " + statusString);
+                    response.end();
+                });
             } else {                
                 response.statusCode = 404;
                 response.end();
