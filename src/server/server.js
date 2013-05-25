@@ -26,6 +26,9 @@
                     }
                 });
 
+            } else if (request.url == "/status"){
+                response.write("Database status: disconnected");
+                response.end();
             } else {                
                 response.statusCode = 404;
                 response.end();

@@ -64,10 +64,18 @@
 
     exports.test_canReportDatabaseStatus = function(test) {
 
+        var expectedPattern = (/Database status:(.*)$/mi);
+
         onceDatabaseIsRunning(function() {
             testUtil.downloadFile("http://localhost:8081/status", function(statusCode, responseBody) {
-                test.ok(responseBody.indexOf("Database connected (localhost:temptestdb)") !== -1, 
-                    "Should have marker indicating database found");
+                
+                var match = expectedPattern.exec(responseBody);
+
+                test.ok(match !== null, "Did not find connection status string.");
+
+                if (match !== null) {
+                    test.equal(match[1].trim(), "connected (localhost)");
+                }
                 test.done();
             });
         });
