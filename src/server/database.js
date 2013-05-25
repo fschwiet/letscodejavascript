@@ -21,7 +21,6 @@ exports.getStatus = function(callback) {
 
     connection.query("SELECT Version()", function(err, rows, fields) {
 
-
         if (err) {
             callback(err.toString() + " (" + hostname + ")");
         } else {
@@ -31,15 +30,7 @@ exports.getStatus = function(callback) {
             callback("connected (" + hostname + ")");
         }
     });
+
     connection.end();
 };
 
-/*
-connection.query('SELECT 1 + 1 AS solution', function(err, rows, fields) {
-  if (err) throw err;
-
-  console.log('The solution is: ', rows[0].solution);
-});
-
-connection.end();
-*/
