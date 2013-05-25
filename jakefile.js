@@ -1,6 +1,7 @@
 var assert = require('assert');
 var karma = require('./node_modules/karma/lib/runner.js');
 
+
 task("default", ["lint", "test"], function() {
 
 });
@@ -21,24 +22,28 @@ task("lint", function() {
 });
 
 desc("test everything");
-// WARNING:  running client tests before server tests causes server tests to not finish
-task("test", ["testServer","testClient"]);
+task("test", ["testClient","testServer"]);
 
 task("testServer", function() {
 
-    var testList = new jake.FileList();
-    testList.include("**/_*.js");
-    testList.exclude("node_modules");
-    testList.exclude("build");
-    testList.exclude("src/client/**");
+  var testList = new jake.FileList();
+  testList.include("**/_*.js");
+  testList.exclude("node_modules");
+  testList.exclude("build");
+  testList.exclude("src/client/**");
 
-    var reporter = require('nodeunit').reporters["default"];
-    reporter.run(testList.toArray(), null, function(failures) {
-        assert.ifError(failures);
-        complete();
-    });
+  var reporter = require('nodeunit').reporters["default"];
+  reporter.run(testList.toArray(), null, function(failures) {
+    assert.ifError(failures);
+    complete();
+  });
 }, {async: true});
 
 task("testClient", function() {
-  karma.run({});
-});
+  karma.run({}, function(exitCode) {
+
+    assert.equal(exitCode, 0, "Karma test runner indicates failure.");
+
+    complete();
+  });
+}, { async: true });
