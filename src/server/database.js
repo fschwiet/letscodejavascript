@@ -1,13 +1,33 @@
 
 var mysql = require('mysql');
-var hostname = "localhost";
-var databaseName = "testtemp";
-var port = 13306;
+
+var nconf = require('nconf');
+
+nconf.argv(["database_port"]);
+
+nconf.file({ file: 'config.json'});
+
+nconf.defaults({
+  "database_hostname" : "localhost",
+  "database_name" : "testtemp",
+  "database_port" : 13306,
+  "database_user" : "root",
+  "database_password" : "",
+});
+
+var hostname = nconf.get("database_hostname");
+var databaseName = nconf.get("database_name");
+var port = nconf.get("database_port");
+var username = nconf.get("database_user");
+var password = nconf.get("database_password");
+
+console.log("using port " + port);
 
 exports.ensureTestDatabaseIsClean = function(callback) {
     var connection = mysql.createConnection({
       host     : hostname,
-      user     : 'root',
+      user     : username,
+      password : password,
       multipleStatements: true,
       port: port
     });
@@ -26,9 +46,10 @@ exports.createConnection = function() {
     
     var connection = mysql.createConnection({
       host     : hostname,
-      user     : 'root',
+      user     : username,
+      password : password,
       database : databaseName,
-      port: 13306
+      port: port
     });
 
     connection.connect();

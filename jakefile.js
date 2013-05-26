@@ -25,7 +25,7 @@ task("lint", function() {
 desc("test everything");
 task("test", ["testClient","testServer"]);
 
-task("testServer", function() {
+task("testServer", ["createTestDatabase"], function() {
 
   var testList = new jake.FileList();
   testList.include("**/_*.js");
