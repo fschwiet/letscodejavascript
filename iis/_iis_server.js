@@ -23,7 +23,17 @@
 
         server.stdout.setEncoding("utf8");
 
-        done();
+        server.stderr.on('data', function (data) {
+            console.log(SCRIPT_NAME + ' stderr: ' + data);
+        });
+
+        server.stdout.on('data', function (data) {
+            console.log(SCRIPT_NAME + " stdout: " + data);
+
+            if (data.indexOf("Server started") !== -1) {
+                done();
+            }
+        });
     };
 
     exports.tearDown = function(done) {
@@ -39,28 +49,11 @@
         }
     };
 
-    function onceServerIsRunning(callback) {
-
-        server.stderr.on('data', function (data) {
-            console.log(SCRIPT_NAME + ' stderr: ' + data);
-        });
-
-        server.stdout.on('data', function (data) {
-            console.log(SCRIPT_NAME + " stdout: " + data);
-
-            if (data.indexOf("Server started") !== -1) {
-                callback();
-            }
-        });
-    }
-
     exports.test_canRunServer = function(test) {
 
-        onceServerIsRunning(function() {
-            testUtil.downloadFile("http://localhost:8081", function(statusCode, responseBody) {
-                test.ok(responseBody.indexOf("this is homepage.html") !== -1, "Should have marker indicating homepage");
-                test.done();
-            });
+        testUtil.downloadFile("http://localhost:8081", function(statusCode, responseBody) {
+            test.ok(responseBody.indexOf("this is homepage.html") !== -1, "Should have marker indicating homepage");
+            test.done();
         });
     };
 
@@ -68,18 +61,16 @@
 
         var expectedPattern = (/Database status:(.*)$/mi);
 
-        onceServerIsRunning(function() {
-            testUtil.downloadFile("http://localhost:8081/status", function(statusCode, responseBody) {
-                
-                var match = expectedPattern.exec(responseBody);
+        testUtil.downloadFile("http://localhost:8081/status", function(statusCode, responseBody) {
+            
+            var match = expectedPattern.exec(responseBody);
 
-                test.ok(match !== null, "Did not find connection status string.");
+            test.ok(match !== null, "Did not find connection status string.");
 
-                if (match !== null) {
-                    test.equal(match[1].trim(), "connected (localhost)");
-                }
-                test.done();
-            });
+            if (match !== null) {
+                test.equal(match[1].trim(), "connected (localhost)");
+            }
+            test.done();
         });
     };
 })();
