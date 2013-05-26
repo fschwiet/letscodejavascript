@@ -39,7 +39,7 @@
         }
     };
 
-    function onceDatabaseIsRunning(callback) {
+    function onceServerIsRunning(callback) {
 
         server.stderr.on('data', function (data) {
             console.log(SCRIPT_NAME + ' stderr: ' + data);
@@ -56,7 +56,7 @@
 
     exports.test_canRunServer = function(test) {
 
-        onceDatabaseIsRunning(function() {
+        onceServerIsRunning(function() {
             testUtil.downloadFile("http://localhost:8081", function(statusCode, responseBody) {
                 test.ok(responseBody.indexOf("this is homepage.html") !== -1, "Should have marker indicating homepage");
                 test.done();
@@ -68,7 +68,7 @@
 
         var expectedPattern = (/Database status:(.*)$/mi);
 
-        onceDatabaseIsRunning(function() {
+        onceServerIsRunning(function() {
             testUtil.downloadFile("http://localhost:8081/status", function(statusCode, responseBody) {
                 
                 var match = expectedPattern.exec(responseBody);
