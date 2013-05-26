@@ -20,12 +20,14 @@
         server = childProcess.spawn("node", [SCRIPT_NAME], {
             env : env
         });
+
         server.stdout.setEncoding("utf8");
 
         done();
     };
 
     exports.tearDown = function(done) {
+        
         if (server !== null) {
             server.on("close", function() {
                 done();
