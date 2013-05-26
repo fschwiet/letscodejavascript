@@ -1,10 +1,37 @@
 
 GOALS
-- need data access
 - deploy to own server
 
+
+tentative deployment plan
+
+  * To check a commit is ready to deploy, from commit A to B, we verify database migrations and mark the commit in a special branch:
+    1.  checkout into a new directory to B
+    2.  npm build
+    3.  create test database running migrations to B
+    4.  checkout commit A
+    5.  run integration tests.  (verifies the schema migrations won't break running code)
+    5.  checkout commit B
+    5.  run integration tests   (verifies integration tests)
+    5.  migrate database backwards to A
+    5.  checkout commit A
+    5.  run integration tests   (verifies we can roll back)
+    5.  migrate database forward to B
+    5.  checkout commit B
+    5.  run integration tests (verifies)
+    6.  add a commit, included in special git branch.  Commit message should indicate the version tested against.
+    *  Might need to enforce these same steps are taken for releases, 
+
+  * To deploy a commit:
+    1.  pull solution into a new directory
+    2.  npm build
+    3.  run database migrations (old code must work against new schema)
+    4.  configure IIS to use that folder
+ 
+
 TODO
-- get MySQL installed via boxen
+- install MySQL on deployment target
+- 
 - verify the MySQL setup works
 - get VPN working
 - clean install of Windows 8 on mini-server
