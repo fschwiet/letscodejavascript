@@ -1,6 +1,7 @@
 var assert = require('assert');
 var karma = require('./node_modules/karma/lib/runner.js');
-
+var mysql = require('mysql');
+var database = require("./src/server/database.js");
 
 task("default", ["lint", "test"], function() {
 
@@ -47,3 +48,10 @@ task("testClient", function() {
     complete();
   });
 }, { async: true });
+
+task("createTestDatabase", function() {
+  database.ensureTestDatabaseIsClean(function(err) {
+    assert.ifError(err);
+    complete();
+  });
+}, { async:true});

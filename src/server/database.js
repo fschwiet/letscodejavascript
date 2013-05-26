@@ -1,14 +1,33 @@
 
 var mysql = require('mysql');
 var hostname = "localhost";
+var databaseName = "testtemp";
+var port = 13306;
 
+exports.ensureTestDatabaseIsClean = function(callback) {
+    var connection = mysql.createConnection({
+      host     : hostname,
+      user     : 'root',
+      multipleStatements: true,
+      port: port
+    });
+
+    connection.connect();
+
+    connection.query(
+      "DROP DATABASE IF EXISTS testtemp; CREATE DATABASE testtemp;", function(err, rows, fields) {
+        callback(err);
+      });
+
+    connection.end();
+};
 
 exports.createConnection = function() {
     
     var connection = mysql.createConnection({
       host     : hostname,
       user     : 'root',
-      password : '',
+      database : databaseName,
       port: 13306
     });
 
@@ -34,4 +53,6 @@ exports.getStatus = function(callback) {
 
     connection.end();
 };
+
+
 
