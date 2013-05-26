@@ -3,8 +3,6 @@ var mysql = require('mysql');
 
 var nconf = require('nconf');
 
-nconf.argv(["database_port"]);
-
 nconf.file({ file: 'config.json'});
 
 nconf.defaults({
@@ -15,22 +13,26 @@ nconf.defaults({
   "database_password" : "",
 });
 
-var hostname = nconf.get("database_hostname");
-var databaseName = nconf.get("database_name");
-var port = nconf.get("database_port");
-var username = nconf.get("database_user");
-var password = nconf.get("database_password");
+function getConnectionInfo(includeDatabasename) {
 
-console.log("using port " + port);
+    var connectionInfo = {
+        host     : nconf.get("database_hostname"),
+        user     : nconf.get("database_user"),
+        password : nconf.get("database_password"),
+        multipleStatements: true,
+        port: nconf.get("database_port")
+    };
+
+    if (includeDatabasename) {
+      connectionInfo.database = nconf.get("database_name");
+    }
+
+    return connectionInfo;
+}
 
 exports.ensureTestDatabaseIsClean = function(callback) {
-    var connection = mysql.createConnection({
-      host     : hostname,
-      user     : username,
-      password : password,
-      multipleStatements: true,
-      port: port
-    });
+
+    var connection = mysql.createConnection(getConnectionInfo());
 
     connection.connect();
 
@@ -42,33 +44,20 @@ exports.ensureTestDatabaseIsClean = function(callback) {
     connection.end();
 };
 
-exports.createConnection = function() {
-    
-    var connection = mysql.createConnection({
-      host     : hostname,
-      user     : username,
-      password : password,
-      database : databaseName,
-      port: port
-    });
-
-    connection.connect();
-    return connection;
-};
-
 exports.getStatus = function(callback) {
 
-    var connection = exports.createConnection();
+    var config = getConnectionInfo(true);
+
+    var connection = mysql.createConnection(config);
+
+    connection.connect();
 
     connection.query("SELECT version()", function(err, rows, fields) {
 
         if (err) {
-            callback(err.toString() + " (" + hostname + ")");
+            callback(err.toString() + " (" + config.host + ")");
         } else {
-            console.log("rows: " + rows);
-            console.log("fields: " + fields);
-
-            callback("connected (" + hostname + ")");
+            callback("connected (" + config.host + ")");
         }
     });
 
