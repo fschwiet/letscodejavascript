@@ -26,7 +26,6 @@ exports.validateFile = function(filename, options, globals) {
 };
 
 exports.validateFileList = function(fileList, options, globals) {
-	console.log("linting files...");
 	var pass = true;
 	fileList.forEach(function(filename) {
 		pass = exports.validateFile(filename, options, globals) && pass;
