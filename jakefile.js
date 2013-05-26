@@ -3,13 +3,18 @@ var karma = require('./node_modules/karma/lib/runner.js');
 var mysql = require('mysql');
 var database = require("./src/server/database.js");
 
-task("default", ["lint", "test"], function() {
+function tracedTask(name) {
+  console.log("\nExecuting " + name);
+  return task.apply(this, arguments);
+}
+
+tracedTask("default", ["lint", "test"], function() {
 
 });
 
 desc("lint");
 
-task("lint", function() {
+tracedTask("lint", function() {
 
   var list = new jake.FileList();
   list.include("**/*.js");
@@ -23,9 +28,9 @@ task("lint", function() {
 });
 
 desc("test everything");
-task("test", ["testClient","testServer"]);
+tracedTask("test", ["testClient","testServer"]);
 
-task("testServer", ["createTestDatabase"], function() {
+tracedTask("testServer", ["createTestDatabase"], function() {
 
   var testList = new jake.FileList();
   testList.include("**/_*.js");
@@ -40,7 +45,7 @@ task("testServer", ["createTestDatabase"], function() {
   });
 }, {async: true});
 
-task("testClient", function() {
+tracedTask("testClient", function() {
   karma.run({}, function(exitCode) {
 
     assert.equal(exitCode, 0, "Karma test runner indicates failure.");
@@ -49,7 +54,7 @@ task("testClient", function() {
   });
 }, { async: true });
 
-task("createTestDatabase", function() {
+tracedTask("createTestDatabase", function() {
   database.ensureTestDatabaseIsClean(function(err) {
     assert.ifError(err);
     complete();
