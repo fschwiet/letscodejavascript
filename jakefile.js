@@ -102,9 +102,11 @@ tracedTask("testForRelease", function() {
     });
   })
   .then(function() {
+    console.log("success!");
       complete();
     }, 
     function(reason) {
+      console.log("failure!");
       console.log("calling fail with parameter" + reason);
       fail(reason);
   });
