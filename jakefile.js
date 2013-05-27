@@ -86,7 +86,7 @@ tracedTask("testForRelease", function() {
   fs.mkdirSync(".\\temp");
   fs.mkdirSync(".\\temp\\workingDirectory");
 
-  function spawn(name, program, args) {
+  function spawn(name, program, args, options) {
 
     var deferred = Q.defer();
 
@@ -99,19 +99,22 @@ tracedTask("testForRelease", function() {
     spawnedProcess.stdout.setEncoding('utf8');
 
     spawnedProcess.stderr.on('data', function(data) { 
-      console.log(name + " error: " + data);
+      console.log(name + " error: " + data.toString().trim().replace("\n", "---"));
+      console.log(name + " error end");
     });
 
     spawnedProcess.stdout.on('data', function(data) {
-      console.log(name + " stdout: " + data);
+      data.toString().split("\n").forEach(function(line) {
+        console.log(name + " stdout: " + line);
+      });
     });
 
     spawnedProcess.on('close', function(code) {
       if (code !== 0) {
         deferred.reject(new Error(name + " finished with errorcode " + code));
+      } else {
+        deferred.resolve();
       }
-
-      deferred.resolve();
     });
     return deferred.promise;
   }
@@ -119,19 +122,17 @@ tracedTask("testForRelease", function() {
   spawn("git clone", "git", ["clone", "--quiet", "--no-hardlinks", originWorkingDirectory, workingDirectory])
   //spawn("gg", "git", ["--version"])
   .then(function() {
-    return spawn("git version", "git", ["--version"]);
-  })
-  .then(function() {
-    return spawn("npm version", "node", [ path.resolve(workingDirectory, ".\\node_modules\\npm\\cli.js"), "--version"]);
-  })
-  .then(function() {
-    return spawn("npm build", "node", [ path.resolve(workingDirectory, ".\\node_modules\\npm\\cli.js"), "rebuild"]);
+    return spawn("npm build", "node", [ path.resolve(workingDirectory, ".\\node_modules\\npm\\cli.js"), "rebuild"], {
+      cwd: workingDirectory,
+    });
   })
   .then(function() {
     fs.copy(path.resolve(originWorkingDirectory, "config.json"), path.resolve(workingDirectory, "config.json"));
   })
   .then(function() {
-    return spawn("jake", "node", [ path.resolve(workingDirectory, ".\\node_modules\\jake\\bin\\cli.js"), "default"]);
+    return spawn("jake", "node", [ path.resolve(workingDirectory, ".\\node_modules\\jake\\bin\\cli.js"), "default"], {
+      cwd: workingDirectory,
+    });
   }, function(reason) {
     fail(reason);
   });
