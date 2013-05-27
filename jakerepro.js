@@ -1,5 +1,7 @@
 
 
+var Q = require("q");
+
 task("syncfail", function() {
    fail("synchronous failure"); 
 });
@@ -8,12 +10,22 @@ var http = require("http");
 
 task("asyncfail", function() {
 
-    http.get("http://www.google.com", function() {
-       
-        http.get("http://www.com", function() {
-           fail("asynchronous failure"); 
-        });
+    waitForSleep().then(waitForSleep).then(waitForSleep).then(waitForSleep).then(function() {
+        console.log("all done, time to fail");
+        fail("This is the end");
     });
 
     console.log("finishing sync part");
 }, { async:true});
+
+
+function waitForSleep() {
+  var deferred = Q.defer();
+
+  setTimeout(function() {
+    console.log("finished timeout");
+    deferred.resolve();
+  });
+
+  return deferred.promise;
+}
