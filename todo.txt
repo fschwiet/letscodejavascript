@@ -8,6 +8,7 @@ tentative deployment plan
   * To check a commit is ready to deploy, from commit A to B, we verify database migrations and mark the commit in a special branch:
     1.  checkout into a new directory to B
     2.  npm build
+    3.  write config file
     3.  create test database running migrations to B
     4.  checkout commit A
     5.  run integration tests.  (verifies the schema migrations won't break running code)
@@ -25,6 +26,7 @@ tentative deployment plan
   * To deploy a commit:
     1.  pull solution into a new directory
     2.  npm build
+    3.  write config file
     3.  run database migrations (old code must work against new schema)
     4.  configure IIS to use that folder
  
