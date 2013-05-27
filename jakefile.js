@@ -2,6 +2,10 @@ var assert = require('assert');
 var karma = require('./node_modules/karma/lib/runner.js');
 var mysql = require('mysql');
 var database = require("./src/server/database.js");
+var childProcess = require("child_process");
+var path = require("path");
+var fs = require('fs');
+var rimraf = require("rimraf");
 
 function tracedTask(name) {
   console.log("\nExecuting " + name);
@@ -13,7 +17,6 @@ tracedTask("default", ["lint", "test"], function() {
 });
 
 desc("lint");
-
 tracedTask("lint", function() {
 
   var list = new jake.FileList();
@@ -46,6 +49,7 @@ tracedTask("testServer", ["createTestDatabase"], function() {
 }, {async: true});
 
 tracedTask("testClient", function() {
+  
   karma.run({}, function(exitCode) {
 
     assert.equal(exitCode, 0, "Karma test runner indicates failure.");
@@ -55,8 +59,39 @@ tracedTask("testClient", function() {
 }, { async: true });
 
 tracedTask("createTestDatabase", function() {
+  
   database.ensureTestDatabaseIsClean(function(err) {
     assert.ifError(err);
     complete();
   });
 }, { async:true});
+
+desc("test all the things");
+tracedTask("testForRelease", function() {
+  
+  var originWorkingDirectory = path.resolve(".");
+  var workingDirectory = path.resolve(".\\temp\\workingDirectory");
+
+  rimraf.sync(".\\temp");
+  fs.mkdirSync(".\\temp");
+
+  var gitClone = childProcess.spawn("git", ["clone", originWorkingDirectory, workingDirectory]);
+
+  gitClone.stdout.setEncoding('utf8');
+
+  gitClone.stderr.on('data', function(data) { 
+    console.log("other error: " + data);
+  });
+
+  gitClone.stdout.on('data', function(data) {
+    console.log("other stdout: " + data);
+  });
+
+  gitClone.on('close', function(code) {
+    if (code !== 0) {
+      fail("other finished with errorcode " + code);
+    }
+
+    complete();
+  });
+}, {async:true});
