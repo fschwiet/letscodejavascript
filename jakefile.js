@@ -4,7 +4,7 @@ var mysql = require('mysql');
 var database = require("./src/server/database.js");
 var childProcess = require("child_process");
 var path = require("path");
-var fs = require('fs');
+var fs = require('fs.extra');
 var rimraf = require("rimraf");
 var util = require("util");
 var Q = require("q");
@@ -116,7 +116,7 @@ tracedTask("testForRelease", function() {
     return deferred.promise;
   }
 
-  spawn("git clone", "git", ["clone", originWorkingDirectory, workingDirectory])
+  spawn("git clone", "git", ["clone", "--quiet", "--no-hardlinks", originWorkingDirectory, workingDirectory])
   //spawn("gg", "git", ["--version"])
   .then(function() {
     return spawn("git version", "git", ["--version"]);
@@ -126,8 +126,14 @@ tracedTask("testForRelease", function() {
   })
   .then(function() {
     return spawn("npm build", "node", [ path.resolve(workingDirectory, ".\\node_modules\\npm\\cli.js"), "rebuild"]);
+  })
+  .then(function() {
+    fs.copy(path.resolve(originWorkingDirectory, "config.json"), path.resolve(workingDirectory, "config.json"));
+  })
+  .then(function() {
+    return spawn("jake", "node", [ path.resolve(workingDirectory, ".\\node_modules\\jake\\bin\\cli.js"), "default"]);
   }, function(reason) {
-    fail(reason)
+    fail(reason);
   });
 
 }, {async:true});
