@@ -100,8 +100,13 @@ tracedTask("testForRelease", function() {
     return spawn("jake", "node", [ path.resolve(workingDirectory, ".\\node_modules\\jake\\bin\\cli.js"), "default"], {
       cwd: workingDirectory,
     });
-  }, function(reason) {
-    fail(reason);
+  })
+  .then(function() {
+      complete();
+    }, 
+    function(reason) {
+      console.log("calling fail with parameter" + reason);
+      fail(reason);
   });
 
 }, {async:true});
@@ -129,8 +134,10 @@ function spawn(name, program, args, options) {
   });
 
   spawnedProcess.on('close', function(code) {
+    console.log(util.format("%s finished with %s", name, code));
     if (code !== 0) {
       deferred.reject(new Error(name + " finished with errorcode " + code));
+      deferred.resolve();
     } else {
       deferred.resolve();
     }
