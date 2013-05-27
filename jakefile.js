@@ -23,6 +23,8 @@ function tracedTask(name) {
   result.addListener('complete', function() {
     taskRuntimes.push({task:name, ms:new Date().getTime() - start});
   });
+
+  return result;
 }
 
 jake.addListener('complete', function() {
@@ -105,7 +107,6 @@ tracedTask("testForRelease", function() {
   fs.mkdirSync(".\\temp\\workingDirectory");
 
   spawn("git clone", "git", ["clone", "--quiet", "--no-hardlinks", originWorkingDirectory, workingDirectory])
-  //spawn("gg", "git", ["--version"])
   .then(function() {
     return spawn("npm build", "node", [ path.resolve(workingDirectory, ".\\node_modules\\npm\\cli.js"), "rebuild"], {
       cwd: workingDirectory,
@@ -157,7 +158,6 @@ function spawn(name, program, args, options) {
     console.log(util.format("%s finished with %s", name, code));
     if (code !== 0) {
       deferred.reject(new Error(name + " finished with errorcode " + code));
-      deferred.resolve();
     } else {
       deferred.resolve();
     }
