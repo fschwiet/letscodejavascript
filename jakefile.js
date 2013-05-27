@@ -10,8 +10,11 @@ var util = require("util");
 var Q = require("q");
 
 function tracedTask(name) {
-  console.log("\nExecuting " + name);
-  return task.apply(this, arguments);
+  var result = task.apply(this, arguments);
+
+  result.addListener('start', function() {
+    console.log("\nExecuting " + name);
+  });
 }
 
 tracedTask("default", ["lint", "test"], function() {
