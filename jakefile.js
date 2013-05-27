@@ -86,39 +86,6 @@ tracedTask("testForRelease", function() {
   fs.mkdirSync(".\\temp");
   fs.mkdirSync(".\\temp\\workingDirectory");
 
-  function spawn(name, program, args, options) {
-
-    var deferred = Q.defer();
-
-    console.log(util.format("running %s as %s %s", name, program, args.join(" ")));
-
-    var spawnedProcess = childProcess.spawn(program, args, {
-      cwd: workingDirectory,
-    });
-
-    spawnedProcess.stdout.setEncoding('utf8');
-
-    spawnedProcess.stderr.on('data', function(data) { 
-      console.log(name + " error: " + data.toString().trim().replace("\n", "---"));
-      console.log(name + " error end");
-    });
-
-    spawnedProcess.stdout.on('data', function(data) {
-      data.toString().split("\n").forEach(function(line) {
-        console.log(name + " stdout: " + line);
-      });
-    });
-
-    spawnedProcess.on('close', function(code) {
-      if (code !== 0) {
-        deferred.reject(new Error(name + " finished with errorcode " + code));
-      } else {
-        deferred.resolve();
-      }
-    });
-    return deferred.promise;
-  }
-
   spawn("git clone", "git", ["clone", "--quiet", "--no-hardlinks", originWorkingDirectory, workingDirectory])
   //spawn("gg", "git", ["--version"])
   .then(function() {
@@ -139,3 +106,34 @@ tracedTask("testForRelease", function() {
 
 }, {async:true});
 
+function spawn(name, program, args, options) {
+
+  var deferred = Q.defer();
+
+  console.log(util.format("running %s as %s %s", name, program, args.join(" ")));
+
+  var spawnedProcess = childProcess.spawn(program, args, options);
+
+  spawnedProcess.stdout.setEncoding('utf8');
+
+  spawnedProcess.stderr.on('data', function(data) { 
+    data.toString().split("\n").forEach(function(line) {
+      console.log(name + " stderr: " + line);
+    });
+  });
+
+  spawnedProcess.stdout.on('data', function(data) {
+    data.toString().split("\n").forEach(function(line) {
+      console.log(name + " stdout: " + line);
+    });
+  });
+
+  spawnedProcess.on('close', function(code) {
+    if (code !== 0) {
+      deferred.reject(new Error(name + " finished with errorcode " + code));
+    } else {
+      deferred.resolve();
+    }
+  });
+  return deferred.promise;
+}
