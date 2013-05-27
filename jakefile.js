@@ -74,7 +74,15 @@ tracedTask("testForRelease", function() {
   var originWorkingDirectory = path.resolve(".");
   var workingDirectory = path.resolve(".\\temp\\workingDirectory");
 
-  rimraf.sync(".\\temp");
+  var rmTarget = path.resolve(".\\temp");
+  console.log("using temp directory " +  rmTarget);
+  jake.rmRf(rmTarget);
+
+  if (fs.existsSync(rmTarget))
+  {
+    fail("Unable to clear temp directory");
+  }
+
   fs.mkdirSync(".\\temp");
   fs.mkdirSync(".\\temp\\workingDirectory");
 
@@ -82,7 +90,7 @@ tracedTask("testForRelease", function() {
 
     var deferred = Q.defer();
 
-    console.log(util.format("  running %s as %s %s", name, program, args.join(" ")));
+    console.log(util.format("running %s as %s %s", name, program, args.join(" ")));
 
     var spawnedProcess = childProcess.spawn(program, args, {
       cwd: workingDirectory,
@@ -100,24 +108,26 @@ tracedTask("testForRelease", function() {
 
     spawnedProcess.on('close', function(code) {
       if (code !== 0) {
-        fail(name + " finished with errorcode " + code);
+        deferred.reject(new Error(name + " finished with errorcode " + code));
       }
 
       deferred.resolve();
     });
-
     return deferred.promise;
   }
 
   spawn("git clone", "git", ["clone", originWorkingDirectory, workingDirectory])
+  //spawn("gg", "git", ["--version"])
   .then(function() {
     return spawn("git version", "git", ["--version"]);
   })
   .then(function() {
-    return spawn("npm version", "node", [".\\node_modules\\npm\\cli.js", "version"]);
+    return spawn("npm version", "node", [ path.resolve(workingDirectory, ".\\node_modules\\npm\\cli.js"), "--version"]);
   })
   .then(function() {
-    return spawn("npm rebuild", "npm", ["rebuild"]);
+    return spawn("npm build", "node", [ path.resolve(workingDirectory, ".\\node_modules\\npm\\cli.js"), "rebuild"]);
+  }, function(reason) {
+    fail(reason)
   });
 
 }, {async:true});
