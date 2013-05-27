@@ -6,6 +6,8 @@ var childProcess = require("child_process");
 var path = require("path");
 var fs = require('fs');
 var rimraf = require("rimraf");
+var util = require("util");
+var Q = require("q");
 
 function tracedTask(name) {
   console.log("\nExecuting " + name);
@@ -74,24 +76,49 @@ tracedTask("testForRelease", function() {
 
   rimraf.sync(".\\temp");
   fs.mkdirSync(".\\temp");
+  fs.mkdirSync(".\\temp\\workingDirectory");
 
-  var gitClone = childProcess.spawn("git", ["clone", originWorkingDirectory, workingDirectory]);
+  function spawn(name, program, args) {
 
-  gitClone.stdout.setEncoding('utf8');
+    var deferred = Q.defer();
 
-  gitClone.stderr.on('data', function(data) { 
-    console.log("other error: " + data);
+    console.log(util.format("  running %s as %s %s", name, program, args.join(" ")));
+
+    var spawnedProcess = childProcess.spawn(program, args, {
+      cwd: workingDirectory,
+    });
+
+    spawnedProcess.stdout.setEncoding('utf8');
+
+    spawnedProcess.stderr.on('data', function(data) { 
+      console.log(name + " error: " + data);
+    });
+
+    spawnedProcess.stdout.on('data', function(data) {
+      console.log(name + " stdout: " + data);
+    });
+
+    spawnedProcess.on('close', function(code) {
+      if (code !== 0) {
+        fail(name + " finished with errorcode " + code);
+      }
+
+      deferred.resolve();
+    });
+
+    return deferred.promise;
+  }
+
+  spawn("git clone", "git", ["clone", originWorkingDirectory, workingDirectory])
+  .then(function() {
+    return spawn("git version", "git", ["--version"]);
+  })
+  .then(function() {
+    return spawn("npm version", "node", [".\\node_modules\\npm\\cli.js", "version"]);
+  })
+  .then(function() {
+    return spawn("npm rebuild", "npm", ["rebuild"]);
   });
 
-  gitClone.stdout.on('data', function(data) {
-    console.log("other stdout: " + data);
-  });
-
-  gitClone.on('close', function(code) {
-    if (code !== 0) {
-      fail("other finished with errorcode " + code);
-    }
-
-    complete();
-  });
 }, {async:true});
+
