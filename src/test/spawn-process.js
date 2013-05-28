@@ -41,7 +41,7 @@ function spawn(name, program, args, options) {
 
   result.on('close', function(code) {
     if (code !== 0) {
-      deferred.reject(new Error(name + " finished with errorcode " + code));
+      deferred.reject(new Error(name + " had non-zero exit code " + code));
     } else {
       deferred.resolve();
     }
