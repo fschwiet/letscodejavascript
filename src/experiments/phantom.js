@@ -2,20 +2,6 @@ var Q = require("q");
 
 var phantom=require('node-phantom');
 
-function _createPageSync() {
-  var deferred = Q.defer();
-
-  this.createPage(function(err, page) {
-    if (err !== null){
-      deferred.reject(err);
-    } else {
-      deferred.resolve(page);
-    }
-  });
-
-  return deferred.promise;
-}
-
 phantom.createSync = function() {
   var deferred = Q.defer();
 
@@ -24,9 +10,23 @@ phantom.createSync = function() {
       deferred.reject(err);  // should be new Error()?
     else
     {
-      ph.createPageSync = _createPageSync;
+      ph.createPageSync = _createPagePromise;
 
       deferred.resolve(ph);
+    }
+  });
+
+  return deferred.promise;
+}
+
+function _createPagePromise() {
+  var deferred = Q.defer();
+
+  this.createPage(function(err, page) {
+    if (err !== null){
+      deferred.reject(err);
+    } else {
+      deferred.resolve(page);
     }
   });
 
