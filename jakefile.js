@@ -3,12 +3,9 @@ var assert = require('assert');
 var karma = require('./node_modules/karma/lib/runner.js');
 var mysql = require('mysql');
 var database = require("./src/server/database.js");
-var childProcess = require("child_process");
 var path = require("path");
 var fs = require('fs.extra');
 var rimraf = require("rimraf");
-var util = require("util");
-var Q = require("q");
 var spawnProcess = require("./src/test/spawn-process.js");
 
 var taskRuntimes = [];

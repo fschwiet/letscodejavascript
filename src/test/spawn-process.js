@@ -1,4 +1,5 @@
 
+var Q = require("q");
 var util = require("util");
 var childProcess = require("child_process");
 
