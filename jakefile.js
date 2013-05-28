@@ -9,6 +9,7 @@ var fs = require('fs.extra');
 var rimraf = require("rimraf");
 var util = require("util");
 var Q = require("q");
+var spawnProcess = require("./src/test/spawn-process.js");
 
 var taskRuntimes = [];
 
@@ -103,9 +104,9 @@ tracedTask("testForRelease", function() {
   fs.mkdirSync(".\\temp");
   fs.mkdirSync(".\\temp\\workingDirectory");
 
-  spawn("git clone", "git", ["clone", "--quiet", "--no-hardlinks", originWorkingDirectory, workingDirectory])
+  spawnProcess("git clone", "git", ["clone", "--quiet", "--no-hardlinks", originWorkingDirectory, workingDirectory])
   .then(function() {
-    return spawn("npm build", "node", [ path.resolve(workingDirectory, ".\\node_modules\\npm\\cli.js"), "rebuild"], {
+    return spawnProcess("npm build", "node", [ path.resolve(workingDirectory, ".\\node_modules\\npm\\cli.js"), "rebuild"], {
       cwd: workingDirectory,
     });
   })
@@ -113,7 +114,7 @@ tracedTask("testForRelease", function() {
     fs.copy(path.resolve(originWorkingDirectory, "config.json"), path.resolve(workingDirectory, "config.json"));
   })
   .then(function() {
-    return spawn("jake", "node", [ path.resolve(workingDirectory, ".\\node_modules\\jake\\bin\\cli.js"), "default"], {
+    return spawnProcess("jake", "node", [ path.resolve(workingDirectory, ".\\node_modules\\jake\\bin\\cli.js"), "default"], {
       cwd: workingDirectory,
     });
   })
@@ -128,39 +129,6 @@ tracedTask("testForRelease", function() {
   });
 
 }, {async:true});
-
-function spawn(name, program, args, options) {
-
-  var deferred = Q.defer();
-
-  console.log(util.format("running %s as %s %s", name, program, args.join(" ")));
-
-  var spawnedProcess = childProcess.spawn(program, args, options);
-
-  spawnedProcess.stdout.setEncoding('utf8');
-
-  spawnedProcess.stderr.on('data', function(data) { 
-    data.toString().split("\n").forEach(function(line) {
-      console.log(name + " stderr: " + line);
-    });
-  });
-
-  spawnedProcess.stdout.on('data', function(data) {
-    data.toString().split("\n").forEach(function(line) {
-      console.log(name + " stdout: " + line);
-    });
-  });
-
-  spawnedProcess.on('close', function(code) {
-    console.log(util.format("%s finished with %s", name, code));
-    if (code !== 0) {
-      deferred.reject(new Error(name + " finished with errorcode " + code));
-    } else {
-      deferred.resolve();
-    }
-  });
-  return deferred.promise;
-}
 
 function getFileListWithTypicalExcludes() {
   var list = new jake.FileList();

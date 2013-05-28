@@ -4,7 +4,7 @@
     var fs = require("fs");
     var assert = require("assert");
     var downloadFile = require("../test/download-file");
-    var childProcess = require("child_process");
+    var spawnProcess = require("../test/spawn-process");
 
     var SCRIPT_NAME = "src/iis/iis_server.js";
 
@@ -17,19 +17,11 @@
         var env = JSON.parse(JSON.stringify(process.env));
         env.PORT = 8081;
 
-        server = childProcess.spawn("node", [SCRIPT_NAME], {
+        server = spawnProcess.leftRunning("iis_server", "node", [SCRIPT_NAME], {
             env : env
         });
 
-        server.stdout.setEncoding("utf8");
-
-        server.stderr.on('data', function (data) {
-            console.log(SCRIPT_NAME + ' stderr: ' + data);
-        });
-
         server.stdout.on('data', function (data) {
-            console.log(SCRIPT_NAME + " stdout: " + data);
-
             if (data.indexOf("Server started") !== -1) {
                 done();
             }
