@@ -1,5 +1,5 @@
 
-exports.whenRunningTheServer = function() {
+exports.whenRunningTheServer = function(inner) {
 
     var fs = require("fs");
     var assert = require("assert");
@@ -10,35 +10,39 @@ exports.whenRunningTheServer = function() {
 
     var server = null;
 
-    return {
-        setUp: function(done) {
+    inner = inner || {};
 
-                assert.ok(fs.existsSync(SCRIPT_NAME), "Could not find file " + SCRIPT_NAME);
+    inner.setUp = function(done) {
 
-                var env = JSON.parse(JSON.stringify(process.env));
-                env.PORT = 8081;
+        assert.ok(fs.existsSync(SCRIPT_NAME), "Could not find file " + SCRIPT_NAME);
 
-                server = spawnProcess.leftRunning("iis_server", "node", [SCRIPT_NAME], {
-                    env : env
-                });
+        var env = JSON.parse(JSON.stringify(process.env));
+        env.PORT = 8081;
 
-                server.stdout.on('data', function (data) {
-                    if (data.indexOf("Server started") !== -1) {
-                        done();
-                    }
-                });
-            },
-        tearDown: function(done) {
-            
-            if (server !== null) {
-                server.on("close", function() {
-                    done();
-                });
-                server.kill();
-                server = null;
-            } else {
+        server = spawnProcess.leftRunning("iis_server", "node", [SCRIPT_NAME], {
+            env : env
+        });
+
+        server.stdout.on('data', function (data) {
+            if (data.indexOf("Server started") !== -1) {
                 done();
             }
+        });
+    };
+
+    inner.tearDown = function(done) {
+        
+        if (server !== null) {
+            server.on("close", function() {
+                done();
+            });
+            server.kill();
+            server = null;
+        } else {
+            done();
         }
     };
+
+    return inner;
 };
+    
