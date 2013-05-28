@@ -13,7 +13,7 @@
     var express = require('express');
     var app = express();    
 
-    app.set('views', __dirname + '/src/server/views');
+    app.set('views', __dirname + '/views');
     app.set('view engine', 'jade');
 
     app.get("/", handleHomepageRequest);
@@ -36,15 +36,8 @@
     };
 
     function handleHomepageRequest(request, response) {
-        fs.readFile(path.resolve(__dirname, homepageFile), function(err,data) {
 
-            if (err) {
-                response.statusCode = 500;
-                response.end();
-            } else {
-                response.end(data);
-            }
-        });
+        response.render('index', { title: "homepage" });
     }
 
     function handleStatusRequest(request, response) {
