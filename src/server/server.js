@@ -13,9 +13,11 @@
     var express = require('express');
     var app = express();    
 
+    app.set('views', __dirname + '/src/server/views');
+    app.set('view engine', 'jade');
+
     app.get("/", handleHomepageRequest);
     app.get("/status", handleStatusRequest);
-    //app.listen(port);
 
     var server;
 
@@ -47,7 +49,7 @@
 
     function handleStatusRequest(request, response) {
         database.getStatus(function(statusString) {
-                            response.write("Database status: " + statusString);
+                            response.render('status', { title: 'Status', databaseStatus: statusString });
                             response.end();
                         });        
     }
