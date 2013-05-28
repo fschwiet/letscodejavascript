@@ -1,7 +1,7 @@
 (function() {
     var http = require("http");
     
-    exports.downloadFile = function(url, callback) {
+    module.exports = function(url, callback) {
         var result = http.get(url, function(response) {
             response.setEncoding("utf8");
             

@@ -3,7 +3,7 @@
 
     var fs = require("fs");
     var assert = require("assert");
-    var testUtil = require("../test-util");
+    var downloadFile = require("../test/download-file");
     var childProcess = require("child_process");
 
     var SCRIPT_NAME = "src/iis/iis_server.js";
@@ -51,7 +51,7 @@
 
     exports.test_canRunServer = function(test) {
 
-        testUtil.downloadFile("http://localhost:8081", function(statusCode, responseBody) {
+        downloadFile("http://localhost:8081", function(statusCode, responseBody) {
             test.ok(responseBody.indexOf("this is homepage.html") !== -1, "Should have marker indicating homepage");
             test.done();
         });
@@ -61,7 +61,7 @@
 
         var expectedPattern = (/Database status:(.*)$/mi);
 
-        testUtil.downloadFile("http://localhost:8081/status", function(statusCode, responseBody) {
+        downloadFile("http://localhost:8081/status", function(statusCode, responseBody) {
             
             var match = expectedPattern.exec(responseBody);
 

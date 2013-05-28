@@ -1,3 +1,4 @@
+var nodeunit = require('nodeunit');
 var assert = require('assert');
 var karma = require('./node_modules/karma/lib/runner.js');
 var mysql = require('mysql');
@@ -59,7 +60,7 @@ tracedTask("testServer", ["createTestDatabase"], function() {
   testList.include("**/_*.js");
   testList.exclude("src/client/**");
 
-  var reporter = require('nodeunit').reporters["default"];
+  var reporter = nodeunit.reporters["default"];
   reporter.run(testList.toArray(), null, function(failures) {
     assert.ifError(failures);
     complete();
