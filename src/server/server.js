@@ -14,29 +14,19 @@
     var app = express();    
 
     app.get("/", handleHomepageRequest);
+    app.get("/status", handleStatusRequest);
     //app.listen(port);
 
     var server;
 
     exports.start = function(port, callback) { 
 
-        server = http.createServer();
-
-        server.on('request', function(request, response) {
-            if (request.url == "/") {
-                handleHomepageRequest(request, response);
-            } else if (request.url == "/status"){
-                handleStatusRequest(handleStatusRequiest);
-            } else {                
-                response.statusCode = 404;
-                response.end();
-            }
-        });
-
+        server = http.createServer(app);
         server.listen(port, callback);
     };
 
     exports.stop = function(callback) {
+
         if (server) {
             server.close(callback);
             server = null;
@@ -55,7 +45,7 @@
         });
     }
 
-    function handleStatusRequiest(request, response) {
+    function handleStatusRequest(request, response) {
         database.getStatus(function(statusString) {
                             response.write("Database status: " + statusString);
                             response.end();
