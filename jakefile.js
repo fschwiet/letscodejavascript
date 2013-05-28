@@ -41,10 +41,8 @@ tracedTask("default", ["lint", "test"], function() {
 desc("lint");
 tracedTask("lint", function() {
 
-  var list = new jake.FileList();
+  var list = getFileListWithTypicalExcludes();
   list.include("**/*.js");
-  list.exclude("node_modules");
-  list.exclude("build");
 
   var runner = require("./build/lint/lint_runner.js");
 
@@ -57,10 +55,8 @@ tracedTask("test", ["testClient","testServer"]);
 
 tracedTask("testServer", ["createTestDatabase"], function() {
 
-  var testList = new jake.FileList();
+  var testList = getFileListWithTypicalExcludes();
   testList.include("**/_*.js");
-  testList.exclude("node_modules");
-  testList.exclude("build");
   testList.exclude("src/client/**");
 
   var reporter = require('nodeunit').reporters["default"];
@@ -163,4 +159,12 @@ function spawn(name, program, args, options) {
     }
   });
   return deferred.promise;
+}
+
+function getFileListWithTypicalExcludes() {
+  var list = new jake.FileList();
+  list.exclude("node_modules");
+  list.exclude("build");
+  list.exclude("temp");
+  return list;
 }

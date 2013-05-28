@@ -3,10 +3,10 @@
 
     var fs = require("fs");
     var assert = require("assert");
-    var testUtil = require("../src/test-util");
+    var testUtil = require("../test-util");
     var childProcess = require("child_process");
 
-    var SCRIPT_NAME = "iis/iis_server.js";
+    var SCRIPT_NAME = "src/iis/iis_server.js";
 
     var server = null;
 
