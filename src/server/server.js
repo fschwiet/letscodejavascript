@@ -2,7 +2,7 @@
 (function() {
     "use strict";
 
-    var homepageFile = "homepage.html";
+    var homepageFile = "views/homepage.html";
 
     var http = require('http');
     var fs = require('fs');
