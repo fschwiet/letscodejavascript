@@ -83,6 +83,13 @@ tracedTask("createTestDatabase", function() {
   });
 }, { async:true});
 
+desc("Run the server locally");
+tracedTask("runServer", function() {
+  console.log("running the server on 8080");
+  var server = require("./src/server/server.js");
+  server.start(8080);
+});
+
 desc("test all the things");
 tracedTask("testForRelease", function() {
   
