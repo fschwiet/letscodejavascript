@@ -35,6 +35,7 @@ phantom.createSync().then(function(ph) {
   return ph.createPageSync().then(function(page) {
     
     console.log("calling open");
+
     return page.openSync("http://google.com/")
       .then(function(status) {
 
@@ -50,11 +51,14 @@ phantom.createSync().then(function(ph) {
       .then(function() { 
 
           console.log("finished");
-          ph.exit();
         }, 
         function(err) { 
         
           console.log("failed: " + err);
-        });
+        })
+      .fin(function() {
+          console.log("ph.exit called");
+          ph.exit();
+      });
   });
 });
