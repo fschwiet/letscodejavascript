@@ -27,6 +27,7 @@ function promisify(nodeAsyncFn, context, modifier) {
 phantom.createSync = promisify(phantom.create, phantom, function(ph) {
   ph.createPageSync = promisify(ph.createPage, ph, function(page) {
     page.openSync = promisify(page.open, page);
+    page.evaluateSync = promisify(page.evaluate, page);
   });
 });
 
@@ -39,12 +40,13 @@ phantom.createSync().then(function(ph) {
 
           console.log("opened site? ", status);
         
-          var title = page.evaluate(function() {
+          return page.evaluateSync(function() {
             return document.title;
           });
-        
-          console.log("title was " + title);
         })
+      .then(function(title) {
+        console.log("title was " + title);
+      })
       .then(function() { 
 
           console.log("finished");
