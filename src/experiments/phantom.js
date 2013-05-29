@@ -24,8 +24,6 @@ function promisify(nodeAsyncFn, context, modifier) {
   };
 };
 
-
-
 phantom.promise = {
   create : promisify(phantom.create, phantom, function(ph) {
     ph.promise = {
@@ -37,7 +35,6 @@ phantom.promise = {
       })
     }
 })};
-
 
 phantom.promise.create()
 .then(function(ph) {
