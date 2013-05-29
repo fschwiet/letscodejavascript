@@ -4,23 +4,25 @@ var phantom=require('node-phantom');
 
 function promisify(nodeAsyncFn, context, modifier) {
   return function() {
-    var defer = Q.defer()
-    , args = Array.prototype.slice.call(arguments);
+    var args = args = Array.prototype.slice.call(arguments);
+    return function() {
+      var defer = Q.defer()
 
-    args.push(function(err, val) {
-      if (err !== null) {
-        return defer.reject(err);
-      }
+      args.push(function(err, val) {
+        if (err !== null) {
+          return defer.reject(err);
+        }
 
-      if (modifier)
-        modifier(val);
+        if (modifier)
+          modifier(val);
 
-      return defer.resolve(val);
-    });
+        return defer.resolve(val);
+      });
 
-    nodeAsyncFn.apply(context || {}, args);
+      nodeAsyncFn.apply(context || {}, args);
 
-    return defer.promise;
+      return defer.promise;
+    };
   };
 };
 
@@ -31,34 +33,33 @@ phantom.createSync = promisify(phantom.create, phantom, function(ph) {
   });
 });
 
-phantom.createSync().then(function(ph) {
-  return ph.createPageSync().then(function(page) {
+phantom
+.createSync()()
+.then(function(ph) {
+  return ph.createPageSync()().then(function(page) {
     
     console.log("calling open");
-
-    return page.openSync("http://google.com/")
+    return page.openSync("http://google.com/")()
       .then(function(status) {
 
-          console.log("opened site? ", status);
-        
-          return page.evaluateSync(function() {
-            return document.title;
-          });
-        })
+        console.log("opened site? ", status);
+      })
+      .then(page.evaluateSync(function() {
+          return document.title;
+      }))
       .then(function(title) {
         console.log("title was " + title);
       })
       .then(function() { 
 
-          console.log("finished");
-        }, 
-        function(err) { 
-        
-          console.log("failed: " + err);
-        })
-      .fin(function() {
-          console.log("ph.exit called");
-          ph.exit();
+        console.log("finished");
       });
+  })
+  .fail(function() {
+     console.log("failed: " + err);
+  })
+  .fin(function() {
+    console.log("ph.exit called");
+    ph.exit();
   });
 });
