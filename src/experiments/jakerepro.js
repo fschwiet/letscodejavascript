@@ -6,11 +6,34 @@ task("syncfail", function() {
    fail("synchronous failure"); 
 });
 
-var http = require("http");
+
+task("goodasyncfail", function() {
+
+  waitForSleep(function() {
+    waitForSleep(function() {
+      waitForSleep(function() {
+        console.log("all done, time to fail");
+        fail("This is the end");
+      });
+    });
+  });
+
+  console.log("finishing sync part");
+}, { async:true});
+
+
+function waitForSleep(callback) {
+
+  setTimeout(function() {
+    console.log("finished timeout");
+    callback();
+  }, 10);
+}
+
 
 task("asyncfail", function() {
 
-    waitForSleep()().then(waitForSleep).then(waitForSleep).then(waitForSleep).then(function() {
+    waitForSleepPromise()().then(waitForSleepPromise).then(waitForSleepPromise).then(waitForSleepPromise).then(function() {
         console.log("all done, time to fail");
         fail("This is the end");
     });
@@ -19,7 +42,7 @@ task("asyncfail", function() {
 }, { async:true});
 
 
-function waitForSleep() {
+function waitForSleepPromise() {
 
   return function() {
     var deferred = Q.defer();
