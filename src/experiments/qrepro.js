@@ -4,7 +4,7 @@ var Q = require("q");
 
 function promiseLog(message) {
     return Q.fcall(function() {
-        console.write(message);
+        console.log(message);
     });
 }
 
