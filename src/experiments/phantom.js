@@ -32,19 +32,26 @@ phantom.createSync = promisify(phantom.create, phantom, function(ph) {
 
 phantom.createSync().then(function(ph) {
   return ph.createPageSync().then(function(page) {
+    
     console.log("calling open");
     return page.openSync("http://google.com/")
       .then(function(status) {
+
           console.log("opened site? ", status);
+        
           var title = page.evaluate(function() {
             return document.title;
           });
+        
           console.log("title was " + title);
         })
       .then(function() { 
+
           console.log("finished");
           ph.exit();
-        }, function(err) { 
+        }, 
+        function(err) { 
+        
           console.log("failed: " + err);
         });
   });
