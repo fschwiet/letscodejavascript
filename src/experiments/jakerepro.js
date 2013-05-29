@@ -33,7 +33,11 @@ function waitForSleep(callback) {
 
 task("asyncfail", function() {
 
-    waitForSleepPromise()().then(waitForSleepPromise).then(waitForSleepPromise).then(waitForSleepPromise).then(function() {
+    waitForSleepPromise()
+    .then(function() { return waitForSleepPromise(); })
+    .then(function() { return waitForSleepPromise(); })
+    .then(function() { return waitForSleepPromise(); })
+    .then(function() {
         console.log("all done, time to fail");
         fail("This is the end");
     });
@@ -44,14 +48,12 @@ task("asyncfail", function() {
 
 function waitForSleepPromise() {
 
-  return function() {
-    var deferred = Q.defer();
+  var deferred = Q.defer();
 
-    setTimeout(function() {
-      console.log("finished timeout");
-      deferred.resolve();
-    });
+  setTimeout(function() {
+    console.log("finished timeout");
+    deferred.resolve();
+  });
 
-    return deferred.promise;
-  };
+  return deferred.promise;
 }
