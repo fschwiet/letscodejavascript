@@ -30,31 +30,22 @@ phantom.createSync = promisify(phantom.create, phantom, function(ph) {
   });
 });
 
-var cleanup = [];
-cleanup.run = function() {
-  cleanup.forEach(function(value) { value(); });
-}
-
 phantom.createSync().then(function(ph) {
-  cleanup.unshift(function() { 
-    ph.exit();
+  return ph.createPageSync().then(function(page) {
+    console.log("calling open");
+    return page.openSync("http://google.com/")
+      .then(function(status) {
+          console.log("opened site? ", status);
+          var title = page.evaluate(function() {
+            return document.title;
+          });
+          console.log("title was " + title);
+        })
+      .then(function() { 
+          console.log("finished");
+          ph.exit();
+        }, function(err) { 
+          console.log("failed: " + err);
+        });
   });
-  return ph.createPageSync();
-}).then(function(page) {
-  console.log("calling open");
-  return page.openSync("http://google.com/")
-  .then(function(status) {
-    console.log("opened site? ", status);
-    page.evaluate(function() {
-      return document.title;
-    }, function(err,result) {
-      console.log(result);
-      cleanup.run();
-    });
-  })
-  .then(function() { console.log("finished");}, function(err) { console.log("failed: " + err)});
-  
 });
-
-
-
