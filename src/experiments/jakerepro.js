@@ -10,7 +10,7 @@ var http = require("http");
 
 task("asyncfail", function() {
 
-    waitForSleep().then(waitForSleep).then(waitForSleep).then(waitForSleep).then(function() {
+    waitForSleep()().then(waitForSleep).then(waitForSleep).then(waitForSleep).then(function() {
         console.log("all done, time to fail");
         fail("This is the end");
     });
@@ -20,12 +20,15 @@ task("asyncfail", function() {
 
 
 function waitForSleep() {
-  var deferred = Q.defer();
 
-  setTimeout(function() {
-    console.log("finished timeout");
-    deferred.resolve();
-  });
+  return function() {
+    var deferred = Q.defer();
 
-  return deferred.promise;
+    setTimeout(function() {
+      console.log("finished timeout");
+      deferred.resolve();
+    });
+
+    return deferred.promise;
+  };
 }
