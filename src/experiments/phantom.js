@@ -5,7 +5,6 @@ var phantom=require('node-phantom');
 function promisify(nodeAsyncFn, context, modifier) {
   return function() {
     var args = args = Array.prototype.slice.call(arguments);
-    return function() {
       var defer = Q.defer()
 
       args.push(function(err, val) {
@@ -22,7 +21,6 @@ function promisify(nodeAsyncFn, context, modifier) {
       nodeAsyncFn.apply(context || {}, args);
 
       return defer.promise;
-    };
   };
 };
 
@@ -34,24 +32,25 @@ phantom.createSync = promisify(phantom.create, phantom, function(ph) {
 });
 
 phantom
-.createSync()()
+.createSync()
 .then(function(ph) {
-  return ph.createPageSync()().then(function(page) {
+  return ph.createPageSync().then(function(page) {
     
     console.log("calling open");
-    return page.openSync("http://google.com/")()
+    return page.openSync("http://google.com/")
       .then(function(status) {
 
         console.log("opened site? ", status);
       })
-      .then(page.evaluateSync(function() {
+      .then(function() {
+        return page.evaluateSync(function() {
           return document.title;
-      }))
+        });
+      })
       .then(function(title) {
         console.log("title was " + title);
       })
       .then(function() { 
-
         console.log("finished");
       });
   })
