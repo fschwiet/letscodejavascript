@@ -5,16 +5,17 @@ var phantom=require('node-phantom');
 
 function promisify(nodeAsyncFn, context, modifier) {
   return function() {
-    var args = args = Array.prototype.slice.call(arguments);
-      var defer = Q.defer()
+    var args = Array.prototype.slice.call(arguments);
+      var defer = Q.defer();
 
       args.push(function(err, val) {
         if (err !== null) {
           return defer.reject(err);
         }
 
-        if (modifier)
+        if (modifier) {
           modifier(val);
+        }
 
         return defer.resolve(val);
       });
@@ -23,7 +24,7 @@ function promisify(nodeAsyncFn, context, modifier) {
 
       return defer.promise;
   };
-};
+}
 
 phantom.promise = {
   create : promisify(phantom.create, phantom, function(ph) {
@@ -31,10 +32,11 @@ phantom.promise = {
       createPage : promisify(ph.createPage, ph, function(page) {
         page.promise = {
           open : promisify(page.open, page),
-          evaluate : promisify(page.evaluate, page)
+          evaluate : promisify(page.evaluate, page),
+          uploadFile : promisify(page.uploadFile, page)
         };
       })
-    }
+    };
 })};
 
 module.exports = phantom;

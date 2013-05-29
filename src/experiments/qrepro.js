@@ -7,7 +7,7 @@ function promiseLog(message) {
         return Q.fcall(function() {
             console.log(message);
         });
-    }
+    };
 }
 
 promiseLog("a")()
@@ -21,7 +21,7 @@ promiseLog("a")()
     promiseLog("lets get crazy")()
     .then(function(v) {
         console.log("1A " + v);
-        return "A"
+        return "A";
     }, function(v) {
         console.log("1B " + v);
     })
