@@ -24,26 +24,33 @@ function promisify(nodeAsyncFn, context, modifier) {
   };
 };
 
-phantom.createSync = promisify(phantom.create, phantom, function(ph) {
-  ph.createPageSync = promisify(ph.createPage, ph, function(page) {
-    page.openSync = promisify(page.open, page);
-    page.evaluateSync = promisify(page.evaluate, page);
-  });
-});
 
-phantom
-.createSync()
+
+phantom.promise = {
+  create : promisify(phantom.create, phantom, function(ph) {
+    ph.promise = {
+      createPage : promisify(ph.createPage, ph, function(page) {
+        page.promise = {
+          open : promisify(page.open, page),
+          evaluate : promisify(page.evaluate, page)
+        };
+      })
+    }
+})};
+
+
+phantom.promise.create()
 .then(function(ph) {
-  return ph.createPageSync().then(function(page) {
+  return ph.promise.createPage().then(function(page) {
     
     console.log("calling open");
-    return page.openSync("http://google.com/")
+    return page.promise.open("http://google.com/")
       .then(function(status) {
 
         console.log("opened site? ", status);
       })
       .then(function() {
-        return page.evaluateSync(function() {
+        return page.promise.evaluate(function() {
           return document.title;
         });
       })
@@ -54,7 +61,7 @@ phantom
         console.log("finished");
       });
   })
-  .fail(function() {
+  .fail(function(err) {
      console.log("failed: " + err);
   })
   .fin(function() {
