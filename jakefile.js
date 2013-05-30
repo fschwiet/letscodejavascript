@@ -1,14 +1,12 @@
 var nodeunit = require('nodeunit');
 var assert = require('assert');
-var karma = require('./node_modules/karma/lib/runner.js');
+var karma = require('./build/karma/karma');
 var mysql = require('mysql');
 var database = require("./src/server/database.js");
 var path = require("path");
 var fs = require('fs.extra');
 var rimraf = require("rimraf");
 var spawnProcess = require("./src/test/spawn-process.js");
-var phantom = require("./src/test/node-phantom-shim");
-var Q = require("q");
 
 var taskRuntimes = [];
 
@@ -69,45 +67,7 @@ tracedTask("testServer", ["createTestDatabase"], function() {
 
 tracedTask("testClient", function() {
 
-  var testRunnerLocation = "http://localhost:9876/";
-
-  promiseJake(phantom.promise.create()
-    .then(function(ph) {
-      return ph.promise.createPage().then(function(page) {
-        
-        console.log("calling open");
-        return page.promise.open(testRunnerLocation)
-          .then(function(status) {
-
-            if (status !== "success")
-            {
-              throw new Error("Status loading karma test runner was non-success: " + status);
-            }
-          })
-          .then(function() { 
-
-            console.log("calling run");
-            var deferred = Q.defer();
-
-            console.log('running karma');
-            karma.run({}, function(exitCode) {
-              console.log('karma was ', exitCode);
-
-              if (exitCode !== 0) {
-                deferred.reject("Karma exit code was non-zero: " + exitCode);
-              } else {
-                deferred.resolve();
-              }
-            });
-
-            return deferred.promise;
-          });
-      })
-      .fin(function() {
-        console.log("ph.exit called");
-        ph.exit();
-      });
-    }));
+  promiseJake(karma.runTests());
 
 }, { async: true });
 
@@ -184,6 +144,6 @@ function promiseJake(promise) {
       complete();
     }, 
     function(err) {
-      fail(err.toString());
+      setTimeout(function() { fail(err);}, 0);
     });
 }
