@@ -1,4 +1,36 @@
 
+
+var phantom = require("./node-phantom-shim.js");
+
+
+exports.testPromise = function(context, name, promise) {
+    context["test_" + name] = function(test) {
+      promise
+        .then(
+          function() {
+            test.done();
+          }, 
+          function(err) {
+            test.ifError(err || "promise failed for unknown reason"); 
+            test.done();
+          });
+    };
+};
+
+//
+//  Callback is passed 1 parameter, the phantom.js instance
+//
+exports.usingPhantom = function(callback) {
+    return phantom.promise
+    .create()
+    .then(function(phantom) {
+        console.log("ph.exit called");
+        return callback.fin(function() {
+            phantom.exit();
+        });
+    });
+};
+
 exports.whenRunningTheServer = function(inner) {
 
     var fs = require("fs");

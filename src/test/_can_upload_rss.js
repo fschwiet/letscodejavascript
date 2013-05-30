@@ -7,33 +7,23 @@
 
   setup.whenRunningTheServer(exports);
 
-  function it(name, promise) {
-    exports["test_" + name] = function(test) {
-      promise
-        .then(
-          function() {
-            test.done();
-          }, 
-          function(err) {
-            test.ifError(err || "promise failed for unknown reason"); 
-            test.done();
-          });
-    };
-  }
-
-  it("can upload rss", phantom.promise
-    .create()
-    .then(function(ph) {
+  setup.testPromise(exports, "can upload rss", setup.usingPhantom(
+    function(ph) {
       return ph.promise.createPage().then(function(page) {
 
         return page.promise.open("http://localhost:8081/")
-          .then(function(status) {
-            assert.equal(status, "success");
+        .then(function(status) {
+
+          assert.equal(status, "success");
+
+          return page.promise.uploadFile('input[name=image]', filepath)
+          .then(function() {
+
           });
-      })
-      .fin(function() {
-        console.log("ph.exit called");
-        ph.exit();
+        })
+        .then(function() {
+
+        });
       });
     }));
 })();
