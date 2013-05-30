@@ -30,16 +30,18 @@ function waitForSleep(callback) {
   }, 10);
 }
 
-
 task("asyncfail", function() {
 
     waitForSleepPromise()
-    .then(function() { return waitForSleepPromise(); })
-    .then(function() { return waitForSleepPromise(); })
-    .then(function() { return waitForSleepPromise(); })
+    .then(waitForSleepPromise)
+    .then(waitForSleepPromise)
+    .then(waitForSleepPromise)
     .then(function() {
         console.log("all done, time to fail");
-        fail("This is the end");
+
+        deferError(function() {
+          fail("This is the end", "fasdf");
+        });
     });
 
     console.log("finishing sync part");
@@ -53,7 +55,18 @@ function waitForSleepPromise() {
   setTimeout(function() {
     console.log("finished timeout");
     deferred.resolve();
-  });
+  }, 10);
 
   return deferred.promise;
+}
+
+function deferError(callback) {
+  try {
+    callback();
+  }
+  catch (err){
+    setTimeout(function() {
+      throw err;
+    }, 0);
+  }
 }
