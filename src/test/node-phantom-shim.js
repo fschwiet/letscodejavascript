@@ -20,6 +20,12 @@ function promisify(nodeAsyncFn, context, modifier) {
         return defer.resolve(val);
       });
 
+      for(var key in context) {
+        if (context[key] == nodeAsyncFn) {
+          console.log("running " + key);
+        }
+      }
+
       nodeAsyncFn.apply(context || {}, args);
 
       return defer.promise;
