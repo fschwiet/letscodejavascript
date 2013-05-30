@@ -7,6 +7,8 @@ var path = require("path");
 var fs = require('fs.extra');
 var rimraf = require("rimraf");
 var spawnProcess = require("./src/test/spawn-process.js");
+var phantom = require("./src/test/node-phantom-shim");
+var Q = require("q");
 
 var taskRuntimes = [];
 
@@ -66,13 +68,47 @@ tracedTask("testServer", ["createTestDatabase"], function() {
 }, {async: true});
 
 tracedTask("testClient", function() {
-  
-  karma.run({}, function(exitCode) {
 
-    assert.equal(exitCode, 0, "Karma test runner indicates failure.");
+  var testRunnerLocation = "http://localhost:9876/";
 
-    complete();
-  });
+  promiseJake(phantom.promise.create()
+    .then(function(ph) {
+      return ph.promise.createPage().then(function(page) {
+        
+        console.log("calling open");
+        return page.promise.open(testRunnerLocation)
+          .then(function(status) {
+
+            if (status !== "success")
+            {
+              throw new Error("Status loading karma test runner was non-success: " + status);
+            }
+          })
+          .then(function() { 
+
+            console.log("calling run");
+            var deferred = Q.defer();
+
+            console.log('running karma');
+            karma.run({}, function(exitCode) {
+              console.log('karma was ', exitCode);
+
+              if (exitCode !== 0) {
+                deferred.reject("Karma exit code was non-zero: " + exitCode);
+              } else {
+                deferred.resolve();
+              }
+            });
+
+            return deferred.promise;
+          });
+      })
+      .fin(function() {
+        console.log("ph.exit called");
+        ph.exit();
+      });
+    }));
+
 }, { async: true });
 
 tracedTask("createTestDatabase", function() {
@@ -140,4 +176,14 @@ function getFileListWithTypicalExcludes() {
   list.exclude("build");
   list.exclude("temp");
   return list;
+}
+
+function promiseJake(promise) {
+  return promise.then(
+    function() {
+      complete();
+    }, 
+    function(err) {
+      fail(err.toString());
+    });
 }
