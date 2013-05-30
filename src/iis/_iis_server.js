@@ -1,9 +1,10 @@
 (function() {
     "use strict";
 
-    var setup = require("..\\test\\setup");
+    var setup = require("../test/setup");
+    var downloadFile = require("../test/download-file");
 
-    exports = setup.whenRunningTheServer();
+    setup.whenRunningTheServer(exports);
 
     exports.test_canRunServer = function(test) {
 

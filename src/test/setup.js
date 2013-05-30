@@ -10,8 +10,6 @@ exports.whenRunningTheServer = function(inner) {
 
     var server = null;
 
-    inner = inner || {};
-
     inner.setUp = function(done) {
 
         assert.ok(fs.existsSync(SCRIPT_NAME), "Could not find file " + SCRIPT_NAME);
@@ -42,7 +40,5 @@ exports.whenRunningTheServer = function(inner) {
             done();
         }
     };
-
-    return inner;
 };
     

@@ -1,13 +1,14 @@
 (function() {
     "use strict";
 
-    var setup = require("..\\test\\setup");
+    var setup = require("../test/setup");
+    var downloadFile = require("../test/download-file");
 
-    exports = setup.whenRunningTheServer();
+    setup.whenRunningTheServer(exports);
 
     exports.test_canReportDatabaseStatus = function(test) {
 
-        var expectedPattern = (/Database status:(.*)$/mi);
+        var expectedPattern = (/Database status:(.*\(.*\))/mi);
 
         downloadFile("http://localhost:8081/status", function(statusCode, responseBody) {
             
