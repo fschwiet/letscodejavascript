@@ -3,13 +3,16 @@
 
   var setup = require("../test/setup");
   var assert = require("assert");
+  var nconf = require("../server/config.js");
+
+  var port = nconf.get("testServer_port");
 
   setup.whenRunningTheServer(exports);
 
 /*
   setup.qtest(exports, "can upload rss", setup.usingPhantom(function(page) {
 
-    return page.promise.open("http://localhost:8081/")
+    return page.promise.open("http://localhost:" + port + "/")
     .then(function(status) {
 
       assert.equal(status, "success");

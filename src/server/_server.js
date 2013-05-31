@@ -5,14 +5,6 @@
 
     var nconf = require('./config.js');
 
-    nconf.defaults({
-      "testServer_portt" : 8081
-    });
-
-    nconf.defaults({
-      "testServer_port" : 8081
-    });
-
     var port = nconf.get("testServer_port");
 
     var server = require("./server.js");

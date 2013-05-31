@@ -3,6 +3,9 @@
 
     var setup = require("../test/setup");
     var downloadFile = require("../test/download-file");
+    var nconf = require("../server/config.js");
+
+    var port = nconf.get("testServer_port");
 
     setup.whenRunningTheServer(exports);
 
@@ -10,7 +13,7 @@
 
         var expectedPattern = (/Database status:(.*\(.*\))/mi);
 
-        downloadFile("http://localhost:8081/status", function(statusCode, responseBody) {
+        downloadFile("http://localhost:" + port + "/status", function(statusCode, responseBody) {
             
             var match = expectedPattern.exec(responseBody);
 
