@@ -1,6 +1,4 @@
 
-var Q = require("q");
-
 var phantom=require('../test/node-phantom-shim');
 
 phantom.promise.create()
