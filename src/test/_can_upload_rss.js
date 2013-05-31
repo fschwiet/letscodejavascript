@@ -7,24 +7,22 @@
   setup.whenRunningTheServer(exports);
 
 /*
-  setup.qtest(exports, "can upload rss", setup.usingPhantom(
-    function(ph) {
-      return ph.promise.createPage().then(function(page) {
+  setup.qtest(exports, "can upload rss", setup.usingPhantom(function(page) {
 
-        return page.promise.open("http://localhost:8081/")
-        .then(function(status) {
+    return page.promise.open("http://localhost:8081/")
+    .then(function(status) {
 
-          assert.equal(status, "success");
+      assert.equal(status, "success");
 
-          return page.promise.uploadFile('input[name=image]', filepath)
-          .then(function() {
+      return page.promise.uploadFile('input[name=image]', filepath)
+      .then(function() {
 
-          });
-        })
-        .then(function() {
-
-        });
       });
+    })
+    .then(function() {
+
+    });
+
     }));
 */
 })();

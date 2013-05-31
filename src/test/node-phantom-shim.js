@@ -33,7 +33,14 @@ function promisify(nodeAsyncFn, context, modifier, callbackParameterPosition) {
         }
       }
 
-      nodeAsyncFn.apply(context || {}, args);
+      try {
+        nodeAsyncFn.apply(context || {}, args);
+      }
+      catch (err) {
+        defer.reject(err || name + " failed within promsifiy.");
+        return;
+      }
+
 
       return defer.promise;
   };
@@ -114,7 +121,6 @@ phantom.promise = {
             return count;
           }, function(err,count) {
 
-            console.log("evaluate finished with count " + count);
             if (err) {
               deferred.reject(err);
             } else if (count > 1) {

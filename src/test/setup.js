@@ -25,15 +25,20 @@ exports.qtest = function(context, name, promiseFilter) {
 //
 //  Callback is passed 1 parameter, the phantom.js instance
 //
+
 exports.usingPhantom = function(callback) {
     return function() {
         return phantom.promise
         .create()
         .then(function(phantom) {
-            return callback(phantom).fin(function() {
-                console.log("ph.exit called");
-                phantom.exit();
-            });
+            return phantom.promise.createPage()
+                .then(function(page) {
+                    return callback(page);
+                })
+                .fin(function() {
+                    console.log("ph.exit called");
+                    phantom.exit();
+                });
         });
     };
 };
