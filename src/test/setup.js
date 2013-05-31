@@ -26,18 +26,25 @@ exports.qtest = function(context, name, promiseFilter) {
 //  Callback is passed 1 parameter, the phantom.js instance
 //
 
+var cachedPage = null;
+
 exports.usingPhantom = function(callback) {
+
+    if (cachedPage !== null) {
+        return callback(cachedPage);
+    }
+
     return function() {
         return phantom.promise
         .create()
         .then(function(phantom) {
             return phantom.promise.createPage()
                 .then(function(page) {
-                    return callback(page);
-                })
-                .fin(function() {
-                    console.log("ph.exit called");
-                    phantom.exit();
+                    return callback(page)
+                        .fin(function() {
+                            console.log("ph.exit called");
+                            phantom.exit();
+                        });
                 });
         });
     };
