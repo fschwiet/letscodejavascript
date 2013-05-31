@@ -3,12 +3,12 @@ var Q = require("q");
 
 var phantom=require('node-phantom');
 
-function promisify(nodeAsyncFn, context, modifier) {
+function promisify(nodeAsyncFn, context, modifier, callbackParameterPosition) {
   return function() {
     var args = Array.prototype.slice.call(arguments);
       var defer = Q.defer();
 
-      args.push(function(err, val) {
+      callbackWrappingPromise = function(err, val) {
         if (err !== null) {
           return defer.reject(err);
         }
@@ -18,7 +18,14 @@ function promisify(nodeAsyncFn, context, modifier) {
         }
 
         return defer.resolve(val);
-      });
+      };
+
+      if (callbackParameterPosition == null) {
+        args.push(callbackWrappingPromise);
+      } else {
+        args.splice(callbackParameterPosition,0,callbackWrappingPromise);
+      }
+      
 
       for(var key in context) {
         if (context[key] == nodeAsyncFn) {
@@ -38,7 +45,7 @@ phantom.promise = {
       createPage : promisify(ph.createPage, ph, function(page) {
         page.promise = {
           open : promisify(page.open, page),
-          evaluate : promisify(page.evaluate, page),
+          evaluate : promisify(page.evaluate, page, null, 1),
           uploadFile : promisify(page.uploadFile, page)
         };
 

@@ -35,7 +35,21 @@
 
   exports.clickElement = {};
 
-  setup.qtest(exports.clickElement, "should give useful error when not found", setup.usingPhantom(
+  setup.qtest(exports, "should pass arguments to evaluate correctly", setup.usingPhantom(
+  function(phantom) {
+    return phantom.promise.createPage()
+      .then(
+        function(page) {
+          return page.promise.evaluate(function(a,b,c) {
+              return a + b + c;
+            },1,2);
+        })
+      .then(function(result) {
+        assert.equal(result, 6);
+      });
+  }));
+/*
+    setup.qtest(exports.clickElement, "should give useful error when not found", setup.usingPhantom(
   function(phantom) {
     return phantom.promise.createPage()
       .then(
@@ -61,7 +75,7 @@
             })
             .then(function() {
               return page.promise.evaluate(function() {
-                return document.body.innerHTML;
+                return document.body.innerHTML.toString();
               });
             })
             .then(function(content) {
@@ -106,6 +120,6 @@
   setup.qtest(exports.clickElement, "should click element when found", setup.usingPhantom(function(phantom) {
     return phantom.promise.createPage();
   }));
-
+*/
 })();
 
