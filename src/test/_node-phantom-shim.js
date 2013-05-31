@@ -54,7 +54,7 @@
     }));
 
 
-  setup.qtest(exports, "should be able to load page content", setup.usingPhantom(
+  setup.qtest(exports, "should be able to load page content as a string", setup.usingPhantom(
     function(phantom) {
     return phantom.promise.createPage()
       .then(

@@ -6,6 +6,7 @@
 
   setup.whenRunningTheServer(exports);
 
+/*
   setup.qtest(exports, "can upload rss", setup.usingPhantom(
     function(ph) {
       return ph.promise.createPage().then(function(page) {
@@ -25,5 +26,6 @@
         });
       });
     }));
+*/
 })();
 
