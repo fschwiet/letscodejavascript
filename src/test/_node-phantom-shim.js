@@ -5,6 +5,7 @@
   var assert = require("assert");
   var express = require("express");
   var http = require('http');
+  var Q = require("q");
   
   var app = express();    
   var server;
@@ -13,7 +14,6 @@
 
   exports.setUp = function(callback) {
 
-        console.log("....s tarting server...");
     app.get("/empty", function(req, res) {
       res.send("<html><head><title>lol hmm</title></head><body></body></html>");
     });
@@ -44,31 +44,41 @@
             .then(function(status) {
               assert.equal(status, "success");
             })
-      .then(function() {
-        var deferred = Q.defer();
+            .then(function() {
+              var deferred = Q.defer();
 
-        setTimeout(function() { console.log("finished timeout"); deferred.resolve();}, 5000);
+              setTimeout(function() { console.log("finished timeout"); deferred.resolve();}, 5000);
 
-        return deferred.promise;
-      })
-      .then(function() {
-        return page.promise.evaluate(function() {
-          return document.body.innerHTML;
-        });
-      })
-      .then(function(content) {
-        console.log("document.body.innerHTML was " + content);
-      })
+              return deferred.promise;
+            })
+            .then(function() {
+              return page.promise.evaluate(function() {
+                return document.title;
+              });
+            })
+            .then(function(content) {
+              console.log("document.title was " + content);
+            })
+            .then(function() {
+              return page.promise.evaluate(function() {
+                return document.body.innerHTML;
+              });
+            })
+            .then(function(content) {
+              console.log("document.body.innerHTML was " + content);
+            })
             .then(function(staus) {
+              console.log("clicking link");
               return page.promise.clickElement("a.target");
             });
         })
       .then(function() {
-        throw new Error("Expected exception");
-      }, 
-      function(err) {
-        assert.notEqual(err.toString().indexOf("An element matching 'a.target' not found"), -1, "Should give better errorstring, actual was " + err.toString());
-      });
+          console.log("throwing exception");
+          throw new Error("Expected exception");
+        }, 
+        function(err) {
+          assert.notEqual(err.toString().indexOf("An element matching 'a.target' not found"), -1, "Should give better errorstring, actual was " + err.toString());
+        });
   }));
 
   setup.qtest(exports.clickElement, "should give useful error when multiple found", setup.usingPhantom(

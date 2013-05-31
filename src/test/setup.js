@@ -30,8 +30,8 @@ exports.usingPhantom = function(callback) {
         return phantom.promise
         .create()
         .then(function(phantom) {
-            console.log("ph.exit called");
             return callback(phantom).fin(function() {
+                console.log("ph.exit called");
                 phantom.exit();
             });
         });
