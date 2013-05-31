@@ -22,6 +22,10 @@
       res.send("<html><body><a class='target'></a><a class='target'></a></body></html>");
     });
 
+    app.get("/links-to-empty", function(req, res) {
+      res.send("<html><body><a class='target' href='/empty'>click me</a></body></html>");
+    });
+
     server = http.createServer(app);
     server.listen(port, callback);
   };
@@ -109,10 +113,26 @@
         assert.ok(err.toString().indexOf("More than one elements matching 'a.target' were found") > -1, "Should give better errorstring, actual was " + err.toString());
       });
     }));
-/*
-  setup.qtest(exports.clickElement, "should click element when found", setup.usingPhantom(function(phantom) {
-    return phantom.promise.createPage();
+
+  setup.qtest(exports.clickElement, "should click element when found", setup.usingPhantom(
+    function(phantom) {
+      return phantom.promise.createPage()
+      .then(
+        function(page) {
+          return page.promise.open("http://localhost:8081/links-to-empty")
+          .then(function(status) {
+            assert.equal(status, "success");
+          })
+          .then(function() {
+            return page.promise.clickElement("a.target");
+          })
+          .then(function() {
+            return page.promise.get("url");
+          })
+          .then(function(url) {
+            assert.equal(url, "http://localhost:8081/empty");
+          });
+        });
   }));
-*/
 })();
 
