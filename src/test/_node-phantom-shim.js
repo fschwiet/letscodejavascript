@@ -49,6 +49,25 @@
       });
     }));
 
+
+  setup.qtest(exports, "should be able to load page content", setup.usingPhantom(
+    function(phantom) {
+    return phantom.promise.createPage()
+      .then(
+        function(page) {
+          return page.promise.open("http://localhost:8081/empty")
+            .then(function(status) {
+              assert.equal(status, "success");
+            })
+            .then(function() {
+              return page.promise.get("content");
+            })
+            .then(function(content) {
+              assert.ok(content.indexOf("This page has no links") > -1, "Expected page content");
+            });
+        });
+    }));  
+
   setup.qtest(exports.clickElement, "should give useful error when not found", setup.usingPhantom(
     function(phantom) {
       return phantom.promise.createPage()
@@ -58,8 +77,7 @@
           .then(function(status) {
             assert.equal(status, "success");
           })
-          .then(function(staus) {
-            console.log("clicking link");
+          .then(function() {
             return page.promise.clickElement("a.target");
           });
         })
@@ -80,8 +98,7 @@
           .then(function(status) {
             assert.equal(status, "success");
           })
-          .then(function(staus) {
-            console.log(page);
+          .then(function() {
             return page.promise.clickElement("a.target");
           });
         })
