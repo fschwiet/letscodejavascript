@@ -20,7 +20,7 @@ function promisify(nodeAsyncFn, context, modifier, callbackParameterPosition) {
         return defer.resolve(val);
       };
 
-      if (callbackParameterPosition == null) {
+      if (typeof callbackParameterPosition !== 'number') {
         args.push(callbackWrappingPromise);
       } else {
         args.splice(callbackParameterPosition,0,callbackWrappingPromise);
