@@ -19,6 +19,14 @@ phantom.promise.create()
       .then(function(title) {
         console.log("title was " + title);
       })
+      .then(function() {
+        return page.promise.evaluate(function() {
+          return document.body.innerHTML;
+        });
+      })
+      .then(function(content) {
+        console.log("document.body.innerHTML was " + content);
+      })
       .then(function() { 
         console.log("finished");
       });
