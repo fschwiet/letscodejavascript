@@ -53,21 +53,21 @@ phantom.promise = {
 
           var deferred = Q.defer();
 
-          page.promise.evaluate(function(s) {
-            console.log('body: ' + document.getElementById("body").outerHTML);
-            return s || "missing";
-            //return document.querySelectorAll(s);
-          }, function(count) {
+          page.evaluate(function(s) {
+            return document.querySelectorAll(s).length;
+          }, function(err,count) {
 
-            deferred.reject(count); /*
-            if (count > 1) {
+            console.log("evaluate finished with count " + count);
+            if (err) {
+              deferred.reject(err);
+            } else if (count > 1) {
               deferred.reject(new Error("More than one elements matching '" + selector + "' were found"));
             } else if (count < 1) {
               deferred.reject(new Error("An element matching '" + selector + "' not found"));
             } else {
-              deferred.resolve();
+              deferred.reject(new Error("click not yet implemented"));
+              //deferred.resolve();
             }
-            */
           }, selector);
 
           return deferred.promise;
