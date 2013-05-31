@@ -1,9 +1,7 @@
 
 var mysql = require('mysql');
 
-var nconf = require('nconf');
-
-nconf.file({ file: 'config.json'});
+var nconf = require('./config.js');
 
 nconf.defaults({
   "database_hostname" : "localhost",

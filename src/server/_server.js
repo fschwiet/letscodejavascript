@@ -3,10 +3,17 @@
 
     "use strict";
 
+    var nconf = require('./config.js');
+
+    nconf.defaults({
+      "testServer_port" : 8080
+    });
+
+    var port = nconf.get("testServer_port");
+
     var server = require("./server.js");
 
     var downloadFile = require("../test/download-file");
-
 
     exports.test_earlyStopCallsAreOk = function(test) {
         server.stop();
@@ -22,8 +29,8 @@
 
     exports.test_servesFileForHomepage = function(test) {
 
-        server.start(8080, function() {
-            var url = "http://localhost:8080/";
+        server.start(port, function() {
+            var url = "http://localhost:" + port + "/";
 
             downloadFile(url, function(statusCode, body) {
 
@@ -38,8 +45,8 @@
 
     exports.test_has404Page = function(test) {
 
-        server.start(8080, function() {
-            var url = "http://localhost:8080/non-existing";
+        server.start(port, function() {
+            var url = "http://localhost:" + port + "/non-existing";
 
             downloadFile(url, function(statusCode, body) {
 
