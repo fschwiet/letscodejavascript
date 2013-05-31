@@ -2,10 +2,15 @@
 
 var phantom = require("./node-phantom-shim.js");
 
-
-exports.testPromise = function(context, name, promise) {
+exports.qtest = function(context, name, promiseFilter) {
     context["test_" + name] = function(test) {
-      promise
+
+      promiseFilter = promiseFilter || function(promise) {
+        promise.reject("not implemented");
+        return promise;
+      };
+
+      promiseFilter()
         .then(
           function() {
             test.done();
@@ -21,14 +26,16 @@ exports.testPromise = function(context, name, promise) {
 //  Callback is passed 1 parameter, the phantom.js instance
 //
 exports.usingPhantom = function(callback) {
-    return phantom.promise
-    .create()
-    .then(function(phantom) {
-        console.log("ph.exit called");
-        return callback.fin(function() {
-            phantom.exit();
+    return function() {
+        return phantom.promise
+        .create()
+        .then(function(phantom) {
+            console.log("ph.exit called");
+            return callback(phantom).fin(function() {
+                phantom.exit();
+            });
         });
-    });
+    };
 };
 
 exports.whenRunningTheServer = function(inner) {

@@ -41,6 +41,30 @@ phantom.promise = {
           evaluate : promisify(page.evaluate, page),
           uploadFile : promisify(page.uploadFile, page)
         };
+
+        page.promise.clickElement = function(selector) {
+
+          var deferred = Q.defer();
+
+          page.promise.evaluate(function(s) {
+            console.log('body: ' + document.getElementById("body").outerHTML);
+            return s || "missing";
+            //return document.querySelectorAll(s);
+          }, function(count) {
+
+            deferred.reject(count); /*
+            if (count > 1) {
+              deferred.reject(new Error("More than one elements matching '" + selector + "' were found"));
+            } else if (count < 1) {
+              deferred.reject(new Error("An element matching '" + selector + "' not found"));
+            } else {
+              deferred.resolve();
+            }
+            */
+          }, selector);
+
+          return deferred.promise;
+        };
       })
     };
 })};
