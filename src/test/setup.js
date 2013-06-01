@@ -1,6 +1,8 @@
 
 
 var phantom = require("./node-phantom-shim.js");
+var Q = require('q');
+var nconf = require("./../server/config.js");
 
 exports.qtest = function(context, name, promiseFilter) {
     context["test_" + name] = function(test) {
@@ -13,7 +15,9 @@ exports.qtest = function(context, name, promiseFilter) {
       promiseFilter()
         .then(
           function() {
+            console.log ("finishing test");
             test.done();
+            console.log ("finished test");
           }, 
           function(err) {
             test.ifError(err || "promise failed for unknown reason"); 
@@ -26,28 +30,52 @@ exports.qtest = function(context, name, promiseFilter) {
 //  Callback is passed 1 parameter, the phantom.js instance
 //
 
+var cachedPhantom = null;
 var cachedPage = null;
 
 exports.usingPhantom = function(callback) {
 
-    if (cachedPage !== null) {
-        return callback(cachedPage);
-    }
-
     return function() {
+
+        if (cachedPage !== null) {
+            return callback(cachedPage);
+        }
+
         return phantom.promise
         .create()
         .then(function(phantom) {
             return phantom.promise.createPage()
-                .then(function(page) {
+            .then(function(page) {
+
+                /*
+                if (cachedPage === null) {
+                    console.log("caching page");
+                    cachedPhantom = phantom;
+                    cachedPage = page;
+                    return callback(cachedPage);
+                } else {
+                    */
                     return callback(page)
-                        .fin(function() {
-                            console.log("ph.exit called");
-                            phantom.exit();
-                        });
-                });
+                    .fin(function() {
+                        console.log("ph.exit called");
+                        phantom.exit();
+                    });
+                //}
+            });
         });
     };
+};
+
+exports.clearPhantomCache = function() {
+
+    var cached = cachedPhantom;
+    cachedPage = null;
+    cachedPhantom = null;
+
+    if (cached !== null) {
+        console.log("ph.exit called");
+        cached.exit();
+    }
 };
 
 exports.whenRunningTheServer = function(inner) {
@@ -66,7 +94,7 @@ exports.whenRunningTheServer = function(inner) {
         assert.ok(fs.existsSync(SCRIPT_NAME), "Could not find file " + SCRIPT_NAME);
 
         var env = JSON.parse(JSON.stringify(process.env));
-        env.PORT = 8081;
+        env.PORT = nconf.get("testServer_port");
 
         server = spawnProcess.leftRunning("iis_server", "node", [SCRIPT_NAME], {
             env : env

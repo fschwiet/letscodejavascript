@@ -39,11 +39,12 @@
     }
   };
 
+/*
   require("nodeunit").on('complete', function() {
     console.log("complete event");
     setup.clearPhantomCache();
   });
-
+*/
   exports.clickElement = {};
 
   setup.qtest(exports, "should pass arguments to evaluate correctly", setup.usingPhantom(function(page) {
@@ -56,7 +57,6 @@
     });
   }));
 
-/*
   setup.qtest(exports, "should be able to load page content as a string", setup.usingPhantom(function(page) {
     return page.promise.open("http://localhost:" + port + "/empty")
       .then(function(status) {
@@ -67,42 +67,24 @@
       })
       .then(function(content) {
         assert.ok(content.indexOf("This page has no links") > -1, "Expected page content");
-        console.log("had content: " + content);
-        debugger;
       });
   }));
-/*
 
   setup.qtest(exports.clickElement, "should give useful error when not found", setup.usingPhantom(function(page) {
-    return page.promise.open("http://localhost:" + port + "/multiple");
-    return page.promise.open("http://localhost:" + port + "/empty");
-    /*
+    return page.promise.open("http://localhost:" + port + "/empty")
     .then(function(status) {
-      console.log("1");
       assert.equal(status, "success");
-      console.log("2");
-    });
-    /*
+    })
     .then(function() {
-      console.log("3");
-      var result = page.promise.clickElement("a.target");
-      console.log("4");
-      return result;
-    });
-    /*
+      return page.promise.clickElement("a.target");
+    })
     .then(function() {
-      console.log("5");
       throw new Error("Expected exception");
     }, 
     function(err) {
-      console.log("6", err);
-      //assert.equal(err.toString().indexOf("An element matching 'a.target' not found"), -1, "Should give better errorstring, actual was " + err);
-      //console.log("7", err);
-      //return err;
+      assert.equal(err.toString().indexOf("An element matching 'a.target' not found"), -1, "Should give better errorstring, actual was " + err);
     });
   }));
-
-  /*
 
   setup.qtest(exports.clickElement, "should give useful error when multiple found", setup.usingPhantom(function(page) {
     return page.promise.open("http://localhost:" + port + "/multiple")
@@ -135,6 +117,5 @@
       assert.equal(url, "http://localhost:" + port + "/empty");
     });
   }));
-  */
 })();
 
