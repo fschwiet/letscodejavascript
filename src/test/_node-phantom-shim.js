@@ -82,7 +82,7 @@
       throw new Error("Expected exception");
     }, 
     function(err) {
-      assert.equal(err.toString().indexOf("An element matching 'a.target' not found"), -1, "Should give better errorstring, actual was " + err);
+      assert.notEqual(err.toString().indexOf("An element matching 'a.target' not found"), -1, "Should give better errorstring, actual was " + err);
     });
   }));
 
