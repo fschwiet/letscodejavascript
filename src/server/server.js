@@ -18,6 +18,7 @@
 
     app.get("/", handleHomepageRequest);
     app.get("/status", handleStatusRequest);
+    app.get("/upload/from/google", handleUploadFromGoogleRequest);
 
     var server;
 
@@ -45,6 +46,11 @@
                             response.render('status', { title: 'Status', databaseStatus: statusString });
                             response.end();
                         });        
+    }
+
+    function handleUploadFromGoogleRequest(request, response) {
+
+        response.render('uploadFromGoogle', { title: "Upload your Google RSS reader subscriptions"});
     }
 })();
 

@@ -13,12 +13,12 @@
 
   setup.qtest(exports, "can upload rss", setup.usingPhantom(function(page) {
 
-    return page.promise.open("http://localhost:" + port + "/")
+    return page.promise.open("http://localhost:" + port + "/upload/from/google")
     .then(function(status) {
 
       assert.equal(status, "success");
 
-      return page.promise.uploadFile('form.uploadRss input[name=image]', fileToUpload);
+      return page.promise.uploadFile('form.uploadRss input[type=file]', fileToUpload);
     })
     .then(function() {
       return page.promise.clickElement('form.uploadRss input[type=submit]');
