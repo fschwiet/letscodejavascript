@@ -23,6 +23,8 @@
     app.get("/upload/from/google", handleUploadFromGoogleRequest);
     app.post("/upload/from/google", handleUploadFromGooglePostRequest);
 
+    app.use(errorHandler);
+
     var server;
 
     exports.start = function(port, callback) { 
@@ -56,29 +58,47 @@
         response.render('uploadFromGoogle', { title: "Upload your Google RSS reader subscriptions"});
     }
 
-    function handleUploadFromGooglePostRequest(request, response) {
+    function handleUploadFromGooglePostRequest(request, response, next) {
 
         var parser = new xml2js.Parser();
 
         fs.readFile(request.files.subscriptionsXml.path, function(err, data) {
 
-            // TODO: handle err
+            if (err) {
+                return next(err);
+            }
+
             parser.parseString(data, function(err, result) {
-                // TODO: handle err
 
-                var rows = [];
+                if (err) {
+                    return next(err);
+                }
 
-                result.opml.body[0].outline.forEach(function(row) {
-                    rows.push({
-                        name : row.$.title,
-                        xmlUrl : row.$.xmlUrl,
-                        htmlUrl : row.$.htmlUrl
+                try
+                {
+                    var rows = [];
+
+                    result.opml.body[0].outline.forEach(function(row) {
+                        rows.push({
+                            name : row.$.title,
+                            xmlUrl : row.$.xmlUrl,
+                            htmlUrl : row.$.htmlUrl
+                        });
                     });
-                });
+                }
+                catch(err)
+                {
+                    return next(err);
+                }
 
                 response.render('uploadedFromGoogle', { title: "Upload complete", rows: rows});
             });
         });
     }
 })();
+
+function errorHandler(err, req, res, next) {
+    res.status(500);
+    res.render("error500", {title: "Error", err: err});
+}
 
