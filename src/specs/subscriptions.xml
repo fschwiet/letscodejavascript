@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<opml version="1.0">
+    <head>
+        <title>Firstname subscriptions in Google Reader</title>
+    </head>
+    <body>
+        <outline text="stackoverflow" title="stackoverflow" type="rss"
+            xmlUrl="http://blog.stackoverflow.com/" htmlUrl="http://blog.stackoverflow.com"/>
+
+        <outline text="TEDTalks (video)" title="TEDTalks (video)"
+            type="rss"
+            xmlUrl="http://feeds.feedburner.com/tedtalks_video" htmlUrl="http://www.ted.com/talks/list"/>
+    </body>
+</opml>

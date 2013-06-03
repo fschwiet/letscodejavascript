@@ -1,6 +1,8 @@
 (function() {
   "use strict";
 
+  var fileToUpload = "subscriptions.xml";
+
   var setup = require("../test/setup");
   var assert = require("assert");
   var nconf = require("../server/config.js");
@@ -9,7 +11,6 @@
 
   setup.whenRunningTheServer(exports);
 
-/*
   setup.qtest(exports, "can upload rss", setup.usingPhantom(function(page) {
 
     return page.promise.open("http://localhost:" + port + "/")
@@ -17,7 +18,7 @@
 
       assert.equal(status, "success");
 
-      return page.promise.uploadFile('input[name=image]', filepath)
+      return page.promise.uploadFile('input[name=image]', fileToUpload)
       .then(function() {
 
       });
@@ -26,7 +27,6 @@
 
     });
 
-    }));
-*/
+  }));
 })();
 

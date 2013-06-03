@@ -43,3 +43,8 @@ TODO
 
 
 - set up domain name
+
+
+NOTE
+
+direct download: http://www.google.com/reader/subscriptions/export
