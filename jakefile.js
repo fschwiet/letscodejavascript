@@ -52,7 +52,7 @@ tracedTask("lint", function() {
 desc("test everything");
 tracedTask("test", ["testClient","testServer"]);
 
-tracedTask("testServer", ["createTestDatabase"], function() {
+tracedTask("testServer", ["prepareTempDirectory", "createTestDatabase"], function() {
 
   var testList = getFileListWithTypicalExcludes();
   testList.include("**/_*.js");
@@ -70,6 +70,20 @@ tracedTask("testClient", function() {
   promiseJake(karma.runTests());
 
 }, { async: true });
+
+tracedTask("prepareTempDirectory", function() {
+  var rmTarget = path.resolve("./temp");
+  console.log("using temp directory " +  rmTarget);
+  jake.rmRf(rmTarget);
+
+  if (fs.existsSync(rmTarget))
+  {
+    fail("Unable to clear temp directory");
+  }
+
+  fs.mkdirSync("./temp");
+  fs.mkdirSync("./temp/uploads");
+});
 
 tracedTask("createTestDatabase", function() {
   
@@ -102,8 +116,8 @@ tracedTask("testForRelease", function() {
     fail("Unable to clear temp directory");
   }
 
-  fs.mkdirSync(".\\temp");
-  fs.mkdirSync(".\\temp\\workingDirectory");
+  fs.mkdirSync("./temp");
+  fs.mkdirSync("./temp/workingDirectory");
 
   spawnProcess("git clone", "git", ["clone", "--quiet", "--no-hardlinks", originWorkingDirectory, workingDirectory])
   .then(function() {

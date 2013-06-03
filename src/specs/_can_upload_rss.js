@@ -1,11 +1,12 @@
 (function() {
   "use strict";
 
-  var fileToUpload = "subscriptions.xml";
+  var fileToUpload = "./src/specs/subscriptions.xml";
 
   var setup = require("../test/setup");
   var assert = require("assert");
   var nconf = require("../server/config.js");
+  var Q = require("q");
 
   var port = nconf.get("testServer_port");
 
@@ -24,6 +25,14 @@
       return page.promise.clickElement('form.uploadRss input[type=submit]');
     })
     .then(function() {
+      // TODO:  waiting is bad 
+      var deferred = Q.defer();
+
+      setTimeout(function() { deferred.resolve();}, 1000);
+
+      return deferred.promise;
+    })
+    .then(function() {
       return page.promise.get("content");
     })
     .then(function(content) {
@@ -31,7 +40,6 @@
       assert.notEqual(content.indexOf("http://feeds.feedburner.com/tedtalks_video"), -1, "Expected to find xml url.");
       assert.notEqual(content.indexOf("http://www.ted.com/talks/list"), -1, "Expected to find html url.");
     });
-
   }));
 })();
 

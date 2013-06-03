@@ -2,6 +2,6 @@
 extends _layout
 
 block content
-    form.uploadRss(method='post')
-        input(type='file')
+    form.uploadRss(method='post', enctype="multipart/form-data")
+        input(type='file', name="subscriptionsXml")
         input(type='submit')

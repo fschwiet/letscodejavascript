@@ -1,0 +1,14 @@
+
+extends _layout
+
+block content
+    table
+        tr
+            th name
+            th xml url
+            th html url
+        each row in rows
+            tr
+                td #{row.name}
+                td #{row.xmlUrl} 
+                td #{row.htmlUrl}

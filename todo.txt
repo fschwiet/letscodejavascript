@@ -1,3 +1,7 @@
+TODO:
+* TODOs
+* how to verify uploads directory exists on deployment?
+
 
 GOALS
 - deploy to own server
