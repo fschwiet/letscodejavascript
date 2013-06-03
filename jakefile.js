@@ -81,9 +81,10 @@ tracedTask("createTestDatabase", function() {
 
 desc("Run the server locally");
 tracedTask("runServer", function() {
-  console.log("running the server on 8080");
+  var port = 8083;
+  console.log("running the server on", port);  
   var server = require("./src/server/server.js");
-  server.start(8080);
+  server.start(port);
 });
 
 desc("test all the things");
