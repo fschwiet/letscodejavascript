@@ -62,7 +62,6 @@
 
         fs.readFile(request.files.subscriptionsXml.path, function(err, data) {
 
-
             // TODO: handle err
             parser.parseString(data, function(err, result) {
                 // TODO: handle err

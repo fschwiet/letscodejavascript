@@ -41,7 +41,6 @@ function promisify(nodeAsyncFn, context, modifier, callbackParameterPosition) {
         return;
       }
 
-
       return defer.promise;
   };
 }
