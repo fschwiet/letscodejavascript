@@ -56,6 +56,18 @@
     }, "timed out");
   });
 
+
+  setup.qtest(exports, "should propagate exceptions", function() {
+    var waits = 0;
+
+    return setup.shouldFail(function() {
+      return waitUntil(function() { 
+        if (++waits >= 5) {
+          throw new Error("foo fiddly pham");
+        }
+      },500,1);
+    }, "foo fiddly pham");
+  });
   // should pass on errors, on first or later attempts
 })();
 

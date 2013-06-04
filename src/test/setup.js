@@ -25,9 +25,9 @@ exports.qtest = function(context, name, testImplementation) {
     };
 };
 
-exports.shouldFail = function(promise, expectedText) {
+exports.shouldFail = function(promiseFactory, expectedText) {
 
-    return promise()
+    return promiseFactory()
         .then(function() {
           throw new Error("Expected exception");
         }, 

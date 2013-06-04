@@ -39,7 +39,16 @@ module.exports = function(toBeEvaluated, msTimeout, msInterval) {
     waitAndTry = function() {
         setTimeout(function() {
 
-            var evaluationResult = toBeEvaluated();
+            var evaluationResult;
+
+            try
+            {
+                evaluationResult = toBeEvaluated();
+            }
+            catch(err) {
+                defer.reject(err);
+                return;
+            }
 
             if (typeof evaluationResult !== 'undefined' && evaluationResult !== null && typeof evaluationResult.then == "function") {
 
