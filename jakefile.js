@@ -50,13 +50,20 @@ tracedTask("lint", function() {
 });
 
 desc("test everything");
-tracedTask("test", ["testClient","testServer"]);
+tracedTask("test", ["testClient","testTheRest", "testSlow"]);
 
-tracedTask("testServer", ["prepareTempDirectory", "createTestDatabase"], function() {
+tracedTask("testClient", function() {
+
+  promiseJake(karma.runTests());
+
+}, { async: true });
+
+tracedTask("testTheRest", ["prepareTempDirectory", "createTestDatabase"], function() {
 
   var testList = getFileListWithTypicalExcludes();
   testList.include("**/_*.js");
   testList.exclude("src/client/**");
+  testList.exclude("**/*.slow.js");
 
   var reporter = nodeunit.reporters["default"];
   reporter.run(testList.toArray(), null, function(failures) {
@@ -65,11 +72,18 @@ tracedTask("testServer", ["prepareTempDirectory", "createTestDatabase"], functio
   });
 }, {async: true});
 
-tracedTask("testClient", function() {
+tracedTask("testSlow", ["prepareTempDirectory", "createTestDatabase"], function() {
 
-  promiseJake(karma.runTests());
+  var testList = getFileListWithTypicalExcludes();
+  testList.include("**/_*.slow.js");
+  testList.exclude("src/client/**");
 
-}, { async: true });
+  var reporter = nodeunit.reporters["default"];
+  reporter.run(testList.toArray(), null, function(failures) {
+    assert.ifError(failures);
+    complete();
+  });
+}, {async: true});
 
 tracedTask("prepareTempDirectory", function() {
   var rmTarget = path.resolve("./temp");
