@@ -7,6 +7,7 @@
   var assert = require("assert");
   var nconf = require("../server/config.js");
   var Q = require("q");
+  var waitUntil = require("../test/waitUntil");
 
   var port = nconf.get("testServer_port");
 
@@ -25,12 +26,13 @@
       return page.promise.clickElement('form.uploadRss input[type=submit]');
     })
     .then(function() {
-      // TODO:  waiting is bad 
-      var deferred = Q.defer();
 
-      setTimeout(function() { deferred.resolve();}, 1000);
-
-      return deferred.promise;
+      return waitUntil(function() {
+        return page.promise.evaluate(function() { return document.title; })
+          .then(function(title) {
+            return title.indexOf("Upload complete") > -1;
+          });
+      });
     })
     .then(function() {
       return page.promise.get("content");

@@ -19,7 +19,7 @@ exports.qtest = function(context, name, testImplementation) {
             test.done();
           }, 
           function(err) {
-            test.doesNotThrow(function() { throw err; });
+            test.ok(false, err);
             test.done();
           });
     };
