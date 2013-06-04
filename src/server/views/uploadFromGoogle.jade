@@ -2,6 +2,8 @@
 extends _layout
 
 block content
+    div The file you want to upload can be found 
+        a(href="http://www.google.com/reader/subscriptions/export") here
     form.uploadRss(method='post', enctype="multipart/form-data")
         input(type='file', name="subscriptionsXml")
         input(type='submit')

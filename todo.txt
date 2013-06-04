@@ -1,4 +1,6 @@
 TODO:
+* make the 
+
 * how to verify uploads directory exists on deployment?
 
 
@@ -47,7 +49,3 @@ TODO
 
 - set up domain name
 
-
-NOTE
-
-direct download: http://www.google.com/reader/subscriptions/export
