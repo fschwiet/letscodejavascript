@@ -93,21 +93,11 @@ task("runServer", function() {
 });
 
 desc("test all the things");
-task("testForRelease", function() {
+task("testForRelease", ["prepareTempDirectory"], function() {
   
   var originWorkingDirectory = path.resolve(".");
   var workingDirectory = path.resolve(".\\temp\\workingDirectory");
 
-  var rmTarget = path.resolve(".\\temp");
-  console.log("using temp directory " +  rmTarget);
-  jake.rmRf(rmTarget);
-
-  if (fs.existsSync(rmTarget))
-  {
-    fail("Unable to clear temp directory");
-  }
-
-  fs.mkdirSync("./temp");
   fs.mkdirSync("./temp/workingDirectory");
 
   spawnProcess("git clone", "git", ["clone", "--quiet", "--no-hardlinks", originWorkingDirectory, workingDirectory])
