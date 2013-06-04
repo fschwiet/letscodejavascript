@@ -8,37 +8,14 @@ var fs = require('fs.extra');
 var rimraf = require("rimraf");
 var spawnProcess = require("./src/test/spawn-process.js");
 
-var taskRuntimes = [];
+task = require("./build/jake-util.js").extendTask(task, jake);
 
-function tracedTask(name) {
-  var result = task.apply(this, arguments);
-  var start;
-
-  result.addListener('start', function() {
-    console.log("\nExecuting " + name);
-    start = new Date().getTime();
-  });
-
-  result.addListener('complete', function() {
-    taskRuntimes.push({task:name, ms:new Date().getTime() - start});
-  });
-
-  return result;
-}
-
-jake.addListener('complete', function() {
-  console.log("Execution time summary");
-  taskRuntimes.forEach(function(value) {
-    console.log("  " + value.task + " (" + value.ms + "ms)");
-  });
-});
-
-tracedTask("default", ["lint", "test"], function() {
+task("default", ["lint", "test"], function() {
 
 });
 
 desc("lint");
-tracedTask("lint", function() {
+task("lint", function() {
 
   var list = getFileListWithTypicalExcludes();
   list.include("**/*.js");
@@ -50,15 +27,15 @@ tracedTask("lint", function() {
 });
 
 desc("test everything");
-tracedTask("test", ["testClient","testTheRest", "testSlow"]);
+task("test", ["testClient","testTheRest", "testSlow"]);
 
-tracedTask("testClient", function() {
+task("testClient", function() {
 
   promiseJake(karma.runTests());
 
 }, { async: true });
 
-tracedTask("testTheRest", ["prepareTempDirectory", "createTestDatabase"], function() {
+task("testTheRest", ["prepareTempDirectory", "createTestDatabase"], function() {
 
   var testList = getFileListWithTypicalExcludes();
   testList.include("**/_*.js");
@@ -72,7 +49,7 @@ tracedTask("testTheRest", ["prepareTempDirectory", "createTestDatabase"], functi
   });
 }, {async: true});
 
-tracedTask("testSlow", ["prepareTempDirectory", "createTestDatabase"], function() {
+task("testSlow", ["prepareTempDirectory", "createTestDatabase"], function() {
 
   var testList = getFileListWithTypicalExcludes();
   testList.include("**/_*.slow.js");
@@ -85,7 +62,7 @@ tracedTask("testSlow", ["prepareTempDirectory", "createTestDatabase"], function(
   });
 }, {async: true});
 
-tracedTask("prepareTempDirectory", function() {
+task("prepareTempDirectory", function() {
   var rmTarget = path.resolve("./temp");
   console.log("using temp directory " +  rmTarget);
   jake.rmRf(rmTarget);
@@ -99,7 +76,7 @@ tracedTask("prepareTempDirectory", function() {
   fs.mkdirSync("./temp/uploads");
 });
 
-tracedTask("createTestDatabase", function() {
+task("createTestDatabase", function() {
   
   database.ensureTestDatabaseIsClean(function(err) {
     assert.ifError(err);
@@ -108,7 +85,7 @@ tracedTask("createTestDatabase", function() {
 }, { async:true});
 
 desc("Run the server locally");
-tracedTask("runServer", function() {
+task("runServer", function() {
   var port = 8083;
   console.log("running the server on", port);  
   var server = require("./src/server/server.js");
@@ -116,7 +93,7 @@ tracedTask("runServer", function() {
 });
 
 desc("test all the things");
-tracedTask("testForRelease", function() {
+task("testForRelease", function() {
   
   var originWorkingDirectory = path.resolve(".");
   var workingDirectory = path.resolve(".\\temp\\workingDirectory");
