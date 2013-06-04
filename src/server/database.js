@@ -22,6 +22,10 @@ function getConnectionInfo(includeDatabasename) {
 
 exports.ensureTestDatabaseIsClean = function(callback) {
 
+    if (nconf.get("isProduction") !== false) {
+        throw new Error("Attempted to clean test database is production environment.");
+    }
+
     var connection = mysql.createConnection(getConnectionInfo());
 
     connection.connect();
