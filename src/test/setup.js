@@ -4,23 +4,21 @@ var phantom = require("./node-phantom-shim.js");
 var Q = require('q');
 var nconf = require("./../server/config.js");
 
-exports.qtest = function(context, name, promiseFilter) {
+exports.qtest = function(context, name, testImplementation) {
     context["test_" + name] = function(test) {
 
-      promiseFilter = promiseFilter || function(promise) {
+      testImplementation = testImplementation || function(promise) {
         promise.reject("not implemented");
         return promise;
       };
 
-      promiseFilter()
+      testImplementation()
         .then(
           function() {
-            console.log ("finishing test");
             test.done();
-            console.log ("finished test");
           }, 
           function(err) {
-            test.ifError(err || "promise failed for unknown reason"); 
+            test.doesNotThrow(function() { throw err; });
             test.done();
           });
     };
