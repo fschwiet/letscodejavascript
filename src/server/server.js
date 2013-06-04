@@ -74,10 +74,10 @@
                     return next(err);
                 }
 
+                var rows = [];
+                
                 try
                 {
-                    var rows = [];
-
                     result.opml.body[0].outline.forEach(function(row) {
                         rows.push({
                             name : row.$.title,
@@ -86,9 +86,9 @@
                         });
                     });
                 }
-                catch(err)
+                catch(ex)
                 {
-                    return next(err);
+                    return next(ex);
                 }
 
                 response.render('uploadedFromGoogle', { title: "Upload complete", rows: rows});
