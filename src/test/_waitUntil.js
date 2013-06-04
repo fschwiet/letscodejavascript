@@ -42,6 +42,20 @@
     }, "timed out");
   });
 
+  setup.qtest(exports, "should eventually fail if promise evaluation is false", function() {
+    var attempts = 0;
+
+    return setup.shouldFail(function() {
+      return waitUntil(function() { 
+
+        attempts++;
+        var deferred = Q.defer();
+        deferred.resolve(false);
+        return deferred.promise;
+      });
+    }, "timed out");
+  });
+
   // should pass on errors, on first or later attempts
 })();
 
