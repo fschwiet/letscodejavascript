@@ -10,7 +10,7 @@
 
     return waitUntil(function() { 
       return ++waits >= 5;
-    }).then(function() {
+    },500,1).then(function() {
       assert.equal(waits, 5);
     });
   });
@@ -25,5 +25,7 @@
       });
     }, "timed out");
   });
+
+  // should pass on errors, on first or later attempts
 })();
 
