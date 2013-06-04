@@ -14,6 +14,7 @@
     var express = require('express');
     var app = express();    
 
+    app.use(express.limit('4mb'));
     app.use(express.bodyParser({ keepExtensions: true, uploadDir: "./temp/uploads" }));
     app.set('views', __dirname + '/views');
     app.set('view engine', 'jade');

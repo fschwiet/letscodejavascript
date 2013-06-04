@@ -1,5 +1,4 @@
 TODO:
-* fix the sleep in _can_upload_rss.js
 * how to verify uploads directory exists on deployment?
 
 
