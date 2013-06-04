@@ -2,25 +2,31 @@
 
 var Q = require("q");
 
-module.exports = function(toBeEvaluated, msTimeout) {
+module.exports = function(toBeEvaluated, msTimeout, msInterval) {
 
     if (typeof(msTimeout) == "undefined") {
         msTimeout = 250;
+    }
+
+    if (typeof(msInterval) == "undefined") {
+        msInterval = 100;
     }
 
     var defer = Q.defer();
     var endTime = new Date();
     endTime.setMilliseconds(msTimeout + endTime.getMilliseconds());
 
-    while(!toBeEvaluated()) {
+    setTimeout(function() {
+        while(!toBeEvaluated()) {
 
-        if (new Date() > endTime) {
-            defer.reject("timed out");
-            return defer.promise;
+            if (new Date() > endTime) {
+                defer.reject("timed out");
+                return defer.promise;
+            }
         }
-    }
 
-    defer.resolve();
+        defer.resolve();
+    }, msInterval);
 
     return defer.promise;
 };
