@@ -1,3 +1,3 @@
 #!/bin/sh
 
-node_modules/.bin/jake $*
+node_modules/.bin/jake --trace $*
