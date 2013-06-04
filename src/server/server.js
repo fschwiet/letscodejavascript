@@ -31,13 +31,11 @@
     var server;
 
     exports.start = function(port, callback) { 
-
         server = http.createServer(app);
         server.listen(port, callback);
     };
 
     exports.stop = function(callback) {
-
         if (server) {
             server.close(callback);
             server = null;
@@ -49,16 +47,34 @@
         response.render('index', { title: "homepage" });
     }
 
+    function canWrite(owner, inGroup, mode) {
+      return owner && (mode & 0x80) || // User is owner and owner can write.
+             inGroup && (mode & 0x10) || // User is in group and group can write.
+             (mode & 0x2); // Anyone can write.
+
+    }    
+
     function handleStatusRequest(request, response) {
 
         var model = { title: 'Status' };
 
         database.getStatus(function(statusString) {
-                            model.databaseStatus = statusString;
-                            model.uploadPathStatus = "bah";
-                            response.render('status', model);
-                            response.end();
-                        });        
+            model.databaseStatus = statusString;
+
+            fs.stat(nconf.get("fileUpload_path"), function(err, stat) {
+
+                if (err) {
+                    model.uploadPathStatus = err.toString();
+                } else if (canWrite(process.uid === stat.uid, process.gid === stat.gid, stat.mode)) {
+                    model.uploadPathStatus = "writeable";
+                } else {
+                    model.uploadPathStatus = "insufficient permissions";
+                }
+
+                response.render('status', model);
+                response.end();
+            });
+        });        
     }
 
     function handleUploadFromGoogleRequest(request, response) {
