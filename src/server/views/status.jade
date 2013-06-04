@@ -2,4 +2,6 @@
 extends _layout
 
 block content
-  p Database status: #{databaseStatus}
+  //- inserting newlines to make splitting out status by regex easier
+  p Database status: #{databaseStatus} #{'\n'}
+  p Upload path status: #{uploadPathStatus} #{'\n'}  

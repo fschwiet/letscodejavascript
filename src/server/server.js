@@ -50,8 +50,13 @@
     }
 
     function handleStatusRequest(request, response) {
+
+        var model = { title: 'Status' };
+
         database.getStatus(function(statusString) {
-                            response.render('status', { title: 'Status', databaseStatus: statusString });
+                            model.databaseStatus = statusString;
+                            model.uploadPathStatus = "bah";
+                            response.render('status', model);
                             response.end();
                         });        
     }

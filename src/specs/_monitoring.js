@@ -23,8 +23,8 @@
                 }
             }
 
-            checkStatus((/Database status:(.*\(.*\))/mi), "connected (localhost)");
-            checkStatus((/Upload path status:(.*\(.*\))/mi), "writeable");
+            checkStatus((/Database status:(.*)/mi), "connected (localhost)");
+            checkStatus((/Upload path status:(.*)/mi), "writeable");
 
             test.done();
         });
