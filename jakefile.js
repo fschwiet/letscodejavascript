@@ -7,6 +7,7 @@ var path = require("path");
 var fs = require('fs.extra');
 var rimraf = require("rimraf");
 var spawnProcess = require("./src/test/spawn-process.js");
+var childProcess = require("child_process");
 
 task = require("./build/jake-util.js").extendTask(task, jake);
 
@@ -125,6 +126,29 @@ task("testForRelease", ["prepareTempDirectory"], function() {
   });
 
 }, {async:true});
+
+
+desc("Verifies there are no uncommitted changes");
+task("verifyEmptyGitStatus", function() {
+  childProcess.exec("git status --porcelain", function(error, stdout, stderror) {
+    if (error !== null) {
+      fail("unable to verify no uncommitted changes -- " + error.toString());
+    } else if (stdout.trim().length > 0) {
+      fail("Working tree is not empty, git status was:\n" + stdout);
+    } else if (stderror.trim().length > 0) {
+      fail("Error verifying working tree is empty, error output was:\n" + stderror);
+    } else {
+      complete();
+    }
+  });
+});
+
+
+desc("Deploy to IIS");
+task("releaseToIIS", ["testForRelease", "verifyEmptyGitStatus"], function() {
+
+  fail("not finished");
+});
 
 function getFileListWithTypicalExcludes() {
   var list = new jake.FileList();
