@@ -16,17 +16,21 @@ module.exports = function(toBeEvaluated, msTimeout, msInterval) {
     var endTime = new Date();
     endTime.setMilliseconds(msTimeout + endTime.getMilliseconds());
 
-    setTimeout(function() {
-        while(!toBeEvaluated()) {
+    var waitAndTry = function() {
+        setTimeout(function() {
+            while(!toBeEvaluated()) {
 
-            if (new Date() > endTime) {
-                defer.reject("timed out");
-                return defer.promise;
+                if (new Date() > endTime) {
+                    defer.reject("timed out");
+                    return defer.promise;
+                }
             }
-        }
 
-        defer.resolve();
-    }, msInterval);
+            defer.resolve();
+        }, msInterval);
+    };
+
+    waitAndTry();
 
     return defer.promise;
 };
