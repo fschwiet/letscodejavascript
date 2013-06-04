@@ -56,8 +56,7 @@
     }, "timed out");
   });
 
-
-  setup.qtest(exports, "should propagate exceptions", function() {
+  setup.qtest(exports, "should propagate synchronous exceptions", function() {
     var waits = 0;
 
     return setup.shouldFail(function() {
@@ -67,6 +66,25 @@
         }
       },500,1);
     }, "foo fiddly pham");
+  });
+
+  setup.qtest(exports, "should propagate asynchronous exceptions", function() {
+    var waits = 0;
+
+    return setup.shouldFail(function() {
+      return waitUntil(function() { 
+
+        var deferred = Q.defer();
+
+        if (++waits >= 5) {
+          deferred.reject(new Error("foo async fiddly pham"));
+        } else {
+          deferred.resolve(false);
+        }
+
+        return deferred.promise;
+      },500,1);
+    }, "foo async fiddly pham");
   });
   // should pass on errors, on first or later attempts
 })();

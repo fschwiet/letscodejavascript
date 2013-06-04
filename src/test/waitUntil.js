@@ -53,8 +53,8 @@ module.exports = function(toBeEvaluated, msTimeout, msInterval) {
             if (typeof evaluationResult !== 'undefined' && evaluationResult !== null && typeof evaluationResult.then == "function") {
 
                 evaluationResult.then(handleResult, 
-                    function() { 
-                        //  TODO
+                    function(err) { 
+                        defer.reject(err);
                     });
             }
             else 
