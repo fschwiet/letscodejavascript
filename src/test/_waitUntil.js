@@ -5,23 +5,25 @@
   var setup = require("./setup.js");
   var waitUntil = require("./waitUntil.js");
 
-  exports.test_should_wait_for_evaluation_to_be_true = function(test) {
-
+  setup.qtest(exports, "should wait for evaluation to be true", function() {
     var waits = 0;
 
-    var p = waitUntil(function() { 
+    return waitUntil(function() { 
       return ++waits >= 5;
-    });
-
-    p.then(function() {
+    }).then(function() {
       assert.equal(waits, 5);
-      test.done();
-    }).
-    fail(function(err) {
-
-      test.doesNotThrow(function() { throw err; });
-      test.done();
     });
-  };
+  });
+
+  setup.qtest(exports, "should eventually fail if evaluation is false", function() {
+    var attempts = 0;
+
+    return setup.shouldFail(function() {
+      return waitUntil(function() { 
+        attempts++;
+        return false;
+      });
+    }, "timed out");
+  });
 })();
 
