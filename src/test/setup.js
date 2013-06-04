@@ -3,6 +3,7 @@
 var phantom = require("./node-phantom-shim.js");
 var Q = require('q');
 var nconf = require("./../server/config.js");
+var assert = require("assert");
 
 exports.qtest = function(context, name, testImplementation) {
     context["test_" + name] = function(test) {
@@ -22,6 +23,20 @@ exports.qtest = function(context, name, testImplementation) {
             test.done();
           });
     };
+};
+
+exports.shouldFail = function(promise, expectedText) {
+
+    return promise()
+        .then(function() {
+          throw new Error("Expected exception");
+        }, 
+        function(err) {
+            if (expectedText) {
+                assert.ok(err.toString().indexOf(expectedText) > -1, 
+                    "Did not see expected error text :" + expectedText + "\nActual text was " + err.toString());
+            }
+        });
 };
 
 //

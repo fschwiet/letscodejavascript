@@ -71,35 +71,27 @@
   }));
 
   setup.qtest(exports.clickElement, "should give useful error when not found", setup.usingPhantom(function(page) {
-    return page.promise.open("http://localhost:" + port + "/empty")
-    .then(function(status) {
-      assert.equal(status, "success");
-    })
-    .then(function() {
-      return page.promise.clickElement("a.target");
-    })
-    .then(function() {
-      throw new Error("Expected exception");
-    }, 
-    function(err) {
-      assert.notEqual(err.toString().indexOf("An element matching 'a.target' not found"), -1, "Should give better errorstring, actual was " + err);
-    });
+    return setup.shouldFail(function() {
+      return page.promise.open("http://localhost:" + port + "/empty")
+      .then(function(status) {
+        assert.equal(status, "success");
+      })
+      .then(function() {
+        return page.promise.clickElement("a.target");
+      });
+    }, "An element matching 'a.target' not found");
   }));
 
   setup.qtest(exports.clickElement, "should give useful error when multiple found", setup.usingPhantom(function(page) {
-    return page.promise.open("http://localhost:" + port + "/multiple")
-    .then(function(status) {
-      assert.equal(status, "success");
-    })
-    .then(function() {
-      return page.promise.clickElement("a.target");
-    })
-    .then(function() {
-      throw new Error("Expected exception");
-    }, 
-    function(err) {
-      assert.ok(err.toString().indexOf("More than one elements matching 'a.target' were found") > -1, "Should give better errorstring, actual was " + err.toString());
-    });
+    return setup.shouldFail(function() {
+      return page.promise.open("http://localhost:" + port + "/multiple")
+      .then(function(status) {
+        assert.equal(status, "success");
+      })
+      .then(function() {
+        return page.promise.clickElement("a.target");
+      });
+    }, "More than one elements matching 'a.target' were found");
   }));
 
   setup.qtest(exports.clickElement, "should click element when found", setup.usingPhantom(function(page) {
