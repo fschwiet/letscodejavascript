@@ -9,7 +9,8 @@ nconf.defaults({
   "database_port" : 13306,
   "database_user" : "root",
   "database_password" : "",
-  "testServer_port" : 8081
+  "testServer_port" : 8081,
+  "fileUpload_path" : "./temp/uploads"
 });
 
 module.exports = nconf;
