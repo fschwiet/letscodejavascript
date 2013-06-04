@@ -1,4 +1,6 @@
-param([string]$installDir, [string]$uploadDir)
+param([string]$installDir, [string]$uploadDir, [string]$hostpattern = "*")
+
+$name = "letscodejavascript ($hostpattern)"
 
 $installDir = (get-item .).fullname
 $rootDir = (get-item .).parent.fullname
@@ -13,4 +15,4 @@ import-module carbon
 Grant-Permission -Identity "IIS_IUSRS" -Permission Modify -Path $installDir
 Grant-Permission -Identity "IIS_IUSRS" -Permission Modify -Path $uploadsDir
 
-Install-IisWebsite -Name letscodejavascript -p $installDir -bindings "http/*:80:"
+Install-IisWebsite -Name $name -p $installDir -bindings "http/$hostpattern:80:"
