@@ -1,6 +1,9 @@
 TODO:
 status page should indicate if upload directory is accessible
 
+iis script should account for hostname listened to in the name, so that the test/127.0.0.3 and production/* instance can live side-by-side
+
+
 * how to verify uploads directory exists on deployment?
 
 
