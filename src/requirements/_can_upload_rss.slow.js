@@ -1,14 +1,14 @@
 (function() {
   "use strict";
 
-  var fileToUpload = "./src/specs/subscriptions.xml";
-
   var setup = require("../test/setup");
   var assert = require("assert");
   var nconf = require("../server/config.js");
   var Q = require("q");
   var waitUntil = require("../test/waitUntil");
+  var path = require("path");
 
+  var fileToUpload = path.resolve(__dirname, "subscriptions.xml");
   var port = nconf.get("testServer_port");
 
   setup.whenRunningTheServer(exports);
@@ -30,9 +30,10 @@
       return waitUntil(function() {
         return page.promise.evaluate(function() { return document.title; })
           .then(function(title) {
+            console.log("title", title);
             return title.indexOf("Upload complete") > -1;
           });
-      });
+      }, 2000);
     })
     .then(function() {
       return page.promise.get("content");
