@@ -102,23 +102,26 @@ task("runServer", function() {
   server.start(port);
 });
 
-desc("test all the things");
-task("testForRelease", ["prepareTempDirectory"], function() {
-  
-  var originWorkingDirectory = path.resolve(".");
-  var workingDirectory = path.resolve(".\\temp\\workingDirectory");
-
-  fs.mkdirSync("./temp/workingDirectory");
-
-  spawnProcess("git clone", "git", ["clone", "--quiet", "--no-hardlinks", originWorkingDirectory, workingDirectory])
+function cloneWithConfig(workingDirectory, configToUse) {
+  return spawnProcess("git clone", "git", ["clone", "--quiet", "--no-hardlinks", ".", workingDirectory])
   .then(function() {
-    return spawnProcess("npm build", "node", [ path.resolve(workingDirectory, ".\\node_modules\\npm\\cli.js"), "rebuild"], {
+    return spawnProcess("npm build", "node", [ path.resolve(workingDirectory, "./node_modules/npm/cli.js"), "rebuild"], {
       cwd: workingDirectory,
     });
   })
   .then(function() {
-    fs.copy(path.resolve(originWorkingDirectory, "config.json"), path.resolve(workingDirectory, "config.json"));
-  })
+    fs.copy(configToUse, path.resolve(workingDirectory, "config.json"));
+  });
+}
+
+desc("test all the things");
+task("testForRelease", ["prepareTempDirectory"], function() {
+  
+  var workingDirectory = path.resolve(".\\temp\\workingDirectory");
+
+  fs.mkdirSync("./temp/workingDirectory");
+
+  cloneWithConfig(workingDirectory, "./config.json")
   .then(function() {
     return spawnProcess("jake", "node", [ path.resolve(workingDirectory, ".\\node_modules\\jake\\bin\\cli.js"), "default"], {
       cwd: workingDirectory,
