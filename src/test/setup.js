@@ -95,7 +95,6 @@ exports.whenRunningTheServer = function(inner) {
 
     var fs = require("fs");
     var assert = require("assert");
-    var downloadFile = require("../test/download-file");
     var spawnProcess = require("../test/spawn-process");
 
     var SCRIPT_NAME = "src/iis/iis_server.js";

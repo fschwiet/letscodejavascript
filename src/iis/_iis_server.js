@@ -2,13 +2,15 @@
     "use strict";
 
     var setup = require("../test/setup");
-    var downloadFile = require("../test/download-file");
+    var request = require("request");
 
     setup.whenRunningTheServer(exports);
 
     exports.test_canRunServer = function(test) {
 
-        downloadFile("http://localhost:8081", function(statusCode, responseBody) {
+        request("http://localhost:8081", function(err, response, responseBody) {
+            test.ifError(err);
+            test.equal(response.statusCode, 200, "Expected 200 response code");
             test.ok(responseBody.indexOf("this is homepage.html") !== -1, "Should have marker indicating homepage");
             test.done();
         });

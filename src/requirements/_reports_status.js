@@ -2,7 +2,6 @@
     "use strict";
 
     var setup = require("../test/setup");
-    var downloadFile = require("../test/download-file");
     var nconf = require("../server/config.js");
     var statusChecker = require("./statusChecker.js");
     var request = require("request");
