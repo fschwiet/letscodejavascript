@@ -4,7 +4,7 @@ var karma = require('./build/karma/karma');
 var mysql = require('mysql');
 var database = require("./src/server/database.js");
 var path = require("path");
-var fs = require('fs.extra');
+var fs = require('fs-extra');
 var rimraf = require("rimraf");
 var spawnProcess = require("./src/test/spawn-process.js");
 var childProcess = require("child_process");
@@ -125,8 +125,11 @@ task("testForRelease", ["prepareTempDirectory"], function() {
   gitCloneTo(workingDirectory)
   .then(function() {
 
-    fs.copySync("./config.json", path.resolve(workingDirectory, "config.json"));
-
+    if (fs.existsSync("./config.json")) {
+      return Q.nbind(fs.copy)("./config.json", path.resolve(workingDirectory, "config.json"));
+    }
+  })
+  .then(function() {
     return spawnProcess("jake", "node", [ path.resolve(workingDirectory, ".\\node_modules\\jake\\bin\\cli.js"), "default"], {
       cwd: workingDirectory,
     });
