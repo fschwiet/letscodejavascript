@@ -2,9 +2,7 @@ param([string]$installDir, [string]$uploadDir, [string]$hostpattern = "*")
 
 $name = "letscodejavascript ($hostpattern)"
 
-$installDir = (get-item .).fullname
-$rootDir = (get-item .).parent.fullname
-$uploadsDir = $installDir.fullname + ".uploads"
+$rootDir = (get-item $installDir).parent.fullname
 
 if (-not (get-module -listavailable | select-string carbon)) {
     throw "Install carbon first"
