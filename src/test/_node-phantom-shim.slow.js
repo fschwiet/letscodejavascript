@@ -7,6 +7,7 @@
   var http = require('http');
   var Q = require("q");
   var nconf = require("../server/config.js");
+  var waitUntil = require("./waitUntil.js");
 
   var app = express();    
   var server;
@@ -103,10 +104,13 @@
       return page.promise.clickElement("a.target");
     })
     .then(function() {
-      return page.promise.get("url");
-    })
-    .then(function(url) {
-      assert.equal(url, "http://localhost:" + port + "/empty");
+      var start = new Date();
+      return waitUntil(function() { 
+          return page.promise.get("url").then(function(url) {
+              console.log("url was", url);
+              return url == "http://localhost:" + port + "/empty";
+          });
+      }, 1000);
     });
   }));
 })();
