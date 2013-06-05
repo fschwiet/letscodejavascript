@@ -7,7 +7,7 @@ function getDefaults() {
   return {
     "database_hostname" : "localhost",
     "database_name" : "testtemp",
-    "database_port" : 13306,
+    "database_port" : 3306,
     "database_user" : "root",
     "database_password" : "",
     "testServer_port" : 8081,
