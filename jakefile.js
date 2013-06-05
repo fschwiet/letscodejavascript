@@ -212,7 +212,10 @@ task("releaseToIIS", [/* TODO, add back: "testForRelease", "verifyEmptyGitStatus
         })
         .then(function() {
           console.log("calling execFile on ./src/iis/install.ps1")
-          return Q.nbind(childProcess.execFile)("powershell", ["-noprofile", "-file", "./src/iis/install.ps1", deployPath, fileUploadPath, "*"], {env:process.env});
+
+          var iisPath = path.join(deployPath, "src/iis");
+          
+          return Q.nbind(childProcess.execFile)("powershell", ["-noprofile", "-file", "./src/iis/install.ps1", iisPath, fileUploadPath, "*"], {env:process.env});
         })
         .then(function(results){
           var stdout = results[0];
