@@ -180,10 +180,11 @@ task("releaseToIIS", [/* TODO, add back: "testForRelease", "verifyEmptyGitStatus
   }
 
   childProcess.exec("git rev-parse HEAD", function(error, stdout, stderr) {
+
     if (error !== null) {
       fail(error);
-    } else {
 
+    } else {
       var id = stdout.toString().trim();
 
       var index = 0;
@@ -200,22 +201,31 @@ task("releaseToIIS", [/* TODO, add back: "testForRelease", "verifyEmptyGitStatus
 
       console.log("Deploying to " + deployPath);
 
-      gitCloneTo(deployPath)
-      .then(function() {
-
-
-
-        promiseJake(Q.fcall(function() {
-          var deployedConfig = JSON.parse(fs.readFileSync(productionConfig));
-          deployedConfig.fileUpload_path = fileUploadPath;
-          fs.writeFileSync(path.resolve(deployPath, "config.json"), JSON.stringify(deployedConfig, null, "    "));
-
-          //childProcess.spawn("powershell -noprofile -command .\\src\\iis\\
+      promiseJake(gitCloneTo(deployPath)
+        .then(function() {
+          return Q.nbind(fs.readFile)(productionConfig, { encoding:"utf8"});
+        })
+        .then(function(configValues) {
+          configValues = JSON.parse(configValues);
+          configValues.fileUpload_path = fileUploadPath;
+          return Q.nbind(fs.writeFile)(path.resolve(deployPath, "config.json"), JSON.stringify(configValues, null, "    "));
+        })
+        .then(function() {
+          return Q.nbind(childProcess.execFile)("powershell", ["-noprofile", "-file", "./src/iis/install.ps1", deployPath, fileUploadPath, "*"], {env:process.env});
+        })
+        .then(function(err,stdout,stderr){
+          if (err !== null) {
+            fail(err);
+          } else {
+            console.log("stdout", stdout);
+            console.log("stderr", stderr);
+            complete();
+          }
         }));
-      });
     }
   });
 }, { async : true});
+
 
 function getFileListWithTypicalExcludes() {
   var list = new jake.FileList();
