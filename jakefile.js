@@ -178,22 +178,24 @@ task("releaseToIIS", [/* TODO, add back: "testForRelease", "verifyEmptyGitStatus
   }
 
   childProcess.exec("git rev-parse HEAD", function(error, stdout, stderr) {
-    if (error != null) {
+    if (error !== null) {
       fail(error);
     } else {
+
       var id = stdout.toString().trim();
 
       var index = 0;
       var deployPath = null;
       do {
-        deployPath = path.resolve(deployRoot,  id + "_" + ++index);
+        deployPath = path.resolve(deployRoot,  id + "_" + (++index));
       } while(fs.existsSync(deployPath));
 
       console.log("Deploying to " + deployPath);
 
       cloneWithConfig(deployPath, productionConfig)
       .then(function() {
-        console.log("finished");
+
+        //childProcess.spawn("powershell -noprofile -command .\\src\\iis\\
         setTimeout(function() { complete();}, 0);
       });
     }
