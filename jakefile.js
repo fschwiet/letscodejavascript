@@ -9,6 +9,8 @@ var rimraf = require("rimraf");
 var spawnProcess = require("./src/test/spawn-process.js");
 var childProcess = require("child_process");
 var nconf = require("./src/server/config.js");
+var mkdirp = require('mkdirp');
+var Q = require("q");
 
 task = require("./build/jake-util.js").extendTask(task, jake);
 
@@ -102,15 +104,12 @@ task("runServer", function() {
   server.start(port);
 });
 
-function cloneWithConfig(workingDirectory, configToUse) {
+function gitCloneTo(workingDirectory) {
   return spawnProcess("git clone", "git", ["clone", "--quiet", "--no-hardlinks", ".", workingDirectory])
   .then(function() {
     return spawnProcess("npm build", "node", [ path.resolve(workingDirectory, "./node_modules/npm/cli.js"), "rebuild"], {
       cwd: workingDirectory,
     });
-  })
-  .then(function() {
-    fs.copy(configToUse, path.resolve(workingDirectory, "config.json"));
   });
 }
 
@@ -121,8 +120,11 @@ task("testForRelease", ["prepareTempDirectory"], function() {
 
   fs.mkdirSync("./temp/workingDirectory");
 
-  cloneWithConfig(workingDirectory, "./config.json")
+  gitCloneTo(workingDirectory)
   .then(function() {
+
+    fs.copySync("./config.json", path.resolve(workingDirectory, "config.json"));
+
     return spawnProcess("jake", "node", [ path.resolve(workingDirectory, ".\\node_modules\\jake\\bin\\cli.js"), "default"], {
       cwd: workingDirectory,
     });
@@ -186,17 +188,30 @@ task("releaseToIIS", [/* TODO, add back: "testForRelease", "verifyEmptyGitStatus
 
       var index = 0;
       var deployPath = null;
+      var fileUploadPath = null;
+
       do {
-        deployPath = path.resolve(deployRoot,  id + "_" + (++index));
+        ++index;
+        deployPath = path.resolve(deployRoot,  id + "_" + index);
+        fileUploadPath = path.resolve(deployRoot,  id + "_" + index + "_uploads");
       } while(fs.existsSync(deployPath));
+
+      mkdirp.sync(fileUploadPath);
 
       console.log("Deploying to " + deployPath);
 
-      cloneWithConfig(deployPath, productionConfig)
+      gitCloneTo(deployPath)
       .then(function() {
 
-        //childProcess.spawn("powershell -noprofile -command .\\src\\iis\\
-        setTimeout(function() { complete();}, 0);
+
+
+        promiseJake(Q.fcall(function() {
+          var deployedConfig = JSON.parse(fs.readFileSync(productionConfig));
+          deployedConfig.fileUpload_path = fileUploadPath;
+          fs.writeFileSync(path.resolve(deployPath, "config.json"), JSON.stringify(deployedConfig, null, "    "));
+
+          //childProcess.spawn("powershell -noprofile -command .\\src\\iis\\
+        }));
       });
     }
   });
