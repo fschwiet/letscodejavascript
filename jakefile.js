@@ -211,7 +211,7 @@ task("releaseToIIS", [/* TODO, add back: "testForRelease", "verifyEmptyGitStatus
           return Q.nbind(fs.writeFile)(path.resolve(deployPath, "config.json"), JSON.stringify(configValues, null, "    "));
         })
         .then(function() {
-          console.log("calling execFile on ./src/iis/install.ps1")
+          console.log("calling execFile on ./src/iis/install.ps1");
 
           var iisPath = path.join(deployPath, "src/iis");
           
