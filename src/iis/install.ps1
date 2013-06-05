@@ -6,7 +6,7 @@ $installDir = (get-item .).fullname
 $rootDir = (get-item .).parent.fullname
 $uploadsDir = $installDir.fullname + ".uploads"
 
-if (-not (get-module carbo[n])) {
+if (-not (get-module -listavailable | select-string carbon)) {
     throw "Install carbon first"
 }
 

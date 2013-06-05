@@ -32,7 +32,6 @@ tentative deployment plan
     2.  npm build
     3.  copy config file from (sourceDir)\production.config.js to (deploymentDir)\config.js
       -> modify fileUpload_path
-      -> make sure isProduction is true
     3.  run database migrations (old code must work against new schema)
     4.  configure IIS to use that folder from 127.0.0.n where n != 1
     5.  Verify status page loads successfully
