@@ -211,16 +211,20 @@ task("releaseToIIS", [/* TODO, add back: "testForRelease", "verifyEmptyGitStatus
           return Q.nbind(fs.writeFile)(path.resolve(deployPath, "config.json"), JSON.stringify(configValues, null, "    "));
         })
         .then(function() {
+          console.log("calling execFile on ./src/iis/install.ps1")
           return Q.nbind(childProcess.execFile)("powershell", ["-noprofile", "-file", "./src/iis/install.ps1", deployPath, fileUploadPath, "*"], {env:process.env});
         })
-        .then(function(err,stdout,stderr){
-          if (err !== null) {
-            fail(err);
-          } else {
-            console.log("stdout", stdout);
-            console.log("stderr", stderr);
-            complete();
+        .then(function(results){
+          var stdout = results[0];
+          var stderr = results[1];
+
+          console.log("stdout:\n" + stdout.toString());
+
+          if (stderr.trim().length > 0) {
+            throw new Error("Have error output: " + stderr.toString());
           }
+
+          complete();
         }));
     }
   });
