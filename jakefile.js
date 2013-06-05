@@ -161,7 +161,7 @@ task("verifyEmptyGitStatus", function() {
 
 
 desc("Deploy to IIS");
-task("releaseToIIS", [/* TODO, add back: "testForRelease", "verifyEmptyGitStatus"*/], function() {
+task("releaseToIIS", ["testForRelease", "verifyEmptyGitStatus"], function() {
 
   var productionConfig = "./production.config.json";
 
@@ -213,7 +213,7 @@ task("releaseToIIS", [/* TODO, add back: "testForRelease", "verifyEmptyGitStatus
           return Q.nbind(fs.writeFile)(path.resolve(deployPath, "config.json"), JSON.stringify(configValues, null, "    "));
         })
         .then(function() {
-          console.log("calling execFile on ./src/iis/install.ps1");
+          console.log("calling execFile on ./src/iis/install.ps1, listening to IP address 127.0.0.3");
 
           var iisPath = path.join(deployPath, "src/iis");
           
@@ -228,8 +228,6 @@ task("releaseToIIS", [/* TODO, add back: "testForRelease", "verifyEmptyGitStatus
           if (stderr.trim().length > 0) {
             throw new Error("Have error output: " + stderr.toString());
           }
-
-          complete();
         })
         .then(function() {
 
@@ -244,6 +242,25 @@ task("releaseToIIS", [/* TODO, add back: "testForRelease", "verifyEmptyGitStatus
           } else {
             statusChecker.assertStatusIsGood(body);
           }
+        })
+        .then(function() {
+          console.log("calling execFile on ./src/iis/install.ps1, listening to any IP address");
+
+          var iisPath = path.join(deployPath, "src/iis");
+          
+          return Q.nbind(childProcess.execFile)("powershell", ["-noprofile", "-file", "./src/iis/install.ps1", iisPath, fileUploadPath, "*"], {env:process.env});
+        })
+        .then(function(results){
+          var stdout = results[0];
+          var stderr = results[1];
+
+          console.log("stdout:\n" + stdout.toString());
+
+          if (stderr.trim().length > 0) {
+            throw new Error("Have error output: " + stderr.toString());
+          }
+
+          complete();
         }));
     }
   });
