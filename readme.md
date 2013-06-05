@@ -1,5 +1,6 @@
 Prerequisites:
 
+* install node v0.10.6
 * install git
 * clone the repo
 * install MySQL
