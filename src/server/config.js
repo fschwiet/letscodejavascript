@@ -1,7 +1,7 @@
 
 var nconf = require('nconf');
 
-nconf.file({ file: 'config.json'});
+nconf.file({ file: __dirname + '/../../config.json'});
 
 function getDefaults() {
   return {
