@@ -9,7 +9,7 @@
 
     setup.whenRunningTheServer(exports);
 
-    exports.test_shouldReportDatabaseStatus = function(test) {
+    exports.test_shouldReportIfConfigurationIsWorking = function(test) {
 
         downloadFile("http://localhost:" + port + "/status", function(statusCode, responseBody) {
             
