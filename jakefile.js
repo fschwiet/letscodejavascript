@@ -157,7 +157,7 @@ task("verifyEmptyGitStatus", function() {
 
 
 desc("Deploy to IIS");
-task("releaseToIIS", [/*"testForRelease", "verifyEmptyGitStatus"*/], function() {
+task("releaseToIIS", [/* TODO, add back: "testForRelease", "verifyEmptyGitStatus"*/], function() {
 
   var productionConfig = "./production.config.json";
 
