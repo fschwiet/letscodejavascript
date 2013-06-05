@@ -11,6 +11,8 @@ var childProcess = require("child_process");
 var nconf = require("./src/server/config.js");
 var mkdirp = require('mkdirp');
 var Q = require("q");
+var request = require("request");
+var statusChecker = require("./src/requirements/statusChecker.js");
 
 task = require("./build/jake-util.js").extendTask(task, jake);
 
@@ -215,7 +217,7 @@ task("releaseToIIS", [/* TODO, add back: "testForRelease", "verifyEmptyGitStatus
 
           var iisPath = path.join(deployPath, "src/iis");
           
-          return Q.nbind(childProcess.execFile)("powershell", ["-noprofile", "-file", "./src/iis/install.ps1", iisPath, fileUploadPath, "*"], {env:process.env});
+          return Q.nbind(childProcess.execFile)("powershell", ["-noprofile", "-file", "./src/iis/install.ps1", iisPath, fileUploadPath, "127.0.0.3"], {env:process.env});
         })
         .then(function(results){
           var stdout = results[0];
@@ -228,6 +230,20 @@ task("releaseToIIS", [/* TODO, add back: "testForRelease", "verifyEmptyGitStatus
           }
 
           complete();
+        })
+        .then(function() {
+
+          return Q.nbind(request)("http://127.0.0.3/status");
+          // request the monitor results using request module: http://www.sitepoint.com/making-http-requests-in-node-js/
+        })
+        .then(function(results) {
+          var response = results[0];
+          var body = results[1];
+          if (response.statusCode !== 200) {
+            fail("expected 200 response from http://127.0.0.3, received " + response.statusCode);
+          } else {
+            statusChecker.assertStatusIsGood(body);
+          }
         }));
     }
   });
