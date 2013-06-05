@@ -153,14 +153,52 @@ task("verifyEmptyGitStatus", function() {
       complete();
     }
   });
-});
+}, {async:true});
 
 
 desc("Deploy to IIS");
-task("releaseToIIS", ["testForRelease", "verifyEmptyGitStatus"], function() {
+task("releaseToIIS", [/*"testForRelease", "verifyEmptyGitStatus"*/], function() {
 
-  fail("not finished");
-});
+  var productionConfig = "./production.config.json";
+
+  if (!fs.existsSync(productionConfig)) {
+    fail("Could not find file production.config.json, please create before deploying.  Consider using sample.config.json as a starting point.");
+  }
+
+  var deployRoot = "c:/inetpub/letscodejavascript";
+
+  if (!fs.existsSync(deployRoot)) {
+    fs.mkdirSync(deployRoot);
+  }
+
+  var countWithinDeployRoot = fs.readdirSync(deployRoot).length;
+
+  if (countWithinDeployRoot > 256) {
+    fail("Deploying to a full directory.  Please clean up " + deployRoot + " first.");
+  }
+
+  childProcess.exec("git rev-parse HEAD", function(error, stdout, stderr) {
+    if (error != null) {
+      fail(error);
+    } else {
+      var id = stdout.toString().trim();
+
+      var index = 0;
+      var deployPath = null;
+      do {
+        deployPath = path.resolve(deployRoot,  id + "_" + ++index);
+      } while(fs.existsSync(deployPath));
+
+      console.log("Deploying to " + deployPath);
+
+      cloneWithConfig(deployPath, productionConfig)
+      .then(function() {
+        console.log("finished");
+        setTimeout(function() { complete();}, 0);
+      });
+    }
+  });
+}, { async : true});
 
 function getFileListWithTypicalExcludes() {
   var list = new jake.FileList();
