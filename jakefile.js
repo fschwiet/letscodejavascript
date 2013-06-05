@@ -8,10 +8,11 @@ var fs = require('fs.extra');
 var rimraf = require("rimraf");
 var spawnProcess = require("./src/test/spawn-process.js");
 var childProcess = require("child_process");
+var nconf = require("./src/server/config.js");
 
 task = require("./build/jake-util.js").extendTask(task, jake);
 
-task("default", ["lint", "test"], function() {
+task("default", ["lint", "writeSampleConfig", "test"], function() {
 
 });
 
@@ -25,6 +26,14 @@ task("lint", function() {
 
   var a = runner.validateFileList(list);
   assert.ok(a, "lint failed");
+});
+
+desc("write sample config file");
+task("writeSampleConfig", function() {
+
+  var defaults = nconf.getDefaults();
+
+  fs.writeFileSync("./sample.config.json", JSON.stringify(defaults, null, "    "));
 });
 
 desc("test everything");
