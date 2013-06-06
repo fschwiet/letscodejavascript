@@ -15,7 +15,7 @@
     exports.test_standard_model_includes_isAuthenticated = function(test) {
         
         var authenticatedRequest = {
-            deserializeUser : {}
+            user : {}
         };
 
         var unathenticatedRequest = {
