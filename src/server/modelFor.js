@@ -1,7 +1,7 @@
 
 
 
-exports.standard = function(title, request) {
+module.exports = function(title, request) {
     return {
         title: title,
         isAuthenticated : typeof request.deserializeUser == "object"

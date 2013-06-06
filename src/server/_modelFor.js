@@ -3,11 +3,11 @@
 
     "use strict";
 
-    var model = require("./model");
+    var modelFor = require("./modelFor");
 
     exports.test_standard_model_includes_page_title = function(test) {
         var expectedTitle = "abc ABC 123";
-        var result = model.standard(expectedTitle, {});
+        var result = modelFor(expectedTitle, {});
         test.equal(result.title, expectedTitle);
         test.done();
     };
@@ -20,9 +20,9 @@
 
         var unathenticatedRequest = {
         };
-        
-        var authenticated = model.standard("", authenticatedRequest);
-        var unauthenticated = model.standard("", unathenticatedRequest);
+
+        var authenticated = modelFor("", authenticatedRequest);
+        var unauthenticated = modelFor("", unathenticatedRequest);
 
         test.equal(authenticated.isAuthenticated, true);
         test.equal(unauthenticated.isAuthenticated, false);
