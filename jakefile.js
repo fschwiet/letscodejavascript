@@ -14,6 +14,10 @@ var Q = require("q");
 var request = require("request");
 var statusChecker = require("./src/requirements/statusChecker.js");
 
+var allTests = "**/_*.js";
+var slowTests = "**/*.slow.js";
+var clientCode = "src/client/**";
+
 task = require("./build/jake-util.js").extendTask(task, jake);
 
 task("default", ["lint", "writeSampleConfig", "test"], function() {
@@ -41,7 +45,7 @@ task("writeSampleConfig", function() {
 });
 
 desc("test everything");
-task("test", ["testClient","testTheRest", "testSlow"]);
+task("test", ["testClient","testRemaining", "testSlow"]);
 
 task("testClient", function() {
 
@@ -49,12 +53,13 @@ task("testClient", function() {
 
 }, { async: true });
 
-task("testTheRest", ["prepareTempDirectory", "createTestDatabase"], function() {
+task("testSlow", ["prepareTempDirectory", "createTestDatabase"], function() {
 
   var testList = getFileListWithTypicalExcludes();
-  testList.include("**/_*.js");
-  testList.exclude("src/client/**");
-  testList.exclude("**/*.slow.js");
+  
+  testList.include(slowTests);
+
+  testList.exclude(clientCode);
 
   var reporter = nodeunit.reporters["default"];
   reporter.run(testList.toArray(), null, function(failures) {
@@ -63,11 +68,14 @@ task("testTheRest", ["prepareTempDirectory", "createTestDatabase"], function() {
   });
 }, {async: true});
 
-task("testSlow", ["prepareTempDirectory", "createTestDatabase"], function() {
+task("testRemaining", ["prepareTempDirectory", "createTestDatabase"], function() {
 
   var testList = getFileListWithTypicalExcludes();
-  testList.include("**/_*.slow.js");
-  testList.exclude("src/client/**");
+  
+  testList.include(allTests);
+  
+  testList.exclude(clientCode);
+  testList.exclude(slowTests);
 
   var reporter = nodeunit.reporters["default"];
   reporter.run(testList.toArray(), null, function(failures) {
