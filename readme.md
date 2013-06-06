@@ -16,6 +16,7 @@ Note:
 
 To deploy to IIS:
   *  Install NodeOnIIS boxstarter package at https://github.com/fschwiet/fschwiet-boxstarter (this installs node, git, phantomjs, carbon, iis, iisnode, urlrewrite, etc)
+  *  Delete the default site IIS creates on port 80
   *  Create a production.config.json, with database settings pointing to your database
   *  clone the repository
   *  run set-executionpolicy unrestricted on powershell, in both x64 and x86.
