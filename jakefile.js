@@ -13,6 +13,8 @@ var mkdirp = require('mkdirp');
 var Q = require("q");
 var request = require("request");
 var statusChecker = require("./src/requirements/statusChecker.js");
+var nodeVersion = new (require("node-version").version)();
+var util = require("util");
 
 var allTests = "**/_*.js";
 var slowTests = "**/*.slow.js";
@@ -20,7 +22,7 @@ var clientCode = "src/client/**";
 
 task = require("./build/jake-util.js").extendTask(task, jake);
 
-task("default", ["lint", "writeSampleConfig", "test"], function() {
+task("default", ["verifyNodeVersion","lint", "writeSampleConfig", "test"], function() {
 
 });
 
@@ -106,14 +108,6 @@ task("createTestDatabase", function() {
   });
 }, { async:true});
 
-desc("Run the server locally");
-task("runServer", function() {
-  var port = 8083;
-  console.log("running the server on", port);  
-  var server = require("./src/server/server.js");
-  server.start(port);
-});
-
 function gitCloneTo(workingDirectory) {
   return spawnProcess("git clone", "git", ["clone", "--quiet", "--no-hardlinks", ".", workingDirectory])
   .then(function() {
@@ -152,22 +146,6 @@ task("testForRelease", ["prepareTempDirectory"], function() {
       fail(reason);
   });
 
-}, {async:true});
-
-
-desc("Verifies there are no uncommitted changes");
-task("verifyEmptyGitStatus", function() {
-  childProcess.exec("git status --porcelain", function(error, stdout, stderror) {
-    if (error !== null) {
-      fail("unable to verify no uncommitted changes -- " + error.toString());
-    } else if (stdout.trim().length > 0) {
-      fail("Working tree is not empty, git status was:\n" + stdout);
-    } else if (stderror.trim().length > 0) {
-      fail("Error verifying working tree is empty, error output was:\n" + stderror);
-    } else {
-      complete();
-    }
-  });
 }, {async:true});
 
 
@@ -277,6 +255,41 @@ task("releaseToIIS", ["testForRelease", "verifyEmptyGitStatus"], function() {
   });
 }, { async : true});
 
+desc("Verifies there are no uncommitted changes");
+task("verifyEmptyGitStatus", function() {
+  childProcess.exec("git status --porcelain", function(error, stdout, stderror) {
+    if (error !== null) {
+      fail("unable to verify no uncommitted changes -- " + error.toString());
+    } else if (stdout.trim().length > 0) {
+      fail("Working tree is not empty, git status was:\n" + stdout);
+    } else if (stderror.trim().length > 0) {
+      fail("Error verifying working tree is empty, error output was:\n" + stderror);
+    } else {
+      complete();
+    }
+  });
+}, {async:true});
+
+desc("Verify node version.");
+task("verifyNodeVersion", function() {
+
+  var actualVersion = nodeVersion.getVersion().original.toString().trim();
+  var expectedVersion = fs.readFileSync("./.node-version").toString().trim();
+
+  if (actualVersion !== expectedVersion) {
+    fail(util.format("Expected node --version to be %s, actually was %s", expectedVersion, actualVersion));
+  }
+
+  console.log("Node version is " + actualVersion);
+});
+
+desc("Run the server locally");
+task("runServer", function() {
+  var port = 8083;
+  console.log("running the server on", port);  
+  var server = require("./src/server/server.js");
+  server.start(port);
+});
 
 function getFileListWithTypicalExcludes() {
   var list = new jake.FileList();
