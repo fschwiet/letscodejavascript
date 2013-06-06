@@ -199,6 +199,12 @@ task("releaseToIIS", ["testForRelease", "verifyEmptyGitStatus"], function() {
         .then(function(configValues) {
           configValues = JSON.parse(configValues);
           configValues.fileUpload_path = fileUploadPath;
+
+          if ((configValues.sessionKey || "").length < 150 {
+
+            throw new Error("Configuration should contain a good sessionKey");
+          }
+
           return Q.nbind(fs.writeFile)(path.resolve(deployPath, "config.json"), JSON.stringify(configValues, null, "    "));
         })
         .then(function() {

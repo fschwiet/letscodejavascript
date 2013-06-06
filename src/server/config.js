@@ -12,6 +12,7 @@ function getDefaults() {
     "database_password" : "",
     "testServer_port" : 8081,
     "fileUpload_path" : "./temp/uploads",
+    "sessionKey" : "foo",
     "isProduction" : false
   };
 }

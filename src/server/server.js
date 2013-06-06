@@ -12,19 +12,27 @@
     var xml2js = require("xml2js");
 
     var express = require('express');
+    var modelFor = require("./modelFor");
+
     var app = express();    
 
     var nconf = require('./config.js');
-
+    
     app.use(express.limit('4mb'));
     app.use(express.bodyParser({ keepExtensions: true, uploadDir: nconf.get("fileUpload_path") }));
+    app.use(express.cookieParser());
     app.set('views', __dirname + '/views');
     app.set('view engine', 'jade');
+
+    app.use(express.cookieSession( { secret: nconf.get("sessionKey")}));
+
+    require("./google-auth")(app);
 
     app.get("/", handleHomepageRequest);
     app.get("/status", handleStatusRequest);
     app.get("/upload/from/google", handleUploadFromGoogleRequest);
     app.post("/upload/from/google", handleUploadFromGooglePostRequest);
+
 
     app.use(errorHandler);
 
@@ -44,7 +52,7 @@
 
     function handleHomepageRequest(request, response) {
 
-        response.render('index', { title: "homepage" });
+        response.render('index', modelFor("homepage", request));
     }
 
     function canWrite(owner, inGroup, mode) {
@@ -56,7 +64,7 @@
 
     function handleStatusRequest(request, response) {
 
-        var model = { title: 'Status' };
+        var model = modelFor('Status', request);
 
         database.getStatus(function(statusString) {
             model.databaseStatus = statusString;
@@ -79,7 +87,7 @@
 
     function handleUploadFromGoogleRequest(request, response) {
 
-        response.render('uploadFromGoogle', { title: "Upload your Google RSS reader subscriptions"});
+        response.render('uploadFromGoogle', modelFor("Upload your Google RSS reader subscriptions", request));
     }
 
     function handleUploadFromGooglePostRequest(request, response, next) {
@@ -115,14 +123,16 @@
                     return next(ex);
                 }
 
-                response.render('uploadedFromGoogle', { title: "Upload complete", rows: rows});
+                var model = modelFor("Upload complete", request);
+                model.rows = rows;
+
+                response.render('uploadedFromGoogle', model);
             });
         });
     }
 })();
 
 function errorHandler(err, req, res, next) {
-    res.status(500);
-    res.render("error500", {title: "Error", err: err});
+    res.render("error500", {title: "Error"});
 }
 
