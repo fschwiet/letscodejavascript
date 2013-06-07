@@ -1,7 +1,7 @@
 (function() {
     "use strict";
 
-    var setup = require("../test/setup");
+    var setup = require("./setup");
     var request = require("request");
 
     setup.whenRunningTheServer(exports);
