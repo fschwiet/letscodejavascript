@@ -15,6 +15,7 @@ var request = require("request");
 var statusChecker = require("./src/requirements/statusChecker.js");
 var nodeVersion = new (require("node-version").version)();
 var util = require("util");
+var runServer = require("./src/test/runServer.js");
 
 var allTests = "**/_*.js";
 var slowTests = "**/_*.slow.js";
@@ -48,7 +49,7 @@ task("writeSampleConfig", function() {
 });
 
 desc("test everything");
-task("test", ["testClient","testRemaining","testSmoke","testSlow"]);
+task("test", ["testClient","testRemaining","testSmokeAsRegularTest","testSlow"]);
 
 task("testClient", function() {
 
@@ -74,7 +75,7 @@ task("testSlow", ["prepareTempDirectory", "createTestDatabase"], function() {
   runTestsWithNodeunit(testList.toArray());
 }, {async: true});
 
-task("testSmoke", ["prepareTempDirectory", "createTestDatabase"], function() {
+task("testSmoke", function() {
 
   var testList = getFileListWithTypicalExcludes();
   
@@ -83,6 +84,18 @@ task("testSmoke", ["prepareTempDirectory", "createTestDatabase"], function() {
 
   runTestsWithNodeunit(testList.toArray());
 }, {async: true});
+
+task("startSmokeServer", function() {
+
+  runServer.startServerLikeIIS(complete);
+}, {async: true});
+
+task("stopSmokeServer", function() {
+
+  runServer.stopServer(complete);
+}, {async: true});
+
+task("testSmokeAsRegularTest", ["prepareTempDirectory", "createTestDatabase", "startSmokeServer", "testSmoke", "stopSmokeServer"], function() {});
 
 task("testRemaining", ["prepareTempDirectory", "createTestDatabase"], function() {
 
