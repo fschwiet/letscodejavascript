@@ -1,4 +1,6 @@
 TODO:
+inline statusChecker
+
     rename _monitoring.slow.js -> _monitoring.smoke.js
       run .smoke tests as part of release, and before slow tests in regular test runs.
 

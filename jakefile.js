@@ -12,7 +12,6 @@ var nconf = require("./src/server/config.js");
 var mkdirp = require('mkdirp');
 var Q = require("q");
 var request = require("request");
-var statusChecker = require("./src/requirements/statusChecker.js");
 var nodeVersion = new (require("node-version").version)();
 var util = require("util");
 
@@ -219,6 +218,10 @@ task("releaseToIIS", ["testForRelease", "verifyEmptyGitStatus"], function() {
           return Q.nbind(fs.writeFile)(path.resolve(deployPath, "config.json"), JSON.stringify(configValues, null, "    "));
         })
         .then(function() {
+          return Q.nbind(childProcess.execFile)("jake", "node", [ ".\\node_modules\\jake\\bin\\cli.js", "testSmoke"]);
+        })
+        .then(assertExecFileSucceeded)
+        .then(function() {
           console.log("calling execFile on ./src/iis/install.ps1, listening to IP address 127.0.0.3");
 
           var iisPath = path.join(deployPath, "src/iis");
@@ -230,15 +233,6 @@ task("releaseToIIS", ["testForRelease", "verifyEmptyGitStatus"], function() {
 
           return Q.nbind(request)("http://127.0.0.3/status");
           // request the monitor results using request module: http://www.sitepoint.com/making-http-requests-in-node-js/
-        })
-        .then(function(results) {
-          var response = results[0];
-          var body = results[1];
-          if (response.statusCode !== 200) {
-            fail("expected 200 response from http://127.0.0.3, received " + response.statusCode);
-          } else {
-            statusChecker.assertStatusIsGood(body);
-          }
         })
         .then(function() {
           console.log("calling execFile on ./src/iis/install.ps1, listening to any IP address");
