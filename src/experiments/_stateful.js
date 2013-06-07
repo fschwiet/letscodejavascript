@@ -5,7 +5,6 @@
     var stateful = require("./stateful.js");
     
     exports.setUp = function(done) {
-        console.log("stateful is " + stateful);
         stateful.initialize();
         done();
     };
