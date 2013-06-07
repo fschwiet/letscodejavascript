@@ -17,7 +17,8 @@ var nodeVersion = new (require("node-version").version)();
 var util = require("util");
 
 var allTests = "**/_*.js";
-var slowTests = "**/*.slow.js";
+var slowTests = "**/_*.slow.js";
+var smokeTests = "**/_*.smoke.js";
 var clientCode = "src/client/**";
 
 task = require("./build/jake-util.js").extendTask(task, jake);
@@ -47,7 +48,7 @@ task("writeSampleConfig", function() {
 });
 
 desc("test everything");
-task("test", ["testClient","testRemaining", "testSlow"]);
+task("test", ["testClient","testRemaining","testSmoke","testSlow"]);
 
 task("testClient", function() {
 
@@ -55,19 +56,32 @@ task("testClient", function() {
 
 }, { async: true });
 
+function runTestsWithNodeunit(testList) {
+  var reporter = nodeunit.reporters["default"];
+  reporter.run(testList, null, function(failures) {
+    assert.ifError(failures);
+    complete();
+  });  
+}
+
 task("testSlow", ["prepareTempDirectory", "createTestDatabase"], function() {
 
   var testList = getFileListWithTypicalExcludes();
   
   testList.include(slowTests);
-
   testList.exclude(clientCode);
 
-  var reporter = nodeunit.reporters["default"];
-  reporter.run(testList.toArray(), null, function(failures) {
-    assert.ifError(failures);
-    complete();
-  });
+  runTestsWithNodeunit(testList.toArray());
+}, {async: true});
+
+task("testSmoke", ["prepareTempDirectory", "createTestDatabase"], function() {
+
+  var testList = getFileListWithTypicalExcludes();
+  
+  testList.include(smokeTests);
+  testList.exclude(clientCode);
+
+  runTestsWithNodeunit(testList.toArray());
 }, {async: true});
 
 task("testRemaining", ["prepareTempDirectory", "createTestDatabase"], function() {
@@ -78,12 +92,9 @@ task("testRemaining", ["prepareTempDirectory", "createTestDatabase"], function()
   
   testList.exclude(clientCode);
   testList.exclude(slowTests);
+  testList.exclude(smokeTests);
 
-  var reporter = nodeunit.reporters["default"];
-  reporter.run(testList.toArray(), null, function(failures) {
-    assert.ifError(failures);
-    complete();
-  });
+  runTestsWithNodeunit(testList.toArray());
 }, {async: true});
 
 task("prepareTempDirectory", function() {
@@ -200,7 +211,7 @@ task("releaseToIIS", ["testForRelease", "verifyEmptyGitStatus"], function() {
           configValues = JSON.parse(configValues);
           configValues.fileUpload_path = fileUploadPath;
 
-          if ((configValues.sessionKey || "").length < 150 {
+          if ((configValues.sessionKey || "").length < 150) {
 
             throw new Error("Configuration should contain a good sessionKey");
           }
@@ -214,16 +225,7 @@ task("releaseToIIS", ["testForRelease", "verifyEmptyGitStatus"], function() {
           
           return Q.nbind(childProcess.execFile)("powershell", ["-noprofile", "-file", "./src/iis/install.ps1", iisPath, fileUploadPath, "127.0.0.3"], {env:process.env});
         })
-        .then(function(results){
-          var stdout = results[0];
-          var stderr = results[1];
-
-          console.log("stdout:\n" + stdout.toString());
-
-          if (stderr.trim().length > 0) {
-            throw new Error("Have error output: " + stderr.toString());
-          }
-        })
+        .then(assertExecFileSucceeded)
         .then(function() {
 
           return Q.nbind(request)("http://127.0.0.3/status");
@@ -245,21 +247,23 @@ task("releaseToIIS", ["testForRelease", "verifyEmptyGitStatus"], function() {
           
           return Q.nbind(childProcess.execFile)("powershell", ["-noprofile", "-file", "./src/iis/install.ps1", iisPath, fileUploadPath, "*"], {env:process.env});
         })
-        .then(function(results){
-          var stdout = results[0];
-          var stderr = results[1];
-
-          console.log("stdout:\n" + stdout.toString());
-
-          if (stderr.trim().length > 0) {
-            throw new Error("Have error output: " + stderr.toString());
-          }
-
-          complete();
-        }));
+        .then(assertExecFileSucceeded)
+        .then(complete));
     }
   });
 }, { async : true});
+
+function assertExecFileSucceeded(execFileResults) {
+
+  var stdout = execFileResults[0];
+  var stderr = execFileResults[1];
+
+  console.log("stdout:\n" + stdout.toString());
+
+  if (stderr.trim().length > 0) {
+    throw new Error("Have error output: " + stderr.toString());
+  }
+}
 
 desc("Verifies there are no uncommitted changes");
 task("verifyEmptyGitStatus", function() {
