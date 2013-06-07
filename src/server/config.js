@@ -10,7 +10,6 @@ function getDefaults() {
     "database_port" : 3306,
     "database_user" : "root",
     "database_password" : "",
-    "testServer_url" : "http://localhost:8081",
     "testServer_port" : 8081,
     "fileUpload_path" : "./temp/uploads",
     "sessionKey" : "foo",
@@ -21,10 +20,6 @@ function getDefaults() {
 nconf.defaults(getDefaults());
 
 nconf.getDefaults = getDefaults;
-
-nconf.urlOfTestServer = function(path) {
-    return nconf.get("testServer_url") + path;
-};
 
 module.exports = nconf;
 

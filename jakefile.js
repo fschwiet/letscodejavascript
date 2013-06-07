@@ -12,6 +12,7 @@ var nconf = require("./src/server/config.js");
 var mkdirp = require('mkdirp');
 var Q = require("q");
 var request = require("request");
+var statusChecker = require("./src/requirements/statusChecker.js");
 var nodeVersion = new (require("node-version").version)();
 var util = require("util");
 
