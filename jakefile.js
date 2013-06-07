@@ -230,11 +230,6 @@ task("releaseToIIS", ["testForRelease", "verifyEmptyGitStatus"], function() {
         })
         .then(assertExecFileSucceeded)
         .then(function() {
-
-          return Q.nbind(request)("http://127.0.0.3/status");
-          // request the monitor results using request module: http://www.sitepoint.com/making-http-requests-in-node-js/
-        })
-        .then(function() {
           console.log("calling execFile on ./src/iis/install.ps1, listening to any IP address");
 
           var iisPath = path.join(deployPath, "src/iis");
