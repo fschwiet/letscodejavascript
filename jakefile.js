@@ -75,6 +75,8 @@ task("testSlow", ["prepareTempDirectory", "createTestDatabase"], function() {
   runTestsWithNodeunit(testList.toArray());
 }, {async: true});
 
+task("testSmokeAsRegularTest", ["prepareTempDirectory", "createTestDatabase", "startSmokeServer", "testSmoke", "stopSmokeServer"], function() {});
+
 task("testSmoke", function() {
 
   var testList = getFileListWithTypicalExcludes();
@@ -94,8 +96,6 @@ task("stopSmokeServer", function() {
 
   runServer.stopServer(complete);
 }, {async: true});
-
-task("testSmokeAsRegularTest", ["prepareTempDirectory", "createTestDatabase", "startSmokeServer", "testSmoke", "stopSmokeServer"], function() {});
 
 task("testRemaining", ["prepareTempDirectory", "createTestDatabase"], function() {
 
