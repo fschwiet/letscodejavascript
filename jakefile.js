@@ -160,8 +160,10 @@ task("testForRelease", ["prepareTempDirectory"], function() {
 }, {async:true});
 
 
+var smoketestHostname = "127.0.0.3";
+
 desc("Deploy to IIS");
-task("releaseToIIS", ["testForRelease", "verifyEmptyGitStatus"], function() {
+task("releaseToIIS", ["verifyEmptyGitStatus", "testForRelease"], function() {
 
   var productionConfig = "./production.config.json";
 
@@ -210,6 +212,7 @@ task("releaseToIIS", ["testForRelease", "verifyEmptyGitStatus"], function() {
         .then(function(configValues) {
           configValues = JSON.parse(configValues);
           configValues.fileUpload_path = fileUploadPath;
+          configValues.smoketestServer_hostname = smoketestHostname;
 
           if ((configValues.sessionKey || "").length < 150) {
 
@@ -219,14 +222,15 @@ task("releaseToIIS", ["testForRelease", "verifyEmptyGitStatus"], function() {
           return Q.nbind(fs.writeFile)(path.resolve(deployPath, "config.json"), JSON.stringify(configValues, null, "    "));
         })
         .then(function() {
-          console.log("calling execFile on ./src/iis/install.ps1, listening to IP address 127.0.0.3");
+          console.log("calling execFile on ./src/iis/install.ps1, listening to " + smoketestHostname);
 
           var iisPath = path.join(deployPath, "src/iis");
           
-          return Q.nbind(childProcess.execFile)("powershell", ["-noprofile", "-file", "./src/iis/install.ps1", iisPath, fileUploadPath, "127.0.0.3"], {env:process.env});
+          return Q.nbind(childProcess.execFile)("powershell", ["-noprofile", "-file", "./src/iis/install.ps1", iisPath, fileUploadPath, smoketestHostname], {env:process.env});
         })
         .then(assertExecFileSucceeded)
         .then(function() {
+
           return Q.nbind(childProcess.execFile)("jake", "node", [ ".\\node_modules\\jake\\bin\\cli.js", "testSmoke"]);
         })
         .then(assertExecFileSucceeded)
