@@ -1,9 +1,7 @@
 TODO:
-    rename _monitoring.slow.js -> _monitoring.smoke.js
-      run .smoke tests as part of release, and before slow tests in regular test runs.
 
     write a smoke test that can login and logout with the links in _layout
-      -> will need to store current hostname/port somehow so it can be passed to google (header?)
+      -> may need to store current hostname/port somehow so it can be passed to google (header?)
       -> verify can enter & exit from different urls (/ and /status)
 
     add local strategy that can be used to login from test

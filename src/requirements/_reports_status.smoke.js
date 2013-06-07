@@ -10,7 +10,7 @@
 
     exports.test_shouldReportIfConfigurationIsWorking = function(test) {
 
-        var target = "http://"+hostname+":"+port+"/status"
+        var target = "http://"+hostname+":"+port+"/status";
         console.log("requesting status page at", target);
 
         request(target, function(err, response, body){
