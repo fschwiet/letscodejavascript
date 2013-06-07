@@ -226,27 +226,28 @@ task("releaseToIIS", ["verifyEmptyGitStatus", "testForRelease"], function() {
           configValues = JSON.parse(configValues);
           configValues.fileUpload_path = fileUploadPath;
           configValues.smoketestServer_hostname = smoketestHostname;
+          configValues.testServer_port = 80;
 
           if ((configValues.sessionKey || "").length < 15) {
 
             throw new Error("Configuration should contain a good sessionKey");
           }
 
-          return Q.nbind(fs.writeFile)(path.resolve(deployPath, "config.json"), JSON.stringify(configValues, null, "    "));
+          return Q.nbind(fs.writeFile)(path.resolve(deployPath, "config.json"), JSON.stringify(configValues, null, "    "))
+            .then(function() {
+              console.log("calling execFile on ./src/iis/install.ps1, listening to " + smoketestHostname);
+
+              var iisPath = path.join(deployPath, "src/iis");
+              
+              return Q.nbind(childProcess.execFile)("powershell", ["-noprofile", "-file", "./src/iis/install.ps1", iisPath, fileUploadPath, smoketestHostname], {env:process.env});
+            })
+            .then(assertExecFileSucceeded);
         })
         .then(function() {
-          console.log("calling execFile on ./src/iis/install.ps1, listening to " + smoketestHostname);
 
-          var iisPath = path.join(deployPath, "src/iis");
-          
-          return Q.nbind(childProcess.execFile)("powershell", ["-noprofile", "-file", "./src/iis/install.ps1", iisPath, fileUploadPath, smoketestHostname], {env:process.env});
+          console.log("starting smoke tests");
+          return spawnProcess("smoke test", "node", [ "./node_modules/jake/bin/cli.js", "testSmoke"], { cwd: deployPath});
         })
-        .then(assertExecFileSucceeded)
-        .then(function() {
-
-          return Q.nbind(childProcess.execFile)("jake", "node", [ ".\\node_modules\\jake\\bin\\cli.js", "testSmoke"]);
-        })
-        .then(assertExecFileSucceeded)
         .then(function() {
           console.log("calling execFile on ./src/iis/install.ps1, listening to any IP address");
 

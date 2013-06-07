@@ -7,4 +7,4 @@ import-module carbon
 Grant-Permission -Identity "IIS_IUSRS" -Permission Modify -Path $installDir
 Grant-Permission -Identity "IIS_IUSRS" -Permission Modify -Path $uploadDir
 
-Install-IisWebsite -Name $name -p $installDir -bindings "http/$($hostpattern):$port:"
+Install-IisWebsite -Name $name -p $installDir -bindings "http/$($hostpattern):$($port):"

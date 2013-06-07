@@ -11,10 +11,9 @@
     exports.test_shouldReportIfConfigurationIsWorking = function(test) {
 
         var target = "http://"+hostname+":"+port+"/status"
-        console.log("starting request", target);
+        console.log("requesting status page at", target);
+
         request(target, function(err, response, body){
-            console.log("have body", body);
-            console.log("have status code", response.statusCode);
             if (err !== null) {
                 test.ok(false, err.toString());
             } else if (response.statusCode != 200) {
