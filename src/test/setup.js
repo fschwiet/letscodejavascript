@@ -91,45 +91,12 @@ exports.clearPhantomCache = function() {
     }
 };
 
+
+var runServer = require("./runServer");
+
 exports.whenRunningTheServer = function(inner) {
 
-    var fs = require("fs");
-    var assert = require("assert");
-    var spawnProcess = require("../test/spawn-process");
-
-    var SCRIPT_NAME = "src/iis/iis_server.js";
-
-    var server = null;
-
-    inner.setUp = function(done) {
-
-        assert.ok(fs.existsSync(SCRIPT_NAME), "Could not find file " + SCRIPT_NAME);
-
-        var env = JSON.parse(JSON.stringify(process.env));
-        env.PORT = nconf.get("testServer_port");
-
-        server = spawnProcess.leftRunning("iis_server", "node", [SCRIPT_NAME], {
-            env : env
-        });
-
-        server.stdout.on('data', function (data) {
-            if (data.indexOf("Server started") !== -1) {
-                done();
-            }
-        });
-    };
-
-    inner.tearDown = function(done) {
-        
-        if (server !== null) {
-            server.on("close", function() {
-                done();
-            });
-            server.kill();
-            server = null;
-        } else {
-            done();
-        }
-    };
+    inner.setUp = runServer.startServerLikeIIS;
+    inner.tearDown = runServer.stopServer;
 };
     
