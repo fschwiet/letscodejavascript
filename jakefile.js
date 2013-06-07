@@ -227,7 +227,7 @@ task("releaseToIIS", ["verifyEmptyGitStatus", "testForRelease"], function() {
           configValues.fileUpload_path = fileUploadPath;
           configValues.smoketestServer_hostname = smoketestHostname;
 
-          if ((configValues.sessionKey || "").length < 150) {
+          if ((configValues.sessionKey || "").length < 15) {
 
             throw new Error("Configuration should contain a good sessionKey");
           }
