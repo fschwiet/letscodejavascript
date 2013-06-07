@@ -218,15 +218,15 @@ task("releaseToIIS", ["testForRelease", "verifyEmptyGitStatus"], function() {
           return Q.nbind(fs.writeFile)(path.resolve(deployPath, "config.json"), JSON.stringify(configValues, null, "    "));
         })
         .then(function() {
-          return Q.nbind(childProcess.execFile)("jake", "node", [ ".\\node_modules\\jake\\bin\\cli.js", "testSmoke"]);
-        })
-        .then(assertExecFileSucceeded)
-        .then(function() {
           console.log("calling execFile on ./src/iis/install.ps1, listening to IP address 127.0.0.3");
 
           var iisPath = path.join(deployPath, "src/iis");
           
           return Q.nbind(childProcess.execFile)("powershell", ["-noprofile", "-file", "./src/iis/install.ps1", iisPath, fileUploadPath, "127.0.0.3"], {env:process.env});
+        })
+        .then(assertExecFileSucceeded)
+        .then(function() {
+          return Q.nbind(childProcess.execFile)("jake", "node", [ ".\\node_modules\\jake\\bin\\cli.js", "testSmoke"]);
         })
         .then(assertExecFileSucceeded)
         .then(function() {
