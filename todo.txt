@@ -1,5 +1,7 @@
 TODO:
 
+    google-auth is hardcoded to return to 8081...
+
     write a smoke test that can login and logout with the links in _layout
       -> may need to store current hostname/port somehow so it can be passed to google (header?)
       -> verify can enter & exit from different urls (/ and /status)

@@ -44,6 +44,12 @@ function(page) {
         }, selectors);
     }
 
+    var googleUsername = nconf.get("googleTest_username");
+    var googlePassword = nconf.get("googleTest_password");
+
+    assert.notEqual(googleUsername, null, "A config setting was not found for googleTest_username.");
+    assert.notEqual(googlePassword, null, "A config setting was not found for googleTest_password.");
+
     return page.promise.open("http://" + hostname + ":" + port + "/")
         .then(function() {
             return page.promise.clickElement(selectors.loginButtonSelector);
@@ -58,7 +64,7 @@ function(page) {
                         return page.promise.evaluate(function(selectors, username, password) {
                             document.querySelector(selectors.googleLoginEmail).value = username;
                             document.querySelector(selectors.googleLoginPassword).value = password;
-                        }, selectors, nconf.get("googleTest_username"), nconf.get("googleTest_password"))
+                        }, selectors, googleUsername, googlePassword)
                         .then(function() {
                             return page.promise.clickElement(selectors.googleLoginSubmit);
                         })
