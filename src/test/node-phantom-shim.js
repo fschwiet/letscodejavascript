@@ -26,13 +26,14 @@ function promisify(nodeAsyncFn, context, modifier, callbackParameterPosition) {
         args.splice(callbackParameterPosition,0,callbackWrappingPromise);
       }
       
-
+      /*
       for(var key in context) {
         if (context[key] == nodeAsyncFn) {
           console.log("running " + key);
         }
       }
-
+      */
+      
       try {
         nodeAsyncFn.apply(context || {}, args);
       }
