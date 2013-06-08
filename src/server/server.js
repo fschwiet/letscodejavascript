@@ -14,31 +14,31 @@
     var express = require('express');
     var modelFor = require("./modelFor");
 
-    var app = express();    
-
     var nconf = require('./config.js');
     
-    app.use(express.limit('4mb'));
-    app.use(express.bodyParser({ keepExtensions: true, uploadDir: nconf.get("fileUpload_path") }));
-    app.use(express.cookieParser());
-    app.set('views', __dirname + '/views');
-    app.set('view engine', 'jade');
-
-    app.use(express.cookieSession( { secret: nconf.get("sessionKey")}));
-
-    require("./google-auth")(app);
-
-    app.get("/", handleHomepageRequest);
-    app.get("/status", handleStatusRequest);
-    app.get("/upload/from/google", handleUploadFromGoogleRequest);
-    app.post("/upload/from/google", handleUploadFromGooglePostRequest);
-
-
-    app.use(errorHandler);
-
     var server;
 
     exports.start = function(port, callback) { 
+        
+        var app = express();    
+
+        app.use(express.limit('4mb'));
+        app.use(express.bodyParser({ keepExtensions: true, uploadDir: nconf.get("fileUpload_path") }));
+        app.use(express.cookieParser());
+        app.set('views', __dirname + '/views');
+        app.set('view engine', 'jade');
+
+        app.use(express.cookieSession( { secret: nconf.get("sessionKey")}));
+
+        require("./google-auth")(port, app);
+
+        app.get("/", handleHomepageRequest);
+        app.get("/status", handleStatusRequest);
+        app.get("/upload/from/google", handleUploadFromGoogleRequest);
+        app.post("/upload/from/google", handleUploadFromGooglePostRequest);
+
+        app.use(errorHandler);
+
         server = http.createServer(app);
         server.listen(port, callback);
     };
