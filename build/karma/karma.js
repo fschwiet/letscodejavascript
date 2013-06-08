@@ -63,7 +63,7 @@ exports.runTests = function() {
 
             setTimeout(function() {
                 attempt();
-            }, 5000);
+            }, 10000);
           } else {
             deferred.reject("Karma exit code was non-zero: " + exitCode);
           }
