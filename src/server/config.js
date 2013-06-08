@@ -11,7 +11,6 @@ function getDefaults() {
     "database_user" : "root",
     "database_password" : "",
     "testServer_port" : 8081,
-    "smoketestServer_hostname" : "localhost",
     "fileUpload_path" : "./temp/uploads",
     "sessionKey" : "foo",
     "isProduction" : false,

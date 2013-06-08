@@ -2,7 +2,6 @@
 var setup = require("../test/setup");
 var assert = require("assert");
 var nconf = require("../server/config.js");
-var hostname = nconf.get("smoketestServer_hostname");
 var port = nconf.get("testServer_port");
 var waitUntil = require("../test/waitUntil");
 
@@ -50,7 +49,7 @@ function(page) {
     assert.notEqual(googleUsername, null, "A config setting was not found for googleTest_username.");
     assert.notEqual(googlePassword, null, "A config setting was not found for googleTest_password.");
 
-    return page.promise.open("http://" + hostname + ":" + port + "/")
+    return page.promise.open("http://localhost:" + port + "/")
         .then(function() {
             return page.promise.clickElement(selectors.loginButtonSelector);
         })

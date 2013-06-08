@@ -5,12 +5,11 @@
     var statusChecker = require("./statusChecker.js");
     var request = require("request");
 
-    var hostname = nconf.get("smoketestServer_hostname");
     var port = nconf.get("testServer_port");
 
     exports.test_shouldReportIfConfigurationIsWorking = function(test) {
 
-        var target = "http://"+hostname+":"+port+"/status";
+        var target = "http://localhost:"+port+"/status";
         console.log("requesting status page at", target);
 
         request(target, function(err, response, body){
