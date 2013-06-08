@@ -83,7 +83,7 @@ exports.usingPhantom = function(callback) {
                             })
                             .then(function() {
                                 var screenshot = path.resolve("./temp/phantom.png");
-                                console.log("saving phantom screenshot to", screenshot)
+                                console.log("saving phantom screenshot to", screenshot);
                                 return page.promise.render(screenshot);
                             })
                             .fin(function() {
