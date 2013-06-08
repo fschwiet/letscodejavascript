@@ -93,10 +93,9 @@ function(page) {
                             return false;
                         });
                     } else if (state.needAllow) {
-                        /*
-                        var ii = 0
+                        var ii = 0;
                         return waitUntil("short delay",function() { return ++ii > 3;})
-                        
+/*
                         .then(function() {
                             return page.promise.evaluate(function() {
                                 return document.querySelectorAll(selectors.googleAllowSubmit).toString();
@@ -106,7 +105,7 @@ function(page) {
                             });
                         })
 */
-                        return page.promise.clickElement(selectors.googleAllowSubmit)
+                        .then(function() { return page.promise.clickElement(selectors.googleAllowSubmit); })
                         .then(function() {
                             return waitUntil("done allowing google account access", function() {
                                 return getPageState()
