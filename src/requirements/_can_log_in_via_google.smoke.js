@@ -49,7 +49,9 @@ function(page) {
     assert.notEqual(googleUsername, null, "A config setting was not found for googleTest_username.");
     assert.notEqual(googlePassword, null, "A config setting was not found for googleTest_password.");
 
-    return page.promise.open("http://localhost:" + port + "/")
+    var startPage = "http://localhost:" + port + "/";
+
+    return page.promise.open(startPage)
         .then(function() {
             return page.promise.clickElement(selectors.loginButtonSelector);
         })
@@ -136,6 +138,12 @@ function(page) {
         .then(function(evaluation) {
             assert.equal(evaluation.loginButtonCount, 0);
             assert.equal(evaluation.logoutButtonCount, 1);
+        })
+        .then(function() {
+            return page.promise.evaluate(function() { return window.location.toString(); });
+        })
+        .then(function(location) {
+            assert.equal(location, startPage);
         });
 }));
 
