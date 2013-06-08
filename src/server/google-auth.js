@@ -11,8 +11,8 @@ passport.deserializeUser(function(obj, done) {
 });
 
 passport.use(new GoogleStrategy.Strategy({
-    returnURL: 'http://localhost:8081/auth/google/return',
-    realm: 'http://localhost:8081/'
+    returnURL: 'http://127.0.0.3/auth/google/return',
+    realm: 'http://127.0.0.3/'
 }, function(identifier, profile, done) {
     return done(null, {
         id : identifier,
