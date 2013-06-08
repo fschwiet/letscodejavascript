@@ -53,7 +53,8 @@ phantom.promise = {
           open : promisify(page.open, page),
           evaluate : promisify(page.evaluate, page, null, 1),
           uploadFile : promisify(page.uploadFile, page),
-          get : promisify(page.get, page)
+          get : promisify(page.get, page),
+          render : promisify(page.render, page)
         };
 
         page.promise.clickElement = function(selector) {

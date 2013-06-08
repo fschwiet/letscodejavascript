@@ -14,7 +14,9 @@ function getDefaults() {
     "smoketestServer_hostname" : "localhost",
     "fileUpload_path" : "./temp/uploads",
     "sessionKey" : "foo",
-    "isProduction" : false
+    "isProduction" : false,
+    "googleTest_username" : null,
+    "googleTest_password" : null
   };
 }
 

@@ -9,7 +9,7 @@
   setup.qtest(exports, "should wait for evaluation to be true", function() {
     var waits = 0;
 
-    return waitUntil(function() { 
+    return waitUntil("hi", function() { 
       return ++waits >= 5;
     },500,1).then(function() {
       assert.equal(waits, 5);
@@ -19,7 +19,7 @@
   setup.qtest(exports, "should wait for promise evaluation to be true", function() {
     var waits = 0;
 
-    return waitUntil(function() { 
+    return waitUntil("hi", function() { 
 
       var defer = Q.defer();
 
@@ -35,7 +35,7 @@
     var attempts = 0;
 
     return setup.shouldFail(function() {
-      return waitUntil(function() { 
+      return waitUntil("hi", function() { 
         attempts++;
         return false;
       });
@@ -46,7 +46,7 @@
     var attempts = 0;
 
     return setup.shouldFail(function() {
-      return waitUntil(function() { 
+      return waitUntil("hi", function() { 
 
         attempts++;
         var deferred = Q.defer();
@@ -60,7 +60,7 @@
     var waits = 0;
 
     return setup.shouldFail(function() {
-      return waitUntil(function() { 
+      return waitUntil("hi", function() { 
         if (++waits >= 5) {
           throw new Error("foo fiddly pham");
         }
@@ -72,7 +72,7 @@
     var waits = 0;
 
     return setup.shouldFail(function() {
-      return waitUntil(function() { 
+      return waitUntil("hi", function() { 
 
         var deferred = Q.defer();
 

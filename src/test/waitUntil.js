@@ -2,10 +2,10 @@
 
 var Q = require("q");
 
-module.exports = function(toBeEvaluated, msTimeout, msInterval) {
+module.exports = function(name, toBeEvaluated, msTimeout, msInterval) {
 
     if (typeof(msTimeout) == "undefined") {
-        msTimeout = 250;
+        msTimeout = module.exports.defaultWait;
     }
 
     if (typeof(msInterval) == "undefined") {
@@ -23,7 +23,7 @@ module.exports = function(toBeEvaluated, msTimeout, msInterval) {
         if(!result) {
 
             if (new Date() > endTime) {
-                defer.reject("timed out");
+                defer.reject("timed out waiting until " + name);
             }
             else 
             {
@@ -68,3 +68,5 @@ module.exports = function(toBeEvaluated, msTimeout, msInterval) {
 
     return defer.promise;
 };
+
+module.exports.defaultWait = 250;

@@ -4,6 +4,7 @@ var phantom = require("./node-phantom-shim.js");
 var Q = require('q');
 var nconf = require("./../server/config.js");
 var assert = require("assert");
+var path = require("path");
 
 exports.qtest = function(context, name, testImplementation) {
     context["test_" + name] = function(test) {
@@ -69,6 +70,26 @@ exports.usingPhantom = function(callback) {
                 } else {
                     */
                     return callback(page)
+                    .fail(function(err) {
+                        return page.promise
+                            .evaluate(function(){ 
+                                return {
+                                    title : document.title,
+                                    url : window.location.toString()
+                                };
+                            })
+                            .then(function(evaluation) {
+                                console.log("page info", JSON.stringify(evaluation, null, "  "));
+                            })
+                            .then(function() {
+                                var screenshot = path.resolve("./temp/phantom.png");
+                                console.log("saving phantom screenshot to", screenshot)
+                                return page.promise.render(screenshot);
+                            })
+                            .fin(function() {
+                                throw err;
+                            });
+                    })
                     .fin(function() {
                         console.log("ph.exit called");
                         phantom.exit();
