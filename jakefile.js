@@ -233,31 +233,35 @@ task("releaseToIIS", ["verifyEmptyGitStatus", "testForRelease"], function() {
           }
 
           return Q.nbind(fs.writeFile)(path.resolve(deployPath, "config.json"), JSON.stringify(configValues, null, "    "))
-            .then(function() {
-              console.log("calling execFile on ./src/iis/install.ps1, listening to " + smokeServer_port);
+          .then(function() {
+            console.log("calling execFile on ./src/iis/install.ps1, listening to " + smokeServer_port);
 
-              var iisPath = path.join(deployPath, "src/iis");
-              
-              return Q.nbind(childProcess.execFile)("powershell", ["-noprofile", "-file", "./src/iis/install.ps1", iisPath, fileUploadPath, smokeServer_port], {env:process.env});
-            })
-            .then(assertExecFileSucceeded);
-        })
-        .then(function() {
+            var iisPath = path.join(deployPath, "src/iis");
+            
+            return Q.nbind(childProcess.execFile)("powershell", ["-noprofile", "-file", "./src/iis/install.ps1", iisPath, fileUploadPath, smokeServer_port], {env:process.env});
+          })
+          .then(function() {
+            configValues.testServer_port = 80;
+            return Q.nbind(fs.writeFile)(path.resolve(deployPath, "config.json"), JSON.stringify(configValues, null, "    "));
+          })
+          .then(assertExecFileSucceeded)
+          .then(function() {
 
-          console.log("starting smoke tests");
-          return spawnProcess("smoke test", "node", [ "./node_modules/jake/bin/cli.js", "testSmoke"], { cwd: deployPath});
-        })
-        .then(function() {
-          console.log("calling execFile on ./src/iis/install.ps1, listening to any IP address");
+            console.log("starting smoke tests");
+            return spawnProcess("smoke test", "node", [ "./node_modules/jake/bin/cli.js", "testSmoke"], { cwd: deployPath});
+          })
+          .then(function() {
+            console.log("calling execFile on ./src/iis/install.ps1, listening to any IP address");
 
-          var iisPath = path.join(deployPath, "src/iis");
-          
-          return Q.nbind(childProcess.execFile)("powershell", ["-noprofile", "-file", "./src/iis/install.ps1", iisPath, fileUploadPath, 80], {env:process.env});
-        })
-        .then(assertExecFileSucceeded)
-        .then(complete));
-    }
-  });
+            var iisPath = path.join(deployPath, "src/iis");
+            
+            return Q.nbind(childProcess.execFile)("powershell", ["-noprofile", "-file", "./src/iis/install.ps1", iisPath, fileUploadPath, 80], {env:process.env});
+          })
+          .then(assertExecFileSucceeded)
+          .then(complete);
+        }));
+}
+});
 }, { async : true});
 
 function assertExecFileSucceeded(execFileResults) {

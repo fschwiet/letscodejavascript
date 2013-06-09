@@ -1,6 +1,7 @@
 
 var GoogleStrategy = require('passport-google');
 var passport = require('passport');
+var config = require("./config");
 
 passport.serializeUser(function(user, done) {
     done(null, user);
@@ -13,8 +14,8 @@ passport.deserializeUser(function(obj, done) {
 module.exports = function(port, app) {
 
     passport.use(new GoogleStrategy.Strategy({
-        returnURL: 'http://localhost:' + port + '/auth/google/return',
-        realm: 'http://localhost:' + port + '/'
+        returnURL: config.urlFor('/auth/google/return'),
+        realm: config.urlFor('/')
     }, function(identifier, profile, done) {
         return done(null, {
             id : identifier,
