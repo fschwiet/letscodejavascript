@@ -1,4 +1,4 @@
-param([string]$installDir, [string]$uploadDir, [string]$port = 80)
+param([string]$installDir, [string]$uploadDir, [string]$port)
 
 $name = "letscodejavascript"
 
