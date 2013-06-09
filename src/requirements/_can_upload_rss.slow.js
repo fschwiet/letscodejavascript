@@ -1,10 +1,11 @@
 
-var setup = require("../test/setup");
 var assert = require("assert");
-var config = require("../server/config.js");
-var Q = require("q");
-var waitUntil = require("../test/waitUntil");
 var path = require("path");
+
+var setup = require("../test/setup");
+var config = require("../server/config.js");
+var waitUntil = require("../test/waitUntil");
+var login = require("./login");
 
 var fileToUpload = path.resolve(__dirname, "subscriptions.xml");
 
@@ -14,9 +15,12 @@ setup.qtest(exports, "can upload rss", setup.usingPhantom(function(page) {
 
   return page.promise.open(config.urlFor("/upload/from/google"))
   .then(function(status) {
+      
+      assert.equal(status, "success");
 
-    assert.equal(status, "success");
-
+      return login.doLogin(page);
+  })
+  .then(function() {
     return page.promise.uploadFile('form.uploadRss input[type=file]', fileToUpload);
   })
   .then(function() {
