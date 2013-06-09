@@ -242,13 +242,13 @@ task("releaseToIIS", ["verifyEmptyGitStatus", "testForRelease"], function() {
           })
           .then(assertExecFileSucceeded)
           .then(function() {
-            configValues.testServer_port = 80;
-            return Q.nbind(fs.writeFile)(path.resolve(deployPath, "config.json"), JSON.stringify(configValues, null, "    "));
-          })
-          .then(function() {
 
             console.log("starting smoke tests");
             return spawnProcess("smoke test", "node", [ "./node_modules/jake/bin/cli.js", "testSmoke"], { cwd: deployPath});
+          })
+          .then(function() {
+            configValues.testServer_port = 80;
+            return Q.nbind(fs.writeFile)(path.resolve(deployPath, "config.json"), JSON.stringify(configValues, null, "    "));
           })
           .then(function() {
             console.log("calling execFile on ./src/iis/install.ps1, listening to any IP address");
