@@ -1,2 +1,10 @@
+GOAL:
+  - user's RSS feed should be saved and available on their return
 
 
+TODO:
+  - add test verifying user's RSS feeds are available after they leave / come back
+
+TASKS:
+  - move rss implementation into a separate file
+  
