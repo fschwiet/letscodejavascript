@@ -23,12 +23,12 @@
         var app = express();    
 
         app.use(express.limit('4mb'));
-        app.use(express.bodyParser({ keepExtensions: true, uploadDir: nconf.get("fileUpload_path") }));
+        app.use(express.bodyParser({ keepExtensions: true, uploadDir: nconf.get("server_fileUploadPath") }));
         app.use(express.cookieParser());
         app.set('views', __dirname + '/views');
         app.set('view engine', 'jade');
 
-        app.use(express.cookieSession( { secret: nconf.get("sessionKey")}));
+        app.use(express.cookieSession( { secret: nconf.get("server_sessionKey")}));
 
         require("./google-auth")(port, app);
 
@@ -69,7 +69,7 @@
         database.getStatus(function(statusString) {
             model.databaseStatus = statusString;
 
-            fs.stat(nconf.get("fileUpload_path"), function(err, stat) {
+            fs.stat(nconf.get("server_fileUploadPath"), function(err, stat) {
 
                 if (err) {
                     model.uploadPathStatus = err.toString();

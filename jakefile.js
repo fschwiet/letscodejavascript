@@ -224,12 +224,12 @@ task("releaseToIIS", ["verifyEmptyGitStatus", "testForRelease"], function() {
         })
         .then(function(configValues) {
           configValues = JSON.parse(configValues);
-          configValues.fileUpload_path = fileUploadPath;
-          configValues.testServer_port = smokeServer_port;
+          configValues.server_fileUploadPath = fileUploadPath;
+          configValues.server_port = smokeServer_port;
 
-          if ((configValues.sessionKey || "").length < 15) {
+          if ((configValues.server_sessionKey || "").length < 15) {
 
-            throw new Error("Configuration should contain a good sessionKey");
+            throw new Error("Configuration should contain a good server_sessionKey");
           }
 
           return Q.nbind(fs.writeFile)(path.resolve(deployPath, "config.json"), JSON.stringify(configValues, null, "    "))
@@ -247,7 +247,7 @@ task("releaseToIIS", ["verifyEmptyGitStatus", "testForRelease"], function() {
             return spawnProcess("smoke test", "node", [ "./node_modules/jake/bin/cli.js", "testSmoke"], { cwd: deployPath});
           })
           .then(function() {
-            configValues.testServer_port = 80;
+            configValues.server_port = 80;
             return Q.nbind(fs.writeFile)(path.resolve(deployPath, "config.json"), JSON.stringify(configValues, null, "    "));
           })
           .then(function() {

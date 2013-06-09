@@ -4,9 +4,9 @@
     "database_port": 3306,
     "database_user": "root",
     "database_password": "",
-    "testServer_port": 8081,
-    "fileUpload_path": "./temp/uploads",
-    "sessionKey": "foo",
+    "server_port": 8081,
+    "server_fileUploadPath": "./temp/uploads",
+    "server_sessionKey": "foo",
     "isProduction": false,
     "googleTest_username": null,
     "googleTest_password": null

@@ -12,7 +12,7 @@
   var app = express();    
   var server;
 
-  var port = nconf.get("testServer_port");
+  var port = nconf.get("server_port");
 
   exports.setUp = function(callback) {
 

@@ -7,7 +7,7 @@
     var server = require("./server.js");
     var request = require("request");
 
-    var port = nconf.get("testServer_port");
+    var port = nconf.get("server_port");
 
 
     exports.test_earlyStopCallsAreOk = function(test) {

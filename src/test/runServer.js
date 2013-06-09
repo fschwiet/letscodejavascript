@@ -12,7 +12,7 @@ exports.startServerLikeIIS = function(callback) {
     assert.ok(fs.existsSync(SCRIPT_NAME), "Could not find file " + SCRIPT_NAME);
 
     var env = JSON.parse(JSON.stringify(process.env));
-    env.PORT = config.get("testServer_port");
+    env.PORT = config.get("server_port");
 
     server = spawnProcess.leftRunning("iis_server", "node", [SCRIPT_NAME], {
         env : env
