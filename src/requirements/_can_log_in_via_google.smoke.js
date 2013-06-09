@@ -89,7 +89,6 @@ function handleGoogleAuth(page) {
         return getPageState()
         .then(function(state) {
 
-            console.log("state", state);
             if (state.needLogin) {
                 return page.promise.evaluate(function(selectors, username, password) {
                     document.querySelector(selectors.googleLoginEmail).value = username;

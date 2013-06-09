@@ -27,13 +27,10 @@ module.exports = function(port, app) {
 
     app.get('/auth/google', function(req,res,next){
             var referer = req.header("referer");
-            console.log("header", req.header);
 
             if (referer !== null) {
                 req.session.referer = referer;
             }
-
-            console.log("have referer", req.session.referer);
 
             next();
         }, passport.authenticate('google', 
@@ -43,8 +40,10 @@ module.exports = function(port, app) {
         }));
 
     app.get('/auth/google/return', 
-      passport.authenticate('google', { successRedirect: '/',
-                                        failureRedirect: '/' }));
+      passport.authenticate('google', { failureRedirect: '/' }),
+      function(req,res) {
+        res.redirect(req.session.referer || '/');
+      });
 
     app.get("/logout", function(req,res) {
         req.logout();
