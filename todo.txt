@@ -3,7 +3,21 @@ GOAL:
 
 
 TODO:
+  - evaluate if Monarch / https://npmjs.org/package/monarch  stores current migration information
+    else use https://npmjs.org/package/db-migrate
+
   - add test verifying user's RSS feeds are available after they leave / come back
+
+  - MySQL connection pooling?
+      https://npmjs.org/package/mysql-simple
+      - stale by 2 years
+      https://npmjs.org/package/easy-mysql
+      - stale by 6 months
+      https://npmjs.org/package/mysql-connection-pool
+      - stale by 6 months
+      https://npmjs.org/package/node-mysql-pooled
+      - stale by 8 months
+
 
 TASKS:
   - move rss implementation into a separate file
