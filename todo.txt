@@ -3,8 +3,22 @@ GOAL:
 
 
 TODO:
-  - evaluate if Monarch / https://npmjs.org/package/monarch  stores current migration information
-    else use https://npmjs.org/package/db-migrate
+  - try https://npmjs.org/package/db-migrate
+    user:
+        long id
+        string username
+        string email
+    
+    googleUser:
+        string googleId
+        long userId PK
+        string profileJson
+
+    subscription:
+        long serId
+        name
+        htmlUrl
+        rssUrl
 
   - add test verifying user's RSS feeds are available after they leave / come back
 
