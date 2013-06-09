@@ -22,8 +22,50 @@ var selectors = {
 waitUntil.defaultWait = 15000;
 
 
-setup.qtest(exports, "can log in with google credentials", setup.usingPhantom(
-function(page) {
+function check_login_from(startPage) {
+    setup.qtest(exports, "can log in with google credentials from " + startPage, setup.usingPhantom(
+    function(page) {
+
+        return page.promise.open(startPage)
+            .then(function() {
+                return page.promise.clickElement(selectors.loginButtonSelector);
+            })
+            .then(function() {
+                return handleGoogleAuth(page);
+            })
+            .then(function() {
+                return page.promise.evaluate(function(ibs, obs) {
+                    return {
+                        loginButtonCount: document.querySelectorAll(ibs).length,
+                        logoutButtonCount: document.querySelectorAll(obs).length
+                    };
+                }, selectors.loginButtonSelector, selectors.logoutButtonSelector);
+            })
+            .then(function(evaluation) {
+                assert.equal(evaluation.loginButtonCount, 0);
+                assert.equal(evaluation.logoutButtonCount, 1);
+            })
+            .then(function() {
+                return page.promise.evaluate(function() { return window.location.toString(); });
+            })
+            .then(function(location) {
+                assert.equal(location, startPage);
+            });
+    }));
+}
+
+
+check_login_from("http://localhost:" + port + "/");
+check_login_from("http://localhost:" + port + "/status");
+
+
+function handleGoogleAuth(page) {
+
+    var googleUsername = nconf.get("googleTest_username");
+    var googlePassword = nconf.get("googleTest_password");
+
+    assert.notEqual(googleUsername, null, "A config setting was not found for googleTest_username.");
+    assert.notEqual(googlePassword, null, "A config setting was not found for googleTest_password.");
 
     function getPageState() {
         return page.promise.evaluate(function(selectors) {
@@ -43,107 +85,61 @@ function(page) {
         }, selectors);
     }
 
-    var googleUsername = nconf.get("googleTest_username");
-    var googlePassword = nconf.get("googleTest_password");
+    return waitUntil("done authenticating", function() {
+        return getPageState()
+        .then(function(state) {
 
-    assert.notEqual(googleUsername, null, "A config setting was not found for googleTest_username.");
-    assert.notEqual(googlePassword, null, "A config setting was not found for googleTest_password.");
-
-    var startPage = "http://localhost:" + port + "/";
-
-    return page.promise.open(startPage)
-        .then(function() {
-            return page.promise.clickElement(selectors.loginButtonSelector);
-        })
-        .then(function() {
-            return waitUntil("done authenticating", function() {
-                return getPageState()
-                .then(function(state) {
-
-                    console.log("state", state);
-                    if (state.needLogin) {
-                        return page.promise.evaluate(function(selectors, username, password) {
-                            document.querySelector(selectors.googleLoginEmail).value = username;
-                            document.querySelector(selectors.googleLoginPassword).value = password;
-                        }, selectors, googleUsername, googlePassword)
-                        .then(function() {
-                            return page.promise.clickElement(selectors.googleLoginSubmit);
-                        })
-                        .then(function() {
-                            return waitUntil("done logging into google", function() {
-                                return getPageState()
-                                .then(function(state) {
-                                    return !state.needLogin;
-                                });
-                            });
-                        })
-                        .then(function() {
-                            return false;
+            console.log("state", state);
+            if (state.needLogin) {
+                return page.promise.evaluate(function(selectors, username, password) {
+                    document.querySelector(selectors.googleLoginEmail).value = username;
+                    document.querySelector(selectors.googleLoginPassword).value = password;
+                }, selectors, googleUsername, googlePassword)
+                .then(function() {
+                    return page.promise.clickElement(selectors.googleLoginSubmit);
+                })
+                .then(function() {
+                    return waitUntil("done logging into google", function() {
+                        return getPageState()
+                        .then(function(state) {
+                            return !state.needLogin;
                         });
-                    } else if (state.needSkip) {
-                        return page.promise.clickElement(selectors.googleNoThanksButton)
-                        .then(function() {
-                            return waitUntil("done skipping password recovery", function() {
-                                return getPageState()
-                                .then(function(state) {
-                                    return !state.needSkip;
-                                });
-                            });
-                        })
-                        .then(function() {
-                            return false;
-                        });
-                    } else if (state.needAllow) {
-                        var ii = 0;
-                        return waitUntil("short delay",function() { return ++ii > 3;})
-/*
-                        .then(function() {
-                            return page.promise.evaluate(function() {
-                                return document.querySelectorAll(selectors.googleAllowSubmit).toString();
-                            })
-                            then(function(result) {
-                                console.log(result);
-                            });
-                        })
-*/
-                        .then(function() { return page.promise.clickElement(selectors.googleAllowSubmit); })
-                        .then(function() {
-                            return waitUntil("done allowing google account access", function() {
-                                return getPageState()
-                                .then(function(state) {
-                                    return !state.needAllow;
-                                });
-                            });
-                        })
-                        .then(function() {
-                            return false;
-                        });
-                    }
-
-                    return state.ready;
+                    });
+                })
+                .then(function() {
+                    return false;
                 });
-            }, 10000);
-        })
+            } else if (state.needSkip) {
+                return page.promise.clickElement(selectors.googleNoThanksButton)
+                .then(function() {
+                    return waitUntil("done skipping password recovery", function() {
+                        return getPageState()
+                        .then(function(state) {
+                            return !state.needSkip;
+                        });
+                    });
+                })
+                .then(function() {
+                    return false;
+                });
+            } else if (state.needAllow) {
+                var ii = 0;
+                return waitUntil("short delay",function() { return ++ii > 3;})
+                .then(function() { return page.promise.clickElement(selectors.googleAllowSubmit); })
+                .then(function() {
+                    return waitUntil("done allowing google account access", function() {
+                        return getPageState()
+                        .then(function(state) {
+                            return !state.needAllow;
+                        });
+                    });
+                })
+                .then(function() {
+                    return false;
+                });
+            }
 
-
-
-        .then(function() {
-            return page.promise.evaluate(function(ibs, obs) {
-                return {
-                    loginButtonCount: document.querySelectorAll(ibs).length,
-                    logoutButtonCount: document.querySelectorAll(obs).length
-                };
-            }, selectors.loginButtonSelector, selectors.logoutButtonSelector);
-        })
-        .then(function(evaluation) {
-            assert.equal(evaluation.loginButtonCount, 0);
-            assert.equal(evaluation.logoutButtonCount, 1);
-        })
-        .then(function() {
-            return page.promise.evaluate(function() { return window.location.toString(); });
-        })
-        .then(function(location) {
-            assert.equal(location, startPage);
+            return state.ready;
         });
-}));
-
+    }, 10000);
+}
