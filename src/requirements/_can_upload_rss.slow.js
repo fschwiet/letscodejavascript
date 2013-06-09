@@ -1,19 +1,18 @@
 
 var setup = require("../test/setup");
 var assert = require("assert");
-var nconf = require("../server/config.js");
+var config = require("../server/config.js");
 var Q = require("q");
 var waitUntil = require("../test/waitUntil");
 var path = require("path");
 
 var fileToUpload = path.resolve(__dirname, "subscriptions.xml");
-var port = nconf.get("testServer_port");
 
 setup.whenRunningTheServer(exports);
 
 setup.qtest(exports, "can upload rss", setup.usingPhantom(function(page) {
 
-  return page.promise.open("http://localhost:" + port + "/upload/from/google")
+  return page.promise.open(config.urlFor("/upload/from/google"))
   .then(function(status) {
 
     assert.equal(status, "success");

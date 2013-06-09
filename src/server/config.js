@@ -27,10 +27,10 @@ nconf.getDefaults = getDefaults;
 var baseUrl = "http://localhost:" + nconf.get("testServer_port") + "/";
 
 nconf.urlFor = function(path) {
-    var parts = urlParser.parse(baseUrl)
+    var parts = urlParser.parse(baseUrl);
     parts.pathname = path;
     return urlParser.format(parts);
-}
+};
 
 module.exports = nconf;
 

@@ -1,15 +1,13 @@
 (function() {
     "use strict";
 
-    var nconf = require("../server/config.js");
+    var config = require("../server/config.js");
     var statusChecker = require("./statusChecker.js");
     var request = require("request");
 
-    var port = nconf.get("testServer_port");
-
     exports.test_shouldReportIfConfigurationIsWorking = function(test) {
 
-        var target = "http://localhost:"+port+"/status";
+        var target = config.urlFor("/status");
         console.log("requesting status page at", target);
 
         request(target, function(err, response, body){
