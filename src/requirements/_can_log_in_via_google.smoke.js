@@ -21,29 +21,17 @@ var selectors = {
 
 waitUntil.defaultWait = 15000;
 
+check_login_from(config.urlFor("/"));
+check_login_from(config.urlFor("/status"));
 
 function check_login_from(startPage) {
+
     setup.qtest(exports, "can log in with google credentials from " + startPage, setup.usingPhantom(
     function(page) {
 
         return page.promise.open(startPage)
             .then(function() {
-                return page.promise.clickElement(selectors.loginButtonSelector);
-            })
-            .then(function() {
-                return handleGoogleAuth(page);
-            })
-            .then(function() {
-                return page.promise.evaluate(function(ibs, obs) {
-                    return {
-                        loginButtonCount: document.querySelectorAll(ibs).length,
-                        logoutButtonCount: document.querySelectorAll(obs).length
-                    };
-                }, selectors.loginButtonSelector, selectors.logoutButtonSelector);
-            })
-            .then(function(evaluation) {
-                assert.equal(evaluation.loginButtonCount, 0);
-                assert.equal(evaluation.logoutButtonCount, 1);
+                return doLogin(page);
             })
             .then(function() {
                 return page.promise.evaluate(function() { return window.location.toString(); });
@@ -54,10 +42,25 @@ function check_login_from(startPage) {
     }));
 }
 
+function doLogin(page) {
 
-check_login_from(config.urlFor("/"));
-check_login_from(config.urlFor("/status"));
-
+    return page.promise.clickElement(selectors.loginButtonSelector)
+        .then(function() {
+            return handleGoogleAuth(page);
+        })
+        .then(function() {
+            return page.promise.evaluate(function(ibs, obs) {
+                return {
+                    loginButtonCount: document.querySelectorAll(ibs).length,
+                    logoutButtonCount: document.querySelectorAll(obs).length
+                };
+            }, selectors.loginButtonSelector, selectors.logoutButtonSelector);
+        })
+        .then(function(evaluation) {
+            assert.equal(evaluation.loginButtonCount, 0);
+            assert.equal(evaluation.logoutButtonCount, 1);
+        });    
+}
 
 function handleGoogleAuth(page) {
 
