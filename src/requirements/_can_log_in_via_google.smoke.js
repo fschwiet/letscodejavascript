@@ -2,8 +2,8 @@
 var setup = require("../test/setup");
 var assert = require("assert");
 var nconf = require("../server/config.js");
-var port = nconf.get("testServer_port");
 var waitUntil = require("../test/waitUntil");
+var config = require("../server/config");
 
 var selectors = {
 
@@ -55,8 +55,8 @@ function check_login_from(startPage) {
 }
 
 
-check_login_from("http://localhost:" + port + "/");
-check_login_from("http://localhost:" + port + "/status");
+check_login_from(config.urlFor("/"));
+check_login_from(config.urlFor("/status"));
 
 
 function handleGoogleAuth(page) {

@@ -1,5 +1,6 @@
 
 var nconf = require('nconf');
+var urlParser = require("url");
 
 nconf.file({ file: __dirname + '/../../config.json'});
 
@@ -22,6 +23,14 @@ function getDefaults() {
 nconf.defaults(getDefaults());
 
 nconf.getDefaults = getDefaults;
+
+var baseUrl = "http://localhost:" + nconf.get("testServer_port") + "/";
+
+nconf.urlFor = function(path) {
+    var parts = urlParser.parse(baseUrl)
+    parts.pathname = path;
+    return urlParser.format(parts);
+}
 
 module.exports = nconf;
 
