@@ -237,14 +237,14 @@ task("releaseToIIS", ["verifyEmptyGitStatus", "testForRelease"], function() {
             console.log("calling execFile on ./src/iis/install.ps1, listening to " + smokeServer_port);
 
             var iisPath = path.join(deployPath, "src/iis");
-            
+
             return Q.nbind(childProcess.execFile)("powershell", ["-noprofile", "-file", "./src/iis/install.ps1", iisPath, fileUploadPath, smokeServer_port], {env:process.env});
           })
+          .then(assertExecFileSucceeded)
           .then(function() {
             configValues.testServer_port = 80;
             return Q.nbind(fs.writeFile)(path.resolve(deployPath, "config.json"), JSON.stringify(configValues, null, "    "));
           })
-          .then(assertExecFileSucceeded)
           .then(function() {
 
             console.log("starting smoke tests");
@@ -254,7 +254,7 @@ task("releaseToIIS", ["verifyEmptyGitStatus", "testForRelease"], function() {
             console.log("calling execFile on ./src/iis/install.ps1, listening to any IP address");
 
             var iisPath = path.join(deployPath, "src/iis");
-            
+
             return Q.nbind(childProcess.execFile)("powershell", ["-noprofile", "-file", "./src/iis/install.ps1", iisPath, fileUploadPath, 80], {env:process.env});
           })
           .then(assertExecFileSucceeded)
