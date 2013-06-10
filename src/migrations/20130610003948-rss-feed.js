@@ -8,13 +8,13 @@ exports.up = function(db, callback) {
         friendlyName: { type: 'text'}
     });
 
-    db.createTable('googleProfile', {
+    db.createTable('googleProfiles', {
         id:  { type: 'string', length: 128, primaryKey: true},
         userId: { type: 'int'},
         profile: { type: 'text'}
     });
 
-    db.createTable('subscription', {
+    db.createTable('subscriptions', {
         id: { type: 'int', primaryKey: true},
         name: { type: 'text'},
         htmlUrl: { type: 'text'},
