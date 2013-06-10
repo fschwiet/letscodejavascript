@@ -40,23 +40,34 @@ exports.ensureTestDatabaseIsClean = function(callback) {
 
 exports.getStatus = function(callback) {
 
+    useConnection(function(connection, done) {
+
+        connection.query("SELECT version()", function(err, rows, fields) {
+
+            if (err) {
+                callback(err.toString() + " (" + connection.config.host + ")");
+            } else {
+                callback("connected (" + connection.config.host + ")");
+            }
+
+            done();
+        });
+    });
+};
+
+function useConnection(callback) {
+
     var config = getConnectionInfo(true);
 
     var connection = mysql.createConnection(config);
 
     connection.connect();
 
-    connection.query("SELECT version()", function(err, rows, fields) {
-
-        if (err) {
-            callback(err.toString() + " (" + config.host + ")");
-        } else {
-            callback("connected (" + config.host + ")");
-        }
+    callback(connection, function() {
+        connection.end();
     });
+}
 
-    connection.end();
-};
-
+exports.useConnection = useConnection;
 
 
