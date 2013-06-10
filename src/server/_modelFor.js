@@ -1,5 +1,4 @@
-
-(function()  {
+(function() {
 
     "use strict";
 
@@ -13,13 +12,12 @@
     };
 
     exports.test_standard_model_includes_isAuthenticated = function(test) {
-        
+
         var authenticatedRequest = {
-            user : {}
+            user: {}
         };
 
-        var unathenticatedRequest = {
-        };
+        var unathenticatedRequest = {};
 
         var authenticated = modelFor("", authenticatedRequest);
         var unauthenticated = modelFor("", unathenticatedRequest);

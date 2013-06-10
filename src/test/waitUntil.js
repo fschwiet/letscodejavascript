@@ -1,5 +1,3 @@
-
-
 var Q = require("q");
 
 module.exports = function(name, toBeEvaluated, msTimeout, msInterval) {
@@ -20,18 +18,14 @@ module.exports = function(name, toBeEvaluated, msTimeout, msInterval) {
     var waitAndTry = null;
 
     handleResult = function(result) {
-        if(!result) {
+        if (!result) {
 
             if (new Date() > endTime) {
                 defer.reject("timed out waiting until " + name);
-            }
-            else 
-            {
+            } else {
                 return waitAndTry();
             }
-        }
-        else
-        {
+        } else {
             defer.resolve();
         }
     };
@@ -41,24 +35,19 @@ module.exports = function(name, toBeEvaluated, msTimeout, msInterval) {
 
             var evaluationResult;
 
-            try
-            {
+            try {
                 evaluationResult = toBeEvaluated();
-            }
-            catch(err) {
+            } catch (err) {
                 defer.reject(err);
                 return;
             }
 
             if (typeof evaluationResult !== 'undefined' && evaluationResult !== null && typeof evaluationResult.then == "function") {
 
-                evaluationResult.then(handleResult, 
-                    function(err) { 
-                        defer.reject(err);
-                    });
-            }
-            else 
-            {
+                evaluationResult.then(handleResult, function(err) {
+                    defer.reject(err);
+                });
+            } else {
                 handleResult(evaluationResult);
             }
         }, msInterval);

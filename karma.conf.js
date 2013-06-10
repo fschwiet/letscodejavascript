@@ -8,16 +8,16 @@ basePath = '';
 
 // list of files / patterns to load in the browser
 files = [
-  MOCHA,
-  MOCHA_ADAPTER,
-  'node_modules/expect.js/expect.js',
-  'src/client/_*.js'
+    MOCHA,
+    MOCHA_ADAPTER,
+    'node_modules/expect.js/expect.js',
+    'src/client/_*.js'
 ];
 
 
 // list of files to exclude
 exclude = [
-  
+
 ];
 
 

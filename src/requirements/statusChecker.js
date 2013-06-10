@@ -1,7 +1,6 @@
-
 var assert = require("assert");
 
-function checkStatus(contents, expectedPattern, expectedStatus){
+function checkStatus(contents, expectedPattern, expectedStatus) {
     var match = expectedPattern.exec(contents);
 
     assert.ok(match !== null, "Did not find " + expectedPattern.toString());

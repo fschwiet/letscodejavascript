@@ -1,5 +1,3 @@
-
-
 var phantom = require("./node-phantom-shim.js");
 var Q = require('q');
 var nconf = require("./../server/config.js");
@@ -9,20 +7,18 @@ var path = require("path");
 exports.qtest = function(context, name, testImplementation) {
     context["test_" + name] = function(test) {
 
-      testImplementation = testImplementation || function(promise) {
-        promise.reject("not implemented");
-        return promise;
-      };
+        testImplementation = testImplementation || function(promise) {
+            promise.reject("not implemented");
+            return promise;
+        };
 
-      testImplementation()
-        .then(
-          function() {
-            test.done();
-          }, 
-          function(err) {
-            test.ok(false, err);
-            test.done();
-          });
+        testImplementation()
+            .then(function() {
+                test.done();
+            }, function(err) {
+                test.ok(false, err);
+                test.done();
+            });
     };
 };
 
@@ -30,11 +26,10 @@ exports.shouldFail = function(promiseFactory, expectedText) {
 
     return promiseFactory()
         .then(function() {
-          throw new Error("Expected exception");
-        }, 
-        function(err) {
+            throw new Error("Expected exception");
+        }, function(err) {
             if (expectedText) {
-                assert.ok(err.toString().indexOf(expectedText) > -1, 
+                assert.ok(err.toString().indexOf(expectedText) > -1,
                     "Did not see expected error text :" + expectedText + "\nActual text was " + err.toString());
             }
         });
@@ -56,12 +51,12 @@ exports.usingPhantom = function(callback) {
         }
 
         return phantom.promise
-        .create()
-        .then(function(phantom) {
-            return phantom.promise.createPage()
-            .then(function(page) {
+            .create()
+            .then(function(phantom) {
+                return phantom.promise.createPage()
+                    .then(function(page) {
 
-                /*
+                        /*
                 if (cachedPage === null) {
                     console.log("caching page");
                     cachedPhantom = phantom;
@@ -69,34 +64,34 @@ exports.usingPhantom = function(callback) {
                     return callback(cachedPage);
                 } else {
                     */
-                    return callback(page)
-                    .fail(function(err) {
-                        return page.promise
-                            .evaluate(function(){ 
-                                return {
-                                    title : document.title,
-                                    url : window.location.toString()
-                                };
-                            })
-                            .then(function(evaluation) {
-                                console.log("page info", JSON.stringify(evaluation, null, "  "));
-                            })
-                            .then(function() {
-                                var screenshot = path.resolve("./temp/phantom.png");
-                                console.log("saving phantom screenshot to", screenshot);
-                                return page.promise.render(screenshot);
+                        return callback(page)
+                            .fail(function(err) {
+                                return page.promise
+                                    .evaluate(function() {
+                                        return {
+                                            title: document.title,
+                                            url: window.location.toString()
+                                        };
+                                    })
+                                    .then(function(evaluation) {
+                                        console.log("page info", JSON.stringify(evaluation, null, "  "));
+                                    })
+                                    .then(function() {
+                                        var screenshot = path.resolve("./temp/phantom.png");
+                                        console.log("saving phantom screenshot to", screenshot);
+                                        return page.promise.render(screenshot);
+                                    })
+                                    .fin(function() {
+                                        throw err;
+                                    });
                             })
                             .fin(function() {
-                                throw err;
+                                console.log("ph.exit called");
+                                phantom.exit();
                             });
-                    })
-                    .fin(function() {
-                        console.log("ph.exit called");
-                        phantom.exit();
+                        //}
                     });
-                //}
             });
-        });
     };
 };
 
@@ -120,4 +115,3 @@ exports.whenRunningTheServer = function(inner) {
     inner.setUp = runServer.startServerLikeIIS;
     inner.tearDown = runServer.stopServer;
 };
-    

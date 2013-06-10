@@ -1,4 +1,3 @@
-
 var fs = require("fs");
 var assert = require("assert");
 var spawnProcess = require("./spawn-process");
@@ -15,10 +14,10 @@ exports.startServerLikeIIS = function(callback) {
     env.PORT = config.get("server_port");
 
     server = spawnProcess.leftRunning("iis_server", "node", [SCRIPT_NAME], {
-        env : env
-    });
+            env: env
+        });
 
-    server.stdout.on('data', function (data) {
+    server.stdout.on('data', function(data) {
         if (data.indexOf("Server started") !== -1) {
             callback();
         }
@@ -36,4 +35,3 @@ exports.stopServer = function(callback) {
         callback();
     }
 };
-

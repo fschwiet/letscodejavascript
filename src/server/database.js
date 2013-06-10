@@ -1,4 +1,3 @@
-
 var mysql = require('mysql');
 
 var nconf = require('./config.js');
@@ -6,15 +5,15 @@ var nconf = require('./config.js');
 function getConnectionInfo(includeDatabasename) {
 
     var connectionInfo = {
-        host     : nconf.get("database_hostname"),
-        user     : nconf.get("database_user"),
-        password : nconf.get("database_password"),
+        host: nconf.get("database_hostname"),
+        user: nconf.get("database_user"),
+        password: nconf.get("database_password"),
         multipleStatements: true,
         port: nconf.get("database_port")
     };
 
     if (includeDatabasename) {
-      connectionInfo.database = nconf.get("database_name");
+        connectionInfo.database = nconf.get("database_name");
     }
 
     return connectionInfo;
@@ -31,9 +30,9 @@ exports.ensureTestDatabaseIsClean = function(callback) {
     connection.connect();
 
     connection.query(
-      "DROP DATABASE IF EXISTS testtemp; CREATE DATABASE testtemp;", function(err, rows, fields) {
-        callback(err);
-      });
+        "DROP DATABASE IF EXISTS testtemp; CREATE DATABASE testtemp;", function(err, rows, fields) {
+            callback(err);
+        });
 
     connection.end();
 };
@@ -69,5 +68,3 @@ function useConnection(callback) {
 }
 
 exports.useConnection = useConnection;
-
-

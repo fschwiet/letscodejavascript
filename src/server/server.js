@@ -1,4 +1,3 @@
-
 (function() {
     "use strict";
 
@@ -18,20 +17,25 @@
     var modelFor = require("./modelFor");
 
     var nconf = require('./config.js');
-    
+
     var server;
 
-    exports.start = function(port, callback) { 
-        
-        var app = express();    
+    exports.start = function(port, callback) {
+
+        var app = express();
 
         app.use(express.limit('4mb'));
-        app.use(express.bodyParser({ keepExtensions: true, uploadDir: nconf.get("server_fileUploadPath") }));
+        app.use(express.bodyParser({
+                    keepExtensions: true,
+                    uploadDir: nconf.get("server_fileUploadPath")
+                }));
         app.use(express.cookieParser());
         app.set('views', __dirname + '/views');
         app.set('view engine', 'jade');
 
-        app.use(express.cookieSession( { secret: nconf.get("server_sessionKey")}));
+        app.use(express.cookieSession({
+                    secret: nconf.get("server_sessionKey")
+                }));
 
         require("./google-auth")(port, app);
 
@@ -39,7 +43,7 @@
         app.get("/status", handleStatusRequest);
 
         require("./rss")(app);
-        
+
         app.get("/crash", function() {
             throw new Error("Ooops!");
         });
@@ -48,21 +52,21 @@
 
         var transports = [];
         transports.push(new winston.transports.File({
-            filename: errorLoggingFile,
-            maxsize: 64 * 1024 * 1024,
-            maxFiles: 20,
-            json: true
-        }));
+                    filename: errorLoggingFile,
+                    maxsize: 64 * 1024 * 1024,
+                    maxFiles: 20,
+                    json: true
+                }));
 
         if (!nconf.isProduction) {
-            transports.push(new winston.transports.Console( {                   
-                json: true
-            }));
+            transports.push(new winston.transports.Console({
+                        json: true
+                    }));
         }
 
         app.use(expressWinston.errorLogger({
-            transports: transports
-        }));
+                    transports: transports
+                }));
 
         app.use(errorHandler);
 
@@ -83,11 +87,11 @@
     }
 
     function canWrite(owner, inGroup, mode) {
-      return owner && (mode & 0x80) || // User is owner and owner can write.
-             inGroup && (mode & 0x10) || // User is in group and group can write.
-             (mode & 0x2); // Anyone can write.
+        return owner && (mode & 0x80) || // User is owner and owner can write.
+        inGroup && (mode & 0x10) || // User is in group and group can write.
+        (mode & 0x2); // Anyone can write.
 
-    }    
+    }
 
     function handleStatusRequest(request, response) {
 
@@ -109,13 +113,11 @@
                 response.render('status', model);
                 response.end();
             });
-        });        
+        });
     }
 
     function errorHandler(err, req, res, next) {
-        res.render("error500", modelFor("Error",req));
+        res.render("error500", modelFor("Error", req));
     }
 
 })();
-
-

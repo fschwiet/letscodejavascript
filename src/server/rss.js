@@ -1,4 +1,3 @@
-
 var fs = require("fs");
 var xml2js = require("xml2js");
 var Q = require("q");
@@ -7,7 +6,7 @@ var modelFor = require("./modelFor");
 
 module.exports = function(app) {
     app.get("/upload/from/google", handleUploadFromGoogleRequest);
-    app.post("/upload/from/google", handleUploadFromGooglePostRequest);  
+    app.post("/upload/from/google", handleUploadFromGooglePostRequest);
 };
 
 function handleUploadFromGoogleRequest(request, response) {
@@ -20,12 +19,12 @@ function handleUploadFromGooglePostRequest(request, response, next) {
     var subscriptionsPath = request.files.subscriptionsXml.path;
 
     loadSubscriptionsFromGoogleXml(subscriptionsPath)
-    .then(function(rows) {
-        var model = modelFor("Upload complete", request);
-        model.rows = rows;
+        .then(function(rows) {
+            var model = modelFor("Upload complete", request);
+            model.rows = rows;
 
-        response.render('uploadedFromGoogle', model);
-    });
+            response.render('uploadedFromGoogle', model);
+        });
 }
 
 function loadSubscriptionsFromGoogleXml(filepath) {
@@ -37,29 +36,23 @@ function loadSubscriptionsFromGoogleXml(filepath) {
 
         if (err) {
             deferred.reject(err);
-        }
-        else
-        {
+        } else {
             parser.parseString(data, function(err, result) {
 
                 if (err) {
                     deferred.reject(err);
-                }
-                else {
+                } else {
                     var rows = [];
-                    
-                    try
-                    {
+
+                    try {
                         result.opml.body[0].outline.forEach(function(row) {
                             rows.push({
-                                name : row.$.title,
-                                xmlUrl : row.$.xmlUrl,
-                                htmlUrl : row.$.htmlUrl
-                            });
+                                    name: row.$.title,
+                                    xmlUrl: row.$.xmlUrl,
+                                    htmlUrl: row.$.htmlUrl
+                                });
                         });
-                    }
-                    catch(ex)
-                    {
+                    } catch (ex) {
                         deferred.reject(ex);
                         return;
                     }

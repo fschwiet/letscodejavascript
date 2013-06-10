@@ -10,7 +10,7 @@
         var target = config.urlFor("/status");
         console.log("requesting status page at", target);
 
-        request(target, function(err, response, body){
+        request(target, function(err, response, body) {
             if (err !== null) {
                 test.ok(false, err.toString());
             } else if (response.statusCode != 200) {
