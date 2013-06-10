@@ -8,7 +8,7 @@ exports.validateSource = function(sourceCode, options, globals, description) {
 	description = description ? description + " " : "";
 	var pass = jshint(sourceCode, options, globals);
 	if (pass) {
-		console.log("  " + description + "ok");
+//		console.log("  " + description + "ok");
 	}
 	else {
 		console.log(description + "failed");
