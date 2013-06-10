@@ -5,12 +5,16 @@
     var homepageFile = "views/homepage.html";
 
     var http = require('http');
-    var fs = require('fs');
+    var fs = require('fs-extra');
     var path = require('path');
+    var Q = require("q");
 
     var database = require("./database.js");
 
     var express = require('express');
+    var expressWinston = require("express-winston");
+    var winston = require('winston');
+
     var modelFor = require("./modelFor");
 
     var nconf = require('./config.js');
@@ -36,6 +40,30 @@
 
         require("./rss")(app);
         
+        app.get("/crash", function() {
+            throw new Error("Ooops!");
+        });
+
+        var errorLoggingFile = path.resolve(nconf.get("server_logPath"), "errors.json");
+
+        var transports = [];
+        transports.push(new winston.transports.File({
+            filename: errorLoggingFile,
+            maxsize: 64 * 1024 * 1024,
+            maxFiles: 20,
+            json: true
+        }));
+
+        if (!nconf.isProduction) {
+            transports.push(new winston.transports.Console( {                   
+                json: true
+            }));
+        }
+
+        app.use(expressWinston.errorLogger({
+            transports: transports
+        }));
+
         app.use(errorHandler);
 
         server = http.createServer(app);
@@ -83,7 +111,7 @@
             });
         });        
     }
-    
+
     function errorHandler(err, req, res, next) {
         res.render("error500", modelFor("Error",req));
     }

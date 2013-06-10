@@ -9,7 +9,6 @@ var rimraf = require("rimraf");
 var spawnProcess = require("./src/test/spawn-process.js");
 var childProcess = require("child_process");
 var nconf = require("./src/server/config.js");
-var mkdirp = require('mkdirp');
 var Q = require("q");
 var request = require("request");
 var statusChecker = require("./src/requirements/statusChecker.js");
@@ -120,8 +119,8 @@ task("prepareTempDirectory", function() {
     fail("Unable to clear temp directory");
   }
 
-  fs.mkdirSync("./temp");
-  fs.mkdirSync("./temp/uploads");
+  fs.mkdirsSync(nconf.get("server_fileUploadPath"));
+  fs.mkdirsSync(nconf.get("server_logPath"));
 });
 
 task("createTestDatabase", function() {
@@ -187,7 +186,7 @@ task("releaseToIIS", ["verifyEmptyGitStatus", "testForRelease"], function() {
   var deployRoot = "c:/inetpub/letscodejavascript";
 
   if (!fs.existsSync(deployRoot)) {
-    fs.mkdirSync(deployRoot);
+    fs.mkdirsSync(deployRoot);
   }
 
   var countWithinDeployRoot = fs.readdirSync(deployRoot).length;
@@ -209,14 +208,18 @@ task("releaseToIIS", ["verifyEmptyGitStatus", "testForRelease"], function() {
       var index = 0;
       var deployPath = null;
       var fileUploadPath = null;
+      var logPath = null;
 
       do {
         ++index;
         deployPath = path.resolve(deployRoot,  id + "_" + index);
-        fileUploadPath = path.resolve(deployRoot,  id + "_" + index + "_uploads");
+        var storagePath = path.resolve(deployRoot,  id + "_" + index + "_storage");
+        fileUploadPath = path.resolve(storagePath, "uploads");
+        logPath = path.resolve(storagePath, "logs");
       } while(fs.existsSync(deployPath));
 
-      mkdirp.sync(fileUploadPath);
+      fs.mkdirsSync.sync(fileUploadPath);
+      fs.mkdirsSync.sync(logPath);
 
       console.log("Deploying to " + deployPath);
 
@@ -227,6 +230,7 @@ task("releaseToIIS", ["verifyEmptyGitStatus", "testForRelease"], function() {
         .then(function(configValues) {
           configValues = JSON.parse(configValues);
           configValues.server_fileUploadPath = fileUploadPath;
+          configValues.server_logPath = logPath;
           configValues.server_port = smokeServer_port;
 
           if ((configValues.server_sessionKey || "").length < 15) {

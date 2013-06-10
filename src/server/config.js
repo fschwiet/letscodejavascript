@@ -13,6 +13,7 @@ function getDefaults() {
     "database_password" : "",
     "server_port" : 8081,
     "server_fileUploadPath" : "./temp/uploads",
+    "server_logPath" : "./temp/logs",
     "server_sessionKey" : "foo",
     "isProduction" : false,
     "googleTest_username" : null,

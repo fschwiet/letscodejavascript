@@ -1,4 +1,5 @@
 GOAL:
+  - need to have seperate iis sites for smoke/production otherwise will be outages on release
   - user's RSS feed should be saved and available on their return
 
 
