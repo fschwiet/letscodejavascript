@@ -218,8 +218,8 @@ task("releaseToIIS", ["verifyEmptyGitStatus", "testForRelease"], function() {
         logPath = path.resolve(storagePath, "logs");
       } while(fs.existsSync(deployPath));
 
-      fs.mkdirsSync.sync(fileUploadPath);
-      fs.mkdirsSync.sync(logPath);
+      fs.mkdirsSync(fileUploadPath);
+      fs.mkdirsSync(logPath);
 
       console.log("Deploying to " + deployPath);
 
