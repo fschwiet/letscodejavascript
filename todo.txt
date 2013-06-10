@@ -1,11 +1,7 @@
 GOAL:
-  - need to have seperate iis sites for smoke/production otherwise will be outages on release
-  - user's RSS feed should be saved and available on their return
 
 
 TODO:
-  - need error logging when running in IIS
-  - get releaseToIIS working
   - add test verifying user's RSS feeds are available after they leave / come back
 
   - MySQL connection pooling?
