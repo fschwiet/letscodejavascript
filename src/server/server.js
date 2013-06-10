@@ -27,7 +27,7 @@
         app.use(express.limit('4mb'));
         app.use(express.bodyParser({
                     keepExtensions: true,
-                    uploadDir: nconf.get("server_fileUploadPath")
+                    uploadDir: nconf.tempPathForUploads()
                 }));
         app.use(express.cookieParser());
         app.set('views', __dirname + '/views');
@@ -48,7 +48,7 @@
             throw new Error("Ooops!");
         });
 
-        var errorLoggingFile = path.resolve(nconf.get("server_logPath"), "errors.json");
+        var errorLoggingFile = path.resolve(nconf.tempPathForLogs(), "errors.json");
 
         var transports = [];
         transports.push(new winston.transports.File({
@@ -100,7 +100,7 @@
         database.getStatus(function(statusString) {
             model.databaseStatus = statusString;
 
-            fs.stat(nconf.get("server_fileUploadPath"), function(err, stat) {
+            fs.stat(nconf.tempPathForUploads(), function(err, stat) {
 
                 if (err) {
                     model.uploadPathStatus = err.toString();

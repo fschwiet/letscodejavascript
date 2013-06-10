@@ -154,8 +154,8 @@ task("prepareTempDirectory", function() {
         fail("Unable to clear temp directory");
     }
 
-    fs.mkdirsSync(nconf.get("server_fileUploadPath"));
-    fs.mkdirsSync(nconf.get("server_logPath"));
+    fs.mkdirsSync(nconf.tempPathForUploads());
+    fs.mkdirsSync(nconf.tempPathForLogs());
 });
 
 task("createTestDatabase", function() {
@@ -245,19 +245,16 @@ task("releaseToIIS", ["verifyEmptyGitStatus", "testForRelease"], function() {
 
             var index = 0;
             var deployPath = null;
-            var fileUploadPath = null;
-            var logPath = null;
+            var tempPath = null;
 
             do {
                 ++index;
                 deployPath = path.resolve(deployRoot, id + "_" + index);
-                var storagePath = path.resolve(deployRoot, id + "_" + index + "_storage");
-                fileUploadPath = path.resolve(storagePath, "uploads");
-                logPath = path.resolve(storagePath, "logs");
+                tempPath = path.resolve(deployRoot, id + "_" + index + "_temp");
             } while (fs.existsSync(deployPath));
 
-            fs.mkdirsSync(fileUploadPath);
-            fs.mkdirsSync(logPath);
+            fs.mkdirsSync(path.resolve(tempPath, "uploads"));
+            fs.mkdirsSync(path.resolve(tempPath, "logs"));
 
             console.log("Deploying to " + deployPath);
 
@@ -269,8 +266,7 @@ task("releaseToIIS", ["verifyEmptyGitStatus", "testForRelease"], function() {
                     })
                 .then(function(configValues) {
                         configValues = JSON.parse(configValues);
-                        configValues.server_fileUploadPath = fileUploadPath;
-                        configValues.server_logPath = logPath;
+                        configValues.server_tempPath = tempPath;
                         configValues.server_port = smokeServer_port;
 
                         if ((configValues.server_sessionKey || "").length < 15) {
@@ -291,7 +287,7 @@ task("releaseToIIS", ["verifyEmptyGitStatus", "testForRelease"], function() {
 
                                 var iisPath = path.join(deployPath, "src/iis");
 
-                                return Q.nbind(childProcess.execFile)("powershell", ["-noprofile", "-file", "./src/iis/install.ps1", iisPath, smokeServer_port, fileUploadPath, logPath], {
+                                return Q.nbind(childProcess.execFile)("powershell", ["-noprofile", "-file", "./src/iis/install.ps1", iisPath, smokeServer_port, tempPath], {
                                         env: process.env
                                     });
                             })
@@ -312,7 +308,7 @@ task("releaseToIIS", ["verifyEmptyGitStatus", "testForRelease"], function() {
 
                                 var iisPath = path.join(deployPath, "src/iis");
 
-                                return Q.nbind(childProcess.execFile)("powershell", ["-noprofile", "-file", "./src/iis/install.ps1", iisPath, 80, fileUploadPath, logPath], {
+                                return Q.nbind(childProcess.execFile)("powershell", ["-noprofile", "-file", "./src/iis/install.ps1", iisPath, 80, tempPath], {
                                         env: process.env
                                     });
                             })
@@ -397,7 +393,7 @@ task("runOneMigrationDown", function() {
 
 function runMigrations(parameters) {
 
-    var databaseMigrationConfig = "./temp/database.json";
+    var databaseMigrationConfig = nconf.tempPathFor("database.json");
 
     fs.writeFileSync(databaseMigrationConfig, JSON.stringify({
                 "db": {
@@ -418,10 +414,10 @@ function runMigrations(parameters) {
     return Q.nbind(childProcess.execFile)("node", builtParameters, {
                 env: process.env
             })
-        .then(function(s) {
-                return s;
-            })
-        .then(assertExecFileSucceeded);
+        .then(assertExecFileSucceeded)
+        .then(function() {
+            fs.unlinkSync(databaseMigrationConfig);
+        });
 }
 
 function getFileListWithTypicalExcludes() {

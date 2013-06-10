@@ -1,5 +1,6 @@
 var nconf = require('nconf');
 var urlParser = require("url");
+var path = require("path");
 
 nconf.file({
         file: __dirname + '/../../config.json'
@@ -13,8 +14,7 @@ function getDefaults() {
         "database_user": "root",
         "database_password": "",
         "server_port": 8081,
-        "server_fileUploadPath": "./temp/uploads",
-        "server_logPath": "./temp/logs",
+        "server_tempPath" : "./temp",
         "server_sessionKey": "foo",
         "isProduction": false,
         "googleTest_username": null,
@@ -33,5 +33,12 @@ nconf.urlFor = function(path) {
     parts.pathname = path;
     return urlParser.format(parts);
 };
+
+nconf.tempPathFor = function(subpath) {
+    return path.resolve(nconf.get("server_tempPath"), subpath);
+};
+
+nconf.tempPathForLogs = function() { return nconf.tempPathFor("logs"); };
+nconf.tempPathForUploads = function() { return nconf.tempPathFor("uploads"); };
 
 module.exports = nconf;
