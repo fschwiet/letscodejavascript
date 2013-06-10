@@ -70,5 +70,5 @@ exports.down = function(db, callback) {
         callback();
     }, function(err) {
         callback(err);
-    })
+    });
 };
