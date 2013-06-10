@@ -315,6 +315,20 @@ task("runServer", function() {
 desc("Run database migrations");
 task("runMigrations", function() {
 
+  var extraParams = ["up"];
+
+  runMigrations(["up"]);
+}, {async:true});
+
+desc("Reverts 1 database migrations");
+task("runOneMigrationDown", function() {
+
+  var extraParams = ["up"];
+
+  runMigrations(["down", "--count", "1"]);
+}, {async:true});
+
+function runMigrations(parameters) {
   var databaseMigrationConfig = "./temp/database.json";
 
   fs.writeFileSync(databaseMigrationConfig, JSON.stringify({
@@ -328,14 +342,26 @@ task("runMigrations", function() {
     }
   }, null, "    "));
 
+  var builtParameters = ["./node_modules/db-migrate/bin/db-migrate"];
+
+  builtParameters = builtParameters.concat.apply(builtParameters, parameters);
+  builtParameters = builtParameters.concat.apply(builtParameters, ["--config", databaseMigrationConfig,"--env=db", "--migrations-dir", "./src/migrations"]);
+
   promiseJake(
-    Q.nbind(childProcess.execFile)("node", 
-          ["./node_modules/db-migrate/bin/db-migrate", "up", "--config", databaseMigrationConfig, "--env=db"], {env:process.env})
+    Q.nbind(childProcess.execFile)("node", builtParameters, {env:process.env})
     .then(function(s) {
       return s;
     })
     .then(assertExecFileSucceeded));
-}, {async:true});
+}
+
+function getFileListWithTypicalExcludes() {
+  var list = new jake.FileList();
+  list.exclude("node_modules");
+  list.exclude("build");
+  list.exclude("temp");
+  return list;
+}
 
 function getFileListWithTypicalExcludes() {
   var list = new jake.FileList();
