@@ -312,6 +312,31 @@ task("runServer", function() {
   server.start(port);
 });
 
+desc("Run database migrations");
+task("runMigrations", function() {
+
+  var databaseMigrationConfig = "./temp/database.json";
+
+  fs.writeFileSync(databaseMigrationConfig, JSON.stringify({
+    "db" : {
+      "driver": "mysql",
+      "user": nconf.get("database_user"),
+      "password": nconf.get("database_password"),
+      "host": nconf.get("database_hostname"),
+      "port": nconf.get("database_port"),
+      "database": nconf.get("database_name")
+    }
+  }, null, "    "));
+
+  promiseJake(
+    Q.nbind(childProcess.execFile)("node", 
+          ["./node_modules/db-migrate/bin/db-migrate", "up", "--config", databaseMigrationConfig, "--env=db"], {env:process.env})
+    .then(function(s) {
+      return s;
+    })
+    .then(assertExecFileSucceeded));
+}, {async:true});
+
 function getFileListWithTypicalExcludes() {
   var list = new jake.FileList();
   list.exclude("node_modules");
