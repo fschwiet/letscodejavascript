@@ -52,17 +52,12 @@ module.exports = function(port, app) {
 
 function hydrateUser(identifier, profile, done) {
 
-    console.log("getting connection");
     database.useConnection(function(connection, connectionDone) {
 
-        console.log("wrapping query");
         var query = Q.nbind(connection.query, connection);
 
-        console.log("making query");
         query("SELECT users.id, users.friendlyName FROM users JOIN googleProfiles ON googleProfiles.userId = users.id WHERE googleProfiles.id = ?", identifier)
         .then(function(result) {
-
-            console.log("select result", JSON.stringify(result, null, "    "));
 
             if (result[0].length > 0) {
                 var firstResult = result[0][0];
@@ -77,20 +72,14 @@ function hydrateUser(identifier, profile, done) {
                 return query("INSERT INTO users SET ?", { friendlyName : profile.displayName})
                 .then(function(result) {
 
-                    console.log("have first result");
                     var userId = result[0].insertId;
 
-                    console.log("userId", userId);
-                    console.log("UserId type", typeof userId);
-
-                    console.log("making next query");
                     return query("INSERT INTO googleProfiles SET ?", {
                         id: identifier,
                         userId: userId,
                         profile: JSON.stringify(profile)
                     })
                     .then(function() {
-                        console.log("1");
                         done(null, {
                             id : userId,
                             friendlyName : profile.displayName
