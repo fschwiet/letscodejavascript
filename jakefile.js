@@ -234,6 +234,7 @@ task("releaseToIIS", ["verifyEmptyGitStatus", "testForRelease"], function() {
     }
 
     var smokeServer_port = 8082;
+    var production_port = 80;
 
     childProcess.exec("git rev-parse HEAD", function(error, stdout, stderr) {
 
@@ -300,7 +301,8 @@ task("releaseToIIS", ["verifyEmptyGitStatus", "testForRelease"], function() {
                                     });
                             })
                             .then(function() {
-                                configValues.server_port = 80;
+                                configValues.server_port = production_port;
+
                                 return Q.nbind(fs.writeFile)(path.resolve(deployPath, "config.json"), JSON.stringify(configValues, null, "    "));
                             })
                             .then(function() {
@@ -308,7 +310,7 @@ task("releaseToIIS", ["verifyEmptyGitStatus", "testForRelease"], function() {
 
                                 var iisPath = path.join(deployPath, "src/iis");
 
-                                return Q.nbind(childProcess.execFile)("powershell", ["-noprofile", "-file", "./src/iis/install.ps1", iisPath, 80, tempPath], {
+                                return Q.nbind(childProcess.execFile)("powershell", ["-noprofile", "-file", "./src/iis/install.ps1", iisPath, production_port, tempPath], {
                                         env: process.env
                                     });
                             })
