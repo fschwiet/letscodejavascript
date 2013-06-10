@@ -3,23 +3,8 @@ GOAL:
 
 
 TODO:
-  - try https://npmjs.org/package/db-migrate
-    user:
-        long id
-        string username
-        string email
-    
-    googleUser:
-        string googleId
-        long userId PK
-        string profileJson
-
-    subscription:
-        long serId
-        name
-        htmlUrl
-        rssUrl
-
+  - need error logging when running in IIS
+  - get releaseToIIS working
   - add test verifying user's RSS feeds are available after they leave / come back
 
   - MySQL connection pooling?
@@ -32,7 +17,3 @@ TODO:
       https://npmjs.org/package/node-mysql-pooled
       - stale by 8 months
 
-
-TASKS:
-  - move rss implementation into a separate file
-  
