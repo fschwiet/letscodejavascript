@@ -83,9 +83,11 @@
             });
         });        
     }
+    
+    function errorHandler(err, req, res, next) {
+        res.render("error500", modelFor("Error",req));
+    }
+
 })();
 
-function errorHandler(err, req, res, next) {
-    res.render("error500", modelFor("Error",req));
-}
 
