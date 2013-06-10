@@ -65,7 +65,7 @@ function runTestsWithNodeunit(testList) {
   });  
 }
 
-task("testSlow", ["prepareTempDirectory", "createTestDatabase"], function() {
+task("testSlow", ["prepareTempDirectory", "prepareTestDatabase"], function() {
 
   var testList = getFileListWithTypicalExcludes();
   
@@ -75,7 +75,7 @@ task("testSlow", ["prepareTempDirectory", "createTestDatabase"], function() {
   runTestsWithNodeunit(testList.toArray());
 }, {async: true});
 
-task("testSmokeAsRegularTest", ["prepareTempDirectory", "createTestDatabase", "startSmokeServer", "testSmoke", "stopSmokeServer"], function() {});
+task("testSmokeAsRegularTest", ["prepareTempDirectory", "prepareTestDatabase", "startSmokeServer", "testSmoke", "stopSmokeServer"], function() {});
 
 task("testSmoke", function() {
 
@@ -97,7 +97,7 @@ task("stopSmokeServer", function() {
   runServer.stopServer(complete);
 }, {async: true});
 
-task("testRemaining", ["prepareTempDirectory", "createTestDatabase"], function() {
+task("testRemaining", ["prepareTempDirectory", "prepareTestDatabase"], function() {
 
   var testList = getFileListWithTypicalExcludes();
   
@@ -131,6 +131,8 @@ task("createTestDatabase", function() {
     complete();
   });
 }, { async:true});
+
+task("prepareTestDatabase", ["createTestDatabase", "runMigrations"]);
 
 function gitCloneTo(workingDirectory) {
   return spawnProcess("git clone", "git", ["clone", "--quiet", "--no-hardlinks", ".", workingDirectory])

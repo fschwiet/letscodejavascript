@@ -2,6 +2,9 @@
 var GoogleStrategy = require('passport-google');
 var passport = require('passport');
 var config = require("./config");
+var Q = require("q");
+
+var database = require("./database");
 
 passport.serializeUser(function(user, done) {
     done(null, user);
@@ -16,12 +19,7 @@ module.exports = function(port, app) {
     passport.use(new GoogleStrategy.Strategy({
         returnURL: config.urlFor('/auth/google/return'),
         realm: config.urlFor('/')
-    }, function(identifier, profile, done) {
-        return done(null, {
-            id : identifier,
-            googleProfile: profile
-        });
-    }));
+    }, hydrateUser));
 
     app.use(passport.initialize());
     app.use(passport.session());
@@ -52,3 +50,45 @@ module.exports = function(port, app) {
     });
 };
 
+function hydrateUser(identifier, profile, done) {
+
+    console.log("getting connection");
+    database.useConnection(function(connection, connectionDone) {
+
+        console.log("wrapping query");
+        var query = Q.nbind(connection.query, connection);
+
+        console.log("making query");    
+        query("INSERT INTO users SET ?", { friendlyName : "hi"})
+        .then(function(result) {
+
+            console.log("have first result");
+            var userId = result[0].insertId;
+
+            console.log("userId", userId);
+            console.log("UserId type", typeof userId);
+
+            console.log("making next query");
+            return query("INSERT INTO googleProfile SET ?", {
+                id: identifier,
+                userId: userId,
+                profile: JSON.stringify(profile)
+            })
+            .then(function() {
+                console.log("1");
+                done(null, {
+                    id : userId,
+                    friendlyName : profile.displayName
+                });
+            });
+        })
+        .fin(function() {
+            connectionDone();
+        })
+        .fail(function(err) {
+            done(err);
+        });
+    })
+}
+
+module.exports.hydrateUser = hydrateUser;
