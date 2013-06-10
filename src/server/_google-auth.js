@@ -16,7 +16,7 @@ function getGoogleProfile(postfix) {
     };
 }
 
-setup.qtest(exports, "hydrateUser can save and load users user", function() {
+setup.qtest(exports, "hydrateUser can save and load users", function() {
 
     var firstGoogleIdentifier = uuid.v4();
     var firstGoogleProfile = getGoogleProfile("First");

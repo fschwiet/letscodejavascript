@@ -1,27 +1,35 @@
 var dbm = require('db-migrate');
 var type = dbm.dataType;
+var Q = require("q");
 
 exports.up = function(db, callback) {
 
-    db.createTable('users', {
+    var createTable = Q.nbind(db.createTable, db);
+
+    createTable('users', {
         id: { type: 'int', primaryKey: true, autoIncrement: true},
         friendlyName: { type: 'text'}
+    })
+    .then(function() {
+        return createTable('googleProfiles', {
+            id:  { type: 'string', length: 128, primaryKey: true},
+            userId: { type: 'int'},
+            profile: { type: 'text'}
+        });
+    })
+    .then(function() {
+        return createTable('subscriptions', {
+            id: { type: 'int', primaryKey: true},
+            name: { type: 'text'},
+            htmlUrl: { type: 'text'},
+            rssUrl: { type: 'text'}
+        });
+    })
+    .then(function() {
+        callback();
+    }, function(err) {
+        callback(err);
     });
-
-    db.createTable('googleProfiles', {
-        id:  { type: 'string', length: 128, primaryKey: true},
-        userId: { type: 'int'},
-        profile: { type: 'text'}
-    });
-
-    db.createTable('subscriptions', {
-        id: { type: 'int', primaryKey: true},
-        name: { type: 'text'},
-        htmlUrl: { type: 'text'},
-        rssUrl: { type: 'text'}
-    });
-
-    callback();
 };
 
 exports.down = function(db, callback) {
