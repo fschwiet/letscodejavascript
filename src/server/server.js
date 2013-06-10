@@ -86,6 +86,6 @@
 })();
 
 function errorHandler(err, req, res, next) {
-    res.render("error500", {title: "Error"});
+    res.render("error500", modelFor("Error",req));
 }
 
