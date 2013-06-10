@@ -280,6 +280,13 @@ task("releaseToIIS", ["verifyEmptyGitStatus", "testForRelease"], function() {
 
                         return Q.nbind(fs.writeFile)(path.resolve(deployPath, "config.json"), JSON.stringify(configValues, null, "    "))
                             .then(function() {
+
+                                console.log("running database migrations");
+                                return spawnProcess("migration task", "node", ["./node_modules/jake/bin/cli.js", "runMigrations"], {
+                                        cwd: deployPath
+                                    });
+                            })
+                            .then(function() {
                                 console.log("calling execFile on ./src/iis/install.ps1, listening to " + smokeServer_port);
 
                                 var iisPath = path.join(deployPath, "src/iis");
