@@ -57,9 +57,18 @@ exports.up = function(db, callback) {
 
 exports.down = function(db, callback) {
 
-    db.dropTable('subscription');
-    db.dropTable('googleProfile');
-    db.dropTable('users');
+    var dropTable = Q.nbind(db.dropTable, db);
 
-    callback();
+    dropTable('subscriptions')
+    .then(function() {
+        return dropTable('googleProfiles');  
+    })
+    .then(function() {
+       return dropTable('users'); 
+    })
+    .then(function() {
+        callback();
+    }, function(err) {
+        callback(err);
+    })
 };
