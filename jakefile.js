@@ -12,9 +12,10 @@ var nconf = require("./src/server/config.js");
 var Q = require("q");
 var request = require("request");
 var statusChecker = require("./src/requirements/statusChecker.js");
-var nodeVersion = new (require("node-version").version)();
+var nodeVersion = new(require("node-version").version)();
 var util = require("util");
 var runServer = require("./src/test/runServer.js");
+var beautify = require('js-beautify');
 
 var allTests = "**/_*.js";
 var slowTests = "**/_*.slow.js";
@@ -23,7 +24,7 @@ var clientCode = "src/client/**";
 
 task = require("./build/jake-util.js").extendTask(task, jake);
 
-task("default", ["verifyNodeVersion","lint", "writeSampleConfig", "test"], function() {
+task("default", ["verifyNodeVersion", "lint", "writeSampleConfig", "test"], function() {
 
 });
 
@@ -39,6 +40,29 @@ task("lint", function() {
   assert.ok(a, "lint failed");
 });
 
+desc("Formats javascript files.");
+task("beautify", [], function() {
+
+  var list = getFileListWithTypicalExcludes();
+  list.include("**/*.js");
+
+  var readFile = Q.nbind(fs.readFile);
+  var writeFile = Q.nbind(fs.writeFile);
+
+  var promises = list.toArray().map(function(filename) {
+    return readFile(filename, "utf8")
+      .then(function(contents) {
+        return writeFile(filename, beautify(contents, {
+              indent_size: 2
+            }));
+      })
+  });
+
+  promiseJake(Q.all(promises));
+}, {
+  async: true
+});
+
 desc("write sample config file");
 task("writeSampleConfig", function() {
 
@@ -48,74 +72,85 @@ task("writeSampleConfig", function() {
 });
 
 desc("test everything");
-task("test", ["testClient","testRemaining","testSmokeAsRegularTest","testSlow"]);
+task("test", ["testClient", "testRemaining", "testSmokeAsRegularTest", "testSlow"]);
 
 task("testClient", function() {
 
   promiseJake(karma.runTests());
 
-}, { async: true });
+}, {
+  async: true
+});
 
 function runTestsWithNodeunit(testList) {
   var reporter = nodeunit.reporters["default"];
   reporter.run(testList, null, function(failures) {
     assert.ifError(failures);
     complete();
-  });  
+  });
 }
 
 task("testSlow", ["prepareTempDirectory", "prepareTestDatabase"], function() {
 
   var testList = getFileListWithTypicalExcludes();
-  
+
   testList.include(slowTests);
   testList.exclude(clientCode);
 
   runTestsWithNodeunit(testList.toArray());
-}, {async: true});
+}, {
+  async: true
+});
 
 task("testSmokeAsRegularTest", ["prepareTempDirectory", "prepareTestDatabase", "startSmokeServer", "testSmoke", "stopSmokeServer"], function() {});
 
 task("testSmoke", function() {
 
   var testList = getFileListWithTypicalExcludes();
-  
+
   testList.include(smokeTests);
   testList.exclude(clientCode);
 
   runTestsWithNodeunit(testList.toArray());
-}, {async: true});
+}, {
+  async: true
+});
 
 task("startSmokeServer", function() {
 
   runServer.startServerLikeIIS(complete);
-}, {async: true});
+}, {
+  async: true
+});
 
 task("stopSmokeServer", function() {
 
   runServer.stopServer(complete);
-}, {async: true});
+}, {
+  async: true
+});
 
 task("testRemaining", ["prepareTempDirectory", "prepareTestDatabase"], function() {
 
   var testList = getFileListWithTypicalExcludes();
-  
+
   testList.include(allTests);
-  
+
   testList.exclude(clientCode);
   testList.exclude(slowTests);
   testList.exclude(smokeTests);
 
   runTestsWithNodeunit(testList.toArray());
-}, {async: true});
+}, {
+  async: true
+});
 
 task("prepareTempDirectory", function() {
   var rmTarget = path.resolve("./temp");
-  console.log("using temp directory " +  rmTarget);
+  console.log("using temp directory " + rmTarget);
   jake.rmRf(rmTarget);
 
-  if (fs.existsSync(rmTarget))
-  {
+  if (fs.existsSync(rmTarget)) {
     fail("Unable to clear temp directory");
   }
 
@@ -124,54 +159,57 @@ task("prepareTempDirectory", function() {
 });
 
 task("createTestDatabase", function() {
-  
+
   database.ensureTestDatabaseIsClean(function(err) {
     assert.ifError(err);
     complete();
   });
-}, { async:true});
+}, {
+  async: true
+});
 
 task("prepareTestDatabase", ["createTestDatabase", "runMigrations"]);
 
 function gitCloneTo(workingDirectory) {
   return spawnProcess("git clone", "git", ["clone", "--quiet", "--no-hardlinks", ".", workingDirectory])
-  .then(function() {
-    return spawnProcess("npm build", "node", [ path.resolve(workingDirectory, "./node_modules/npm/cli.js"), "rebuild"], {
-      cwd: workingDirectory,
+    .then(function() {
+      return spawnProcess("npm build", "node", [path.resolve(workingDirectory, "./node_modules/npm/cli.js"), "rebuild"], {
+          cwd: workingDirectory,
+        });
     });
-  });
 }
 
 desc("test all the things");
 task("testForRelease", ["prepareTempDirectory"], function() {
-  
+
   var workingDirectory = path.resolve(".\\temp\\workingDirectory");
 
   fs.mkdirSync("./temp/workingDirectory");
 
   gitCloneTo(workingDirectory)
-  .then(function() {
+    .then(function() {
 
-    if (fs.existsSync("./config.json")) {
-      return Q.nbind(fs.copy)("./config.json", path.resolve(workingDirectory, "config.json"));
-    }
-  })
-  .then(function() {
-    return spawnProcess("jake", "node", [ path.resolve(workingDirectory, ".\\node_modules\\jake\\bin\\cli.js"), "default"], {
-      cwd: workingDirectory,
-    });
-  })
-  .then(function() {
-    console.log("success!");
+      if (fs.existsSync("./config.json")) {
+        return Q.nbind(fs.copy)("./config.json", path.resolve(workingDirectory, "config.json"));
+      }
+    })
+    .then(function() {
+      return spawnProcess("jake", "node", [path.resolve(workingDirectory, ".\\node_modules\\jake\\bin\\cli.js"), "default"], {
+          cwd: workingDirectory,
+        });
+    })
+    .then(function() {
+      console.log("success!");
       complete();
-    }, 
-    function(reason) {
+    }, function(reason) {
       console.log("failure!");
       console.log("calling fail with parameter" + reason);
       fail(reason);
-  });
+    });
 
-}, {async:true});
+}, {
+  async: true
+});
 
 
 desc("Deploy to IIS");
@@ -212,11 +250,11 @@ task("releaseToIIS", ["verifyEmptyGitStatus", "testForRelease"], function() {
 
       do {
         ++index;
-        deployPath = path.resolve(deployRoot,  id + "_" + index);
-        var storagePath = path.resolve(deployRoot,  id + "_" + index + "_storage");
+        deployPath = path.resolve(deployRoot, id + "_" + index);
+        var storagePath = path.resolve(deployRoot, id + "_" + index + "_storage");
         fileUploadPath = path.resolve(storagePath, "uploads");
         logPath = path.resolve(storagePath, "logs");
-      } while(fs.existsSync(deployPath));
+      } while (fs.existsSync(deployPath));
 
       fs.mkdirsSync(fileUploadPath);
       fs.mkdirsSync(logPath);
@@ -225,50 +263,60 @@ task("releaseToIIS", ["verifyEmptyGitStatus", "testForRelease"], function() {
 
       promiseJake(gitCloneTo(deployPath)
         .then(function() {
-          return Q.nbind(fs.readFile)(productionConfig, { encoding:"utf8"});
-        })
+            return Q.nbind(fs.readFile)(productionConfig, {
+                encoding: "utf8"
+              });
+          })
         .then(function(configValues) {
-          configValues = JSON.parse(configValues);
-          configValues.server_fileUploadPath = fileUploadPath;
-          configValues.server_logPath = logPath;
-          configValues.server_port = smokeServer_port;
+            configValues = JSON.parse(configValues);
+            configValues.server_fileUploadPath = fileUploadPath;
+            configValues.server_logPath = logPath;
+            configValues.server_port = smokeServer_port;
 
-          if ((configValues.server_sessionKey || "").length < 15) {
+            if ((configValues.server_sessionKey || "").length < 15) {
 
-            throw new Error("Configuration should contain a good server_sessionKey");
-          }
+              throw new Error("Configuration should contain a good server_sessionKey");
+            }
 
-          return Q.nbind(fs.writeFile)(path.resolve(deployPath, "config.json"), JSON.stringify(configValues, null, "    "))
-          .then(function() {
-            console.log("calling execFile on ./src/iis/install.ps1, listening to " + smokeServer_port);
+            return Q.nbind(fs.writeFile)(path.resolve(deployPath, "config.json"), JSON.stringify(configValues, null, "    "))
+              .then(function() {
+                console.log("calling execFile on ./src/iis/install.ps1, listening to " + smokeServer_port);
 
-            var iisPath = path.join(deployPath, "src/iis");
+                var iisPath = path.join(deployPath, "src/iis");
 
-            return Q.nbind(childProcess.execFile)("powershell", ["-noprofile", "-file", "./src/iis/install.ps1", iisPath, smokeServer_port, fileUploadPath, logPath], {env:process.env});
-          })
-          .then(assertExecFileSucceeded)
-          .then(function() {
+                return Q.nbind(childProcess.execFile)("powershell", ["-noprofile", "-file", "./src/iis/install.ps1", iisPath, smokeServer_port, fileUploadPath, logPath], {
+                    env: process.env
+                  });
+              })
+              .then(assertExecFileSucceeded)
+              .then(function() {
 
-            console.log("starting smoke tests");
-            return spawnProcess("smoke test", "node", [ "./node_modules/jake/bin/cli.js", "testSmoke"], { cwd: deployPath});
-          })
-          .then(function() {
-            configValues.server_port = 80;
-            return Q.nbind(fs.writeFile)(path.resolve(deployPath, "config.json"), JSON.stringify(configValues, null, "    "));
-          })
-          .then(function() {
-            console.log("calling execFile on ./src/iis/install.ps1, listening to any IP address");
+                console.log("starting smoke tests");
+                return spawnProcess("smoke test", "node", ["./node_modules/jake/bin/cli.js", "testSmoke"], {
+                    cwd: deployPath
+                  });
+              })
+              .then(function() {
+                configValues.server_port = 80;
+                return Q.nbind(fs.writeFile)(path.resolve(deployPath, "config.json"), JSON.stringify(configValues, null, "    "));
+              })
+              .then(function() {
+                console.log("calling execFile on ./src/iis/install.ps1, listening to any IP address");
 
-            var iisPath = path.join(deployPath, "src/iis");
+                var iisPath = path.join(deployPath, "src/iis");
 
-            return Q.nbind(childProcess.execFile)("powershell", ["-noprofile", "-file", "./src/iis/install.ps1", iisPath, 80, fileUploadPath, logPath], {env:process.env});
-          })
-          .then(assertExecFileSucceeded)
-          .then(complete);
-        }));
-}
+                return Q.nbind(childProcess.execFile)("powershell", ["-noprofile", "-file", "./src/iis/install.ps1", iisPath, 80, fileUploadPath, logPath], {
+                    env: process.env
+                  });
+              })
+              .then(assertExecFileSucceeded)
+              .then(complete);
+          }));
+    }
+  });
+}, {
+  async: true
 });
-}, { async : true});
 
 function assertExecFileSucceeded(execFileResults) {
 
@@ -295,7 +343,9 @@ task("verifyEmptyGitStatus", function() {
       complete();
     }
   });
-}, {async:true});
+}, {
+  async: true
+});
 
 desc("Verify node version.");
 task("verifyNodeVersion", function() {
@@ -313,7 +363,7 @@ task("verifyNodeVersion", function() {
 desc("Run the server locally");
 task("runServer", function() {
   var port = 8083;
-  console.log("running the server on", port);  
+  console.log("running the server on", port);
   var server = require("./src/server/server.js");
   server.start(port);
 });
@@ -324,7 +374,9 @@ task("runMigrations", function() {
   var extraParams = ["up"];
 
   runMigrations(["up"]);
-}, {async:true});
+}, {
+  async: true
+});
 
 desc("Reverts 1 database migrations");
 task("runOneMigrationDown", function() {
@@ -332,32 +384,36 @@ task("runOneMigrationDown", function() {
   var extraParams = ["up"];
 
   runMigrations(["down", "--count", "1"]);
-}, {async:true});
+}, {
+  async: true
+});
 
 function runMigrations(parameters) {
   var databaseMigrationConfig = "./temp/database.json";
 
   fs.writeFileSync(databaseMigrationConfig, JSON.stringify({
-    "db" : {
-      "driver": "mysql",
-      "user": nconf.get("database_user"),
-      "password": nconf.get("database_password"),
-      "host": nconf.get("database_hostname"),
-      "port": nconf.get("database_port"),
-      "database": nconf.get("database_name")
-    }
-  }, null, "    "));
+        "db": {
+          "driver": "mysql",
+          "user": nconf.get("database_user"),
+          "password": nconf.get("database_password"),
+          "host": nconf.get("database_hostname"),
+          "port": nconf.get("database_port"),
+          "database": nconf.get("database_name")
+        }
+      }, null, "    "));
 
   var builtParameters = ["./node_modules/db-migrate/bin/db-migrate"];
 
   builtParameters = builtParameters.concat.apply(builtParameters, parameters);
-  builtParameters = builtParameters.concat.apply(builtParameters, ["--config", databaseMigrationConfig,"--env=db", "--migrations-dir", "./src/migrations"]);
+  builtParameters = builtParameters.concat.apply(builtParameters, ["--config", databaseMigrationConfig, "--env=db", "--migrations-dir", "./src/migrations"]);
 
   promiseJake(
-    Q.nbind(childProcess.execFile)("node", builtParameters, {env:process.env})
+    Q.nbind(childProcess.execFile)("node", builtParameters, {
+        env: process.env
+      })
     .then(function(s) {
-      return s;
-    })
+        return s;
+      })
     .then(assertExecFileSucceeded));
 }
 
@@ -378,11 +434,11 @@ function getFileListWithTypicalExcludes() {
 }
 
 function promiseJake(promise) {
-  return promise.then(
-    function() {
-      complete();
-    }, 
-    function(err) {
-      setTimeout(function() { fail(err);}, 0);
-    });
+  return promise.then(function() {
+    complete();
+  }, function(err) {
+    setTimeout(function() {
+      fail(err);
+    }, 0);
+  });
 }
