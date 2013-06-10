@@ -373,7 +373,7 @@ task("runMigrations", function() {
 
     var extraParams = ["up"];
 
-    runMigrations(["up"]);
+    promiseJake(runMigrations(["up"]));
 }, {
     async: true
 });
@@ -383,12 +383,13 @@ task("runOneMigrationDown", function() {
 
     var extraParams = ["up"];
 
-    runMigrations(["down", "--count", "1"]);
+    promiseJake(runMigrations(["down", "--count", "1"]));
 }, {
     async: true
 });
 
 function runMigrations(parameters) {
+
     var databaseMigrationConfig = "./temp/database.json";
 
     fs.writeFileSync(databaseMigrationConfig, JSON.stringify({
@@ -407,14 +408,13 @@ function runMigrations(parameters) {
     builtParameters = builtParameters.concat.apply(builtParameters, parameters);
     builtParameters = builtParameters.concat.apply(builtParameters, ["--config", databaseMigrationConfig, "--env=db", "--migrations-dir", "./src/migrations"]);
 
-    promiseJake(
-        Q.nbind(childProcess.execFile)("node", builtParameters, {
+    return Q.nbind(childProcess.execFile)("node", builtParameters, {
                 env: process.env
             })
         .then(function(s) {
                 return s;
             })
-        .then(assertExecFileSucceeded));
+        .then(assertExecFileSucceeded);
 }
 
 function getFileListWithTypicalExcludes() {
