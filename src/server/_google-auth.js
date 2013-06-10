@@ -48,7 +48,3 @@ setup.qtest(exports, "hydrateUser can save and load users", function() {
         });
     });
 });
-
-//  Can create new user
-  // stores profile, name
-//  Can load existing user
