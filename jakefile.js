@@ -41,7 +41,7 @@ task("lint", function() {
 });
 
 desc("Formats javascript files.");
-task("beautify", [], function() {
+task("beautify", ["verifyEmptyGitStatus"], function() {
 
     var list = getFileListWithTypicalExcludes();
     list.include("**/*.js");
