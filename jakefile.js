@@ -315,6 +315,12 @@ task("releaseToIIS", ["verifyEmptyGitStatus", "testForRelease"], function() {
                                     });
                             })
                             .then(assertExecFileSucceeded)
+                            .then(function() {
+                                console.log("running iisreset");
+
+                                return Q.nbind(childProcess.execFile)("iisreset");
+                            })
+                            .then(assertExecFileSucceeded)
                             .then(complete);
                     }));
         }
