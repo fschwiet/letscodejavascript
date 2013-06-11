@@ -316,6 +316,11 @@ task("releaseToIIS", ["verifyEmptyGitStatus", "testForRelease"], function() {
                             })
                             .then(assertExecFileSucceeded)
                             .then(function() {
+                                
+                                //  sad workaround:  the iis-hosted node application doesn't recognize the configuration change
+                                //  until after iisreset (the configuration is written before the iis site is created, so this seems
+                                //  like a iis, iisnode or carbon issue)
+
                                 console.log("running iisreset");
 
                                 return Q.nbind(childProcess.execFile)("iisreset");
