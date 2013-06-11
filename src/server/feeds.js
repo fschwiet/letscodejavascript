@@ -43,7 +43,7 @@ function handleUploadFromGooglePostRequest(request, response, next) {
 
         database.useConnection(function(connection, connectionDone) {
 
-            saveSubscriptions(connection, request.user.id, rows)
+            database.saveSubscriptions(connection, request.user.id, rows)
             .fin(function() {
                 connectionDone();
             })
@@ -96,25 +96,3 @@ function loadSubscriptionsFromGoogleXml(filepath) {
     return deferred.promise;
 }
 
-function saveSubscriptions(connection, userId, subscriptions) {
-
-    if (subscriptions.length === 0) {
-        return;
-    }
-
-    var first = subscriptions[0];
-
-    return Q.npost(connection, "query", ["SELECT userId FROM subscriptions S WHERE S.userId = ? AND S.rssUrl = ?", [userId, first.rssUrl]])
-    .then(function(results) {
-
-        return Q.ninvoke(connection, "query", "INSERT INTO subscriptions SET ?", {
-            userId: userId,
-            name: first.name,
-            rssUrl: first.rssUrl,
-            htmlUrl: first.htmlUrl
-        });
-    })
-    .then(function() {
-        return saveSubscriptions(connection, userId, subscriptions.slice(1));
-    });
-}

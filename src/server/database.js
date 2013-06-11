@@ -68,3 +68,27 @@ function useConnection(callback) {
 }
 
 exports.useConnection = useConnection;
+
+
+exports.saveSubscriptions = function(connection, userId, subscriptions) {
+
+    if (subscriptions.length === 0) {
+        return;
+    }
+
+    var first = subscriptions[0];
+
+    return Q.npost(connection, "query", ["SELECT userId FROM subscriptions S WHERE S.userId = ? AND S.rssUrl = ?", [userId, first.rssUrl]])
+    .then(function(results) {
+
+        return Q.ninvoke(connection, "query", "INSERT INTO subscriptions SET ?", {
+            userId: userId,
+            name: first.name,
+            rssUrl: first.rssUrl,
+            htmlUrl: first.htmlUrl
+        });
+    })
+    .then(function() {
+        return exports.saveSubscriptions(connection, userId, subscriptions.slice(1));
+    });
+};
