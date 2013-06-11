@@ -5,7 +5,7 @@ var assert = require("assert");
 var path = require("path");
 
 exports.qtest = function(context, name, testImplementation) {
-    context["test_" + name] = function(test) {
+    context[name] = function(test) {
 
         testImplementation = testImplementation || function(promise) {
             promise.reject("not implemented");
