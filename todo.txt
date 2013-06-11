@@ -1,5 +1,4 @@
 GOAL:
-  feeds page should prompt the user to login if they are not
   don't insert duplicate feeds
   allow users to add a feed
   allow users to delete a feed
