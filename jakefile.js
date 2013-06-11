@@ -266,7 +266,14 @@ task("releaseToIIS", ["verifyEmptyGitStatus", "testForRelease"], function() {
                             });
                     })
                 .then(function(configValues) {
-                        configValues = JSON.parse(configValues);
+                        try {
+                            configValues = JSON.parse(configValues);
+                        }
+                        catch(err)
+                        {
+                            throw new Error("Error parsing " + productionConfig + ": " + err.toString());
+                        }
+                        
                         configValues.server_tempPath = tempPath;
                         configValues.server_port = smokeServer_port;
 
