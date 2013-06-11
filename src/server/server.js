@@ -45,7 +45,7 @@
         app.get("/", handleHomepageRequest);
         app.get("/status", handleStatusRequest);
 
-        require("./rss")(app);
+        require("./feeds")(app);
 
         app.get("/crash", function() {
             throw new Error("Ooops!");
