@@ -18,11 +18,15 @@ Prerequisites:
 Note:
 
 To deploy to IIS:
+
   *  Install NodeOnIIS boxstarter package at https://github.com/fschwiet/fschwiet-boxstarter (this installs node, git, phantomjs, carbon, iis, iisnode, urlrewrite, etc)
-  *  Delete the default site IIS creates on port 80
-  *  Create a production.config.json, with database settings pointing to your database
+  *  Set the "deployment_" configuration values.
+    * deployment_configFile will point to the configuration file the production environment will use.
+    * Verify the ports are available.
   *  clone the repository
   *  run set-executionpolicy unrestricted on powershell, in both x64 and x86.
-  *  run .\jake.bat releaseToIIS
+  *  run .\jake.bat deployToIIS
+    *  Directories will be created with appropriate permissions.
+    *  First the a test site is created in IIS (without disturbing existing deployments), once the smoke test passes then the final iis site is created (overwriting any existing deployment).
 
 NOTE: an iisreset may be needed before calling releaseToIIS.  I suspect adding a iisreset to NodeOnIIS boxstarter fixed this but have not verified.
