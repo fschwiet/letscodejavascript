@@ -1,4 +1,5 @@
 var mysql = require('mysql');
+var Q = require("q");
 
 var nconf = require('./config.js');
 
@@ -69,6 +70,12 @@ function useConnection(callback) {
 
 exports.useConnection = useConnection;
 
+exports.loadSubscriptions = function(connection, userId) {
+    return Q.ninvoke(connection, "query", "SELECT * FROM subscriptions WHERE userId = ?", userId)
+    .then(function(results) {
+        return results[0];
+    });
+};
 
 exports.saveSubscriptions = function(connection, userId, subscriptions) {
 

@@ -17,11 +17,11 @@ function handleUploadFromGoogleRequest(request, response) {
     if (typeof request.user == "object") {
         database.useConnection(function(connection, connectionDone) {
 
-            Q.ninvoke(connection, "query", "SELECT * FROM subscriptions WHERE userId = ?", request.user.id)
-            .then(function(results) {
-                model.rows = results[0];
-            })
-            .then(function() {
+            database.loadSubscriptions(connection, request.user.id)
+            .then(function(subscriptions) {
+
+                model.rows = subscriptions;
+
                 connectionDone();
 
                 response.render('feeds', model);
