@@ -20,8 +20,8 @@ Note:
 To deploy to IIS:
 
   *  Install NodeOnIIS boxstarter package at https://github.com/fschwiet/fschwiet-boxstarter (this installs node, git, phantomjs, carbon, iis, iisnode, urlrewrite, etc)
-  *  Set the "deployment_" configuration values.
-    * deployment_configFile will point to the configuration file the production environment will use.
+  *  Set the "deployment_" configuration values in "config.json".
+    * deployment_configFile will point to the configuration file like "config.json" the deployed environment will use (its "deployment_" values are not used).
     * Verify the ports are available.
   *  clone the repository
   *  run set-executionpolicy unrestricted on powershell, in both x64 and x86.
