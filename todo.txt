@@ -3,6 +3,8 @@ GOAL:
   allow users to add a feed
   allow users to delete a feed
 
+  should be able to read feeds
+
   should have automated rollback
 
 
