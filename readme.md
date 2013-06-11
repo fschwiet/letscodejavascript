@@ -27,6 +27,6 @@ To deploy to IIS:
   *  run set-executionpolicy unrestricted on powershell, in both x64 and x86.
   *  run .\jake.bat deployToIIS
     *  Directories will be created with appropriate permissions.
-    *  First the a test site is created in IIS (without disturbing existing deployments), once the smoke test passes then the final iis site is created (overwriting any existing deployment).
+    *  First a test site is created in IIS (without disturbing existing deployments), then smoke tests are ran before the final iis site is created (overwriting any existing deployment).
 
 NOTE: an iisreset may be needed before calling releaseToIIS.  I suspect adding a iisreset to NodeOnIIS boxstarter fixed this but have not verified.
