@@ -2,10 +2,10 @@ var Q = require("q");
 var uuid = require('node-uuid');
 var expect = require("expect.js");
 
-var googleAuth = require("../server/google-auth");
 var setup = require("../test/setup");
+var database = require("./database");
 
-var hydrateUser = Q.nbind(googleAuth.hydrateUser);
+var findOrCreateUserByGoogleIdentifier = Q.nbind(database.findOrCreateUserByGoogleIdentifier);
 
 function getGoogleProfile(postfix) {
     return {
@@ -21,7 +21,7 @@ function getGoogleProfile(postfix) {
     };
 }
 
-setup.qtest(exports, "hydrateUser can save and load users", function() {
+setup.qtest(exports, "findOrCreateUserByGoogleIdentifier can save and load users", function() {
 
     var firstGoogleIdentifier = uuid.v4();
     var firstGoogleProfile = getGoogleProfile("First");
@@ -30,13 +30,13 @@ setup.qtest(exports, "hydrateUser can save and load users", function() {
     var secondGoogleProfile = getGoogleProfile("Second");
 
     //  Load the first user
-    return hydrateUser(firstGoogleIdentifier, firstGoogleProfile)
+    return findOrCreateUserByGoogleIdentifier(firstGoogleIdentifier, firstGoogleProfile)
         .then(function(firstUser) {
             expect(firstUser.id).to.be.a('number');
             expect(firstUser.friendlyName).to.equal("displayNameFirst");
 
             //  Load the second user
-            return hydrateUser(secondGoogleIdentifier, secondGoogleProfile)
+            return findOrCreateUserByGoogleIdentifier(secondGoogleIdentifier, secondGoogleProfile)
                 .then(function(secondUser) {
                     expect(secondUser.id).to.be.a('number');
                     expect(secondUser.id).not.to.equal(firstUser.id);
@@ -45,7 +45,7 @@ setup.qtest(exports, "hydrateUser can save and load users", function() {
                 .then(function() {
 
                     //  Reload the first user
-                    return hydrateUser(firstGoogleIdentifier, firstGoogleProfile)
+                    return findOrCreateUserByGoogleIdentifier(firstGoogleIdentifier, firstGoogleProfile)
                         .then(function(reloadedUser) {
                             expect(reloadedUser.id).to.equal(firstUser.id);
                             expect(reloadedUser.friendlyName).to.equal("displayNameFirst");
