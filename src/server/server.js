@@ -11,6 +11,7 @@
     var database = require("./database.js");
 
     var express = require('express');
+    var connectFlash = require("connect-flash");
     var expressWinston = require("express-winston");
     var winston = require('winston');
 
@@ -36,6 +37,8 @@
         app.use(express.cookieSession({
                     secret: nconf.get("server_sessionKey")
                 }));
+
+        app.use(connectFlash());
 
         require("./google-auth")(port, app);
 

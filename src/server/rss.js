@@ -49,10 +49,8 @@ function handleUploadFromGooglePostRequest(request, response, next) {
                 connectionDone();
             })
             .then(function() {
-                var model = modelFor("Upload complete", request);
-                model.rows = [];
-
-                response.render('uploadedFromGoogle', model);
+                request.flash("info", "Upload complete");
+                response.redirect("/feeds");
             }, function(err) {
                 next(err);
             });

@@ -28,14 +28,17 @@ setup.qtest(exports, "can upload rss", setup.usingPhantom(function(page) {
                 .then(function() {
 
                     return waitUntil("upload is complete", function() {
-                        return page.promise.evaluate(function() {
-                            return document.title;
-                        })
-                            .then(function(title) {
-                                console.log("title", title);
-                                return title.indexOf("Upload complete") > -1;
-                            });
+                        return page.promise.get("content")
+                        .then(function(content) {
+                            return content.indexOf("Upload complete") > -1;
+                        });
                     }, 2000);
+                })
+                .then(function() {
+                    return page.promise.get("content");
+                })
+                .then(function(content) {
+                    assertContainsRSSFeeds(content);
                 })
                 .then(function() {
                     return page.promise.open(config.urlFor("/feeds"));
@@ -44,8 +47,13 @@ setup.qtest(exports, "can upload rss", setup.usingPhantom(function(page) {
                     return page.promise.get("content");
                 })
                 .then(function(content) {
-                    assert.notEqual(content.indexOf("TEDTalks (video)"), -1, "Expected to find subscription title");
-                    assert.notEqual(content.indexOf("http://feeds.feedburner.com/tedtalks_video"), -1, "Expected to find xml url.");
-                    assert.notEqual(content.indexOf("http://www.ted.com/talks/list"), -1, "Expected to find html url.");
+                    assertContainsRSSFeeds(content);
                 });
         }));
+
+
+function assertContainsRSSFeeds(content) {
+    assert.notEqual(content.indexOf("TEDTalks (video)"), -1, "Expected to find subscription title");
+    assert.notEqual(content.indexOf("http://feeds.feedburner.com/tedtalks_video"), -1, "Expected to find xml url.");
+    assert.notEqual(content.indexOf("http://www.ted.com/talks/list"), -1, "Expected to find html url.");
+}

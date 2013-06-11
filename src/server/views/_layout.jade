@@ -9,4 +9,8 @@ html
     - else
         a(href="/auth/google") Login
 
+    - if (typeof flash !== "undefined")
+        -if (flash.info)
+            span.info #{flash.info}
+
     block content
