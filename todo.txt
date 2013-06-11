@@ -1,8 +1,11 @@
 GOAL:
-
+  User's feeds should be available after upload
 
 TODO:
-  - add test verifying user's RSS feeds are available after they leave / come back
+  empty homepage has call to action leading to login, then go to /feeds
+  non-empty homepage has tabs to home,feeds
+  non-empty homepage lists feeds
+  manage has tabs to home, feeds
 
   - MySQL connection pooling?
       https://npmjs.org/package/mysql-simple
@@ -14,3 +17,6 @@ TODO:
       https://npmjs.org/package/node-mysql-pooled
       - stale by 8 months
 
+
+  - name it
+    - google-auth has hard-coded name "localhost"
