@@ -5,6 +5,8 @@ GOAL:
   allow users to add a feed
   allow users to delete a feed
 
+  how do I rollback
+
 TODO:
   empty homepage has call to action leading to login, then go to /feeds
   non-empty homepage has tabs to home,feeds

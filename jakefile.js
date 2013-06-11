@@ -295,7 +295,7 @@ task("releaseToIIS", ["verifyEmptyGitStatus", "testForRelease"], function() {
 
                                 var iisPath = path.join(deployPath, "src/iis");
 
-                                return Q.nbind(childProcess.execFile)("powershell", ["-noprofile", "-file", "./src/iis/install.ps1", iisPath, smokeServer_port, tempPath], {
+                                return Q.nbind(childProcess.execFile)("powershell", ["-noprofile", "-file", "./src/iis/install.ps1", "letscodejavascript (smoke)", iisPath, smokeServer_port, tempPath], {
                                         env: process.env
                                     });
                             })
@@ -317,7 +317,7 @@ task("releaseToIIS", ["verifyEmptyGitStatus", "testForRelease"], function() {
 
                                 var iisPath = path.join(deployPath, "src/iis");
 
-                                return Q.nbind(childProcess.execFile)("powershell", ["-noprofile", "-file", "./src/iis/install.ps1", iisPath, production_port, tempPath], {
+                                return Q.nbind(childProcess.execFile)("powershell", ["-noprofile", "-file", "./src/iis/install.ps1", "letscodejavascript", iisPath, production_port, tempPath], {
                                         env: process.env
                                     });
                             })
