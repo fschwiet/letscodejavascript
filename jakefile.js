@@ -212,16 +212,17 @@ task("testForRelease", ["prepareTempDirectory"], function() {
 });
 
 
-desc("Deploy to IIS");
-task("releaseToIIS", ["verifyEmptyGitStatus", "testForRelease"], function() {
+desc("Deploys to IIS after checking smoke tests.");
+task("deployToIIS", ["verifyEmptyGitStatus", "testForRelease"], function() {
 
-    var productionConfig = "./production.config.json";
+    var productionConfig    = nconf.get("deployment_configFile");
+    var deployRoot          = nconf.get("deployment_basePath");
+    var smoketest_port    = nconf.get("deployment_smoketestPort");
+    var final_port     = nconf.get("deployment_port");
 
     if (!fs.existsSync(productionConfig)) {
         fail("Could not find file production.config.json, please create before deploying.  Consider using sample.config.json as a starting point.");
     }
-
-    var deployRoot = "c:/inetpub/letscodejavascript";
 
     if (!fs.existsSync(deployRoot)) {
         fs.mkdirsSync(deployRoot);
@@ -233,8 +234,6 @@ task("releaseToIIS", ["verifyEmptyGitStatus", "testForRelease"], function() {
         fail("Deploying to a full directory.  Please clean up " + deployRoot + " first.");
     }
 
-    var smokeServer_port = 8082;
-    var production_port = 80;
 
     childProcess.exec("git rev-parse HEAD", function(error, stdout, stderr) {
 
@@ -275,7 +274,7 @@ task("releaseToIIS", ["verifyEmptyGitStatus", "testForRelease"], function() {
                         }
                         
                         configValues.server_tempPath = tempPath;
-                        configValues.server_port = smokeServer_port;
+                        configValues.server_port = smoketest_port;
 
                         if ((configValues.server_sessionKey || "").length < 15) {
 
@@ -291,11 +290,11 @@ task("releaseToIIS", ["verifyEmptyGitStatus", "testForRelease"], function() {
                                     });
                             })
                             .then(function() {
-                                console.log("calling execFile on ./src/iis/install.ps1, listening to " + smokeServer_port);
+                                console.log("calling execFile on ./src/iis/install.ps1, listening to " + smoketest_port);
 
                                 var iisPath = path.join(deployPath, "src/iis");
 
-                                return Q.nbind(childProcess.execFile)("powershell", ["-noprofile", "-file", "./src/iis/install.ps1", "letscodejavascript (smoke)", iisPath, smokeServer_port, tempPath], {
+                                return Q.nbind(childProcess.execFile)("powershell", ["-noprofile", "-file", "./src/iis/install.ps1", "letscodejavascript (smoke)", iisPath, smoketest_port, tempPath], {
                                         env: process.env
                                     });
                             })
@@ -308,7 +307,7 @@ task("releaseToIIS", ["verifyEmptyGitStatus", "testForRelease"], function() {
                                     });
                             })
                             .then(function() {
-                                configValues.server_port = production_port;
+                                configValues.server_port = final_port;
 
                                 return Q.nbind(fs.writeFile)(path.resolve(deployPath, "config.json"), JSON.stringify(configValues, null, "    "));
                             })
@@ -317,7 +316,7 @@ task("releaseToIIS", ["verifyEmptyGitStatus", "testForRelease"], function() {
 
                                 var iisPath = path.join(deployPath, "src/iis");
 
-                                return Q.nbind(childProcess.execFile)("powershell", ["-noprofile", "-file", "./src/iis/install.ps1", "letscodejavascript", iisPath, production_port, tempPath], {
+                                return Q.nbind(childProcess.execFile)("powershell", ["-noprofile", "-file", "./src/iis/install.ps1", "letscodejavascript", iisPath, final_port, tempPath], {
                                         env: process.env
                                     });
                             })
