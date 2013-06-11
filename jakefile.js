@@ -215,6 +215,7 @@ task("testForRelease", ["prepareTempDirectory"], function() {
 desc("Deploys to IIS after checking smoke tests.");
 task("deployToIIS", ["verifyEmptyGitStatus", "testForRelease"], function() {
 
+    var deploymentName      = nconf.get("deployment_iisName");
     var productionConfig    = nconf.get("deployment_configFile");
     var deployRoot          = nconf.get("deployment_basePath");
     var smoketest_port    = nconf.get("deployment_smoketestPort");
@@ -294,7 +295,7 @@ task("deployToIIS", ["verifyEmptyGitStatus", "testForRelease"], function() {
 
                                 var iisPath = path.join(deployPath, "src/iis");
 
-                                return Q.nbind(childProcess.execFile)("powershell", ["-noprofile", "-file", "./src/iis/install.ps1", "letscodejavascript (smoke)", iisPath, smoketest_port, tempPath], {
+                                return Q.nbind(childProcess.execFile)("powershell", ["-noprofile", "-file", "./src/iis/install.ps1", deploymentName + " (smoke)", iisPath, smoketest_port, tempPath], {
                                         env: process.env
                                     });
                             })
@@ -316,7 +317,7 @@ task("deployToIIS", ["verifyEmptyGitStatus", "testForRelease"], function() {
 
                                 var iisPath = path.join(deployPath, "src/iis");
 
-                                return Q.nbind(childProcess.execFile)("powershell", ["-noprofile", "-file", "./src/iis/install.ps1", "letscodejavascript", iisPath, final_port, tempPath], {
+                                return Q.nbind(childProcess.execFile)("powershell", ["-noprofile", "-file", "./src/iis/install.ps1", deploymentName, iisPath, final_port, tempPath], {
                                         env: process.env
                                     });
                             })
