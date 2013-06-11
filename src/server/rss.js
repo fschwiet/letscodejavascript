@@ -24,7 +24,7 @@ function handleUploadFromGoogleRequest(request, response) {
             .then(function() {
                 connectionDone();
 
-                response.render('uploadFromGoogle', model);
+                response.render('feeds', model);
             });
         });
     }
