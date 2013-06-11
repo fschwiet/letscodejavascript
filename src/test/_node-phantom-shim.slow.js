@@ -28,6 +28,10 @@
             res.send("<html><body><a class='target' href='/empty'>click me</a></body></html>");
         });
 
+        app.get("/duplicate-links-to-empty", function(req, res) {
+            res.send("<html><body><a class='target' href='/empty'>click me</a><a class='target' href='/empty'>click me</a></body></html>");
+        });
+
         server = http.createServer(app);
         server.listen(port, callback);
     };
@@ -102,6 +106,25 @@
                     })
                     .then(function() {
                         return page.promise.clickElement("a.target");
+                    })
+                    .then(function() {
+                        var start = new Date();
+                        return waitUntil("browser is redirected to /empty", function() {
+                            return page.promise.get("url").then(function(url) {
+                                console.log("url was", url);
+                                return url == "http://localhost:" + port + "/empty";
+                            });
+                        }, 1000);
+                    });
+            }));
+
+    setup.qtest(exports.clickElement, "should allow less-strict clicking where uniqueness is not required", setup.usingPhantom(function(page) {
+                return page.promise.open("http://localhost:" + port + "/duplicate-links-to-empty")
+                    .then(function(status) {
+                        assert.equal(status, "success");
+                    })
+                    .then(function() {
+                        return page.promise.clickElement("a.target",true);
                     })
                     .then(function() {
                         var start = new Date();

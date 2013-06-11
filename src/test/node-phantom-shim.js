@@ -56,15 +56,15 @@ phantom.promise = {
                     render: promisify(page.render, page)
                 };
 
-                page.promise.clickElement = function(selector) {
+                page.promise.clickElement = function(selector, allowAmbiguousSelector) {
 
                     var deferred = Q.defer();
 
-                    page.evaluate(function(s) {
+                    page.evaluate(function(s, allowAmbiguousSelector) {
                         var matches = document.querySelectorAll(s);
                         var count = matches.length;
 
-                        if (count == 1) {
+                        if (count == 1 || (allowAmbiguousSelector && count > 1)) {
 
                             // http://stackoverflow.com/questions/6157929/how-to-simulate-mouse-click-using-javascript
                             var simulatedClick = function(target, options) {
@@ -121,14 +121,14 @@ phantom.promise = {
 
                         if (err) {
                             deferred.reject(err);
-                        } else if (count > 1) {
+                        } else if (count > 1 && !allowAmbiguousSelector) {
                             deferred.reject(new Error("More than one elements matching '" + selector + "' were found"));
                         } else if (count < 1) {
                             deferred.reject(new Error("An element matching '" + selector + "' not found"));
                         } else {
                             deferred.resolve();
                         }
-                    }, selector);
+                    }, selector, allowAmbiguousSelector);
 
                     return deferred.promise;
                 };

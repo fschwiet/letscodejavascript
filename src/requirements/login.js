@@ -21,7 +21,7 @@ var selectors = {
 
 exports.doLogin = function(page) {
 
-    return page.promise.clickElement(selectors.loginButtonSelector)
+    return page.promise.clickElement(selectors.loginButtonSelector, true)
         .then(function() {
             return handleGoogleAuth(page);
         })

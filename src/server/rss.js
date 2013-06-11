@@ -30,8 +30,7 @@ function handleUploadFromGoogleRequest(request, response) {
     }
     else {
 
-        model.rows = [];
-        response.render('uploadFromGoogle', model);
+        response.render('feeds_unauthenticated', model);
     }
 }
 
