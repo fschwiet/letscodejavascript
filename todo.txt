@@ -1,11 +1,10 @@
 GOAL:
-  deployment port shouldn't have to be 80.  hard-coded ports and c:\inetpub location used in deployment is yuk
-
   don't insert duplicate feeds
   allow users to add a feed
   allow users to delete a feed
 
-  how do I rollback
+  should have automated rollback
+
 
 TODO:
   empty homepage has call to action leading to login, then go to /feeds

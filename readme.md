@@ -10,7 +10,10 @@ Prerequisites:
 * create a config.json file
     1.  copy sample.config.json to config.json
     2.  change any values that don't match the desired configuration
-    3.  (optional) remove any settings you did not need to change (sample.config.json has the defaults)
+        * "googleTest_" will require creating a throw-away google account.  You may need to authenticate with the account to the 
+        server before it works for the tests, use jake task runServer and authenticate there.
+        * "deployment_" are only used only during deployment and can be ignored otherwise.
+    3.  (optional) remove any settings where you like the defaults
 
 Note:
 
