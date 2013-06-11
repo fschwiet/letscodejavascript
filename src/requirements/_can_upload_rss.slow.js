@@ -38,6 +38,9 @@ setup.qtest(exports, "can upload rss", setup.usingPhantom(function(page) {
                     }, 2000);
                 })
                 .then(function() {
+                    return page.promise.open(config.urlFor("/feeds"));
+                })
+                .then(function() {
                     return page.promise.get("content");
                 })
                 .then(function(content) {

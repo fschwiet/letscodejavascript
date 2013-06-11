@@ -1,5 +1,9 @@
 GOAL:
-  User's feeds should be available after upload
+  import completion should just take user back to feeds view with flash message
+  feeds page should prompt the user to login if they are not
+  don't insert duplicate feeds
+  allow users to add a feed
+  allow users to delete a feed
 
 TODO:
   empty homepage has call to action leading to login, then go to /feeds
@@ -17,6 +21,7 @@ TODO:
       https://npmjs.org/package/node-mysql-pooled
       - stale by 8 months
 
+  - add timestamps on row creation / http://dev.mysql.com/doc/refman/5.0/en/timestamp-initialization.html
 
   - name it
     - google-auth has hard-coded name "localhost"
