@@ -78,7 +78,7 @@ function loadSubscriptionsFromGoogleXml(filepath) {
                         result.opml.body[0].outline.forEach(function(row) {
                             rows.push({
                                     name: row.$.title,
-                                    xmlUrl: row.$.xmlUrl,
+                                    rssUrl: row.$.xmlUrl,
                                     htmlUrl: row.$.htmlUrl
                                 });
                         });
@@ -104,13 +104,13 @@ function saveSubscriptions(connection, userId, subscriptions) {
 
     var first = subscriptions[0];
 
-    return Q.npost(connection, "query", ["SELECT userId FROM subscriptions S WHERE S.userId = ? AND S.rssUrl = ?", [userId, first.xmlUrl]])
+    return Q.npost(connection, "query", ["SELECT userId FROM subscriptions S WHERE S.userId = ? AND S.rssUrl = ?", [userId, first.rssUrl]])
     .then(function(results) {
 
         return Q.ninvoke(connection, "query", "INSERT INTO subscriptions SET ?", {
             userId: userId,
             name: first.name,
-            rssUrl: first.xmlUrl,
+            rssUrl: first.rssUrl,
             htmlUrl: first.htmlUrl
         });
     })
