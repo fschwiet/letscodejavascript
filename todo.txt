@@ -1,5 +1,6 @@
 GOAL:
   User's feeds should be available after upload
+  Smoke tests on alternate port should not disrupt existing production deploy by stomping iis app
 
 TODO:
   empty homepage has call to action leading to login, then go to /feeds
