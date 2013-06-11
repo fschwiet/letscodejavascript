@@ -5,8 +5,8 @@ var Q = require("q");
 var modelFor = require("./modelFor");
 
 module.exports = function(app) {
-    app.get("/upload/from/google", handleUploadFromGoogleRequest);
-    app.post("/upload/from/google", handleUploadFromGooglePostRequest);
+    app.get("/feeds", handleUploadFromGoogleRequest);
+    app.post("/feeds", handleUploadFromGooglePostRequest);
 };
 
 function handleUploadFromGoogleRequest(request, response) {

@@ -12,7 +12,7 @@ setup.whenRunningTheServer(exports);
 
 setup.qtest(exports, "can upload rss", setup.usingPhantom(function(page) {
 
-            return page.promise.open(config.urlFor("/upload/from/google"))
+            return page.promise.open(config.urlFor("/feeds"))
                 .then(function(status) {
 
                     assert.equal(status, "success");
