@@ -1,6 +1,6 @@
 param([string]$installDir, [string]$port, [string]$extraDir)
 
-$name = "letscodejavascript"
+$name = "letscodejavascript ($port)"
 
 import-module carbon
 
