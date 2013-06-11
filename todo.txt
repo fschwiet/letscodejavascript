@@ -21,3 +21,4 @@ TODO:
 
   - name it
     - google-auth has hard-coded name "localhost"
+    - iis site is named letscodejavascript and in c:\inetpub\letscodejavascript
