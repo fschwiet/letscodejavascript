@@ -215,7 +215,7 @@ task("testForRelease", ["prepareTempDirectory"], function() {
 desc("Deploys to IIS after checking smoke tests.");
 task("deployToIIS", ["verifyEmptyGitStatus", "testForRelease"], function() {
 
-    var deploymentName      = nconf.get("deployment_iisName");
+    var deploymentName      = nconf.get("server_friendlyName");
     var productionConfig    = nconf.get("deployment_configFile");
     var deployRoot          = nconf.get("deployment_basePath");
     var smoketest_port    = nconf.get("deployment_smoketestPort");

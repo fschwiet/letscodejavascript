@@ -14,6 +14,7 @@ function getDefaults() {
         "database_user": "root",
         "database_password": "",
 
+        "server_friendlyName": "letscodejavascript",
         "server_port": 8081,
         "server_tempPath" : "./temp",
         "server_sessionKey": "foo",
@@ -25,8 +26,7 @@ function getDefaults() {
         "deployment_configFile": "production.config.json",
         "deployment_port": 80,
         "deployment_smoketestPort": 8082,
-        "deployment_basePath": "c:/inetpub/letscodejavascript",
-        "deployment_iisName": "letscodejavascript"
+        "deployment_basePath": "c:/inetpub/letscodejavascript"
     };
 }
 
