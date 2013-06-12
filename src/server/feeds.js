@@ -15,17 +15,12 @@ function handleUploadFromGoogleRequest(request, response) {
     var model = modelFor("Manage your RSS feed subscriptions", request);
 
     if (typeof request.user == "object") {
-        database.useConnection(function(connection, connectionDone) {
+        database.loadSubscriptions(request.user.id)
+        .then(function(subscriptions) {
 
-            database.loadSubscriptions(connection, request.user.id)
-            .then(function(subscriptions) {
+            model.rows = subscriptions;
 
-                model.rows = subscriptions;
-
-                connectionDone();
-
-                response.render('feeds', model);
-            });
+            response.render('feeds', model);
         });
     }
     else {
@@ -41,18 +36,12 @@ function handleUploadFromGooglePostRequest(request, response, next) {
     loadSubscriptionsFromGoogleXml(subscriptionsPath)
     .then(function(rows) {
 
-        database.useConnection(function(connection, connectionDone) {
-
-            database.saveSubscriptions(connection, request.user.id, rows)
-            .fin(function() {
-                connectionDone();
-            })
-            .then(function() {
-                request.flash("info", "Upload complete");
-                response.redirect("/feeds");
-            }, function(err) {
-                next(err);
-            });
+        database.saveSubscriptions(request.user.id, rows)
+        .then(function() {
+            request.flash("info", "Upload complete");
+            response.redirect("/feeds");
+        }, function(err) {
+            next(err);
         });
     });
 }

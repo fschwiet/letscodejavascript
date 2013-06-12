@@ -55,13 +55,20 @@ exports.getStatus = function(callback) {
     });
 };
 
-function useConnection(callback) {
+function getConnection() {
 
     var config = getConnectionInfo(true);
 
     var connection = mysql.createConnection(config);
 
     connection.connect();
+
+    return connection;
+}
+
+function useConnection(callback) {
+
+    var connection = getConnection();
 
     callback(connection, function() {
         connection.end();
@@ -71,61 +78,78 @@ function useConnection(callback) {
 exports.useConnection = useConnection;
 
 
-exports.findOrCreateUserByGoogleIdentifier = function(identifier, profile, done) {
+exports.findOrCreateUserByGoogleIdentifier = function(identifier, profile, callback) {
 
-    exports.useConnection(function(connection, connectionDone) {
+    var connection = getConnection();
 
-        var query = Q.nbind(connection.query, connection);
+    var query = Q.nbind(connection.query, connection);
 
-        query("SELECT users.id, users.friendlyName FROM users JOIN googleProfiles ON googleProfiles.userId = users.id WHERE googleProfiles.id = ?", identifier)
-            .then(function(result) {
+    query("SELECT users.id, users.friendlyName FROM users JOIN googleProfiles ON googleProfiles.userId = users.id WHERE googleProfiles.id = ?", identifier)
+        .then(function(result) {
 
-                if (result[0].length > 0) {
-                    var firstResult = result[0][0];
+            if (result[0].length > 0) {
+                var firstResult = result[0][0];
 
-                    done(null, {
-                            id: firstResult.id,
-                            friendlyName: firstResult.friendlyName
-                        });
-                } else {
-                    return query("INSERT INTO users SET ?", {
-                            friendlyName: profile.displayName
-                        })
-                        .then(function(result) {
+                callback(null, {
+                        id: firstResult.id,
+                        friendlyName: firstResult.friendlyName
+                    });
+            } else {
+                return query("INSERT INTO users SET ?", {
+                        friendlyName: profile.displayName
+                    })
+                    .then(function(result) {
 
-                            var userId = result[0].insertId;
+                        var userId = result[0].insertId;
 
-                            return query("INSERT INTO googleProfiles SET ?", {
-                                    id: identifier,
-                                    userId: userId,
-                                    profile: JSON.stringify(profile)
-                                })
-                                .then(function() {
-                                    done(null, {
-                                            id: userId,
-                                            friendlyName: profile.displayName
-                                        });
-                                });
-                        });
-                }
-            })
-            .fin(function() {
-                connectionDone();
-            })
-            .fail(function(err) {
-                done(err);
-            });
-    });
+                        return query("INSERT INTO googleProfiles SET ?", {
+                                id: identifier,
+                                userId: userId,
+                                profile: JSON.stringify(profile)
+                            })
+                            .then(function() {
+                                callback(null, {
+                                        id: userId,
+                                        friendlyName: profile.displayName
+                                    });
+                            });
+                    });
+            }
+        })
+        .fin(function() {
+            connection.end();
+        })
+        .fail(function(err) {
+            callback(err);
+        });
 };
 
-exports.loadSubscriptions = function(connection, userId) {
+exports.loadSubscriptions = function(userId) {
+
+    var connection = getConnection();
+
     return Q.ninvoke(connection, "query", "SELECT * FROM subscriptions WHERE userId = ?", userId)
     .then(function(results) {
         return results[0];
+    })
+    .fin(function() {
+        connection.end();
     });
 };
 
-exports.saveSubscriptions = function(connection, userId, subscriptions) {
+exports.saveSubscriptions = function(userId, subscriptions) {
+
+    var connection = getConnection();
+
+    return saveSubscriptionsInternal(connection, userId, subscriptions)
+    .fin(function() {
+        connection.end();
+    });
+};
+
+
+
+function saveSubscriptionsInternal(connection, userId, subscriptions) {
 
     if (subscriptions.length === 0) {
         return;
@@ -144,6 +168,6 @@ exports.saveSubscriptions = function(connection, userId, subscriptions) {
         });
     })
     .then(function() {
-        return exports.saveSubscriptions(connection, userId, subscriptions.slice(1));
+        return saveSubscriptionsInternal(connection, userId, subscriptions.slice(1));
     });
-};
+}
