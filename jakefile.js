@@ -448,14 +448,6 @@ function getFileListWithTypicalExcludes() {
     return list;
 }
 
-function getFileListWithTypicalExcludes() {
-    var list = new jake.FileList();
-    list.exclude("node_modules");
-    list.exclude("build");
-    list.exclude("temp");
-    return list;
-}
-
 function promiseJake(promise) {
     return promise.then(function() {
         complete();
