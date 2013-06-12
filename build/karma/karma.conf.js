@@ -3,21 +3,26 @@
 
 
 // base path, that will be used to resolve files and exclude
-basePath = '';
+basePath = '../../';
 
 
 // list of files / patterns to load in the browser
 files = [
     MOCHA,
     MOCHA_ADAPTER,
+    REQUIRE,
+    REQUIRE_ADAPTER,
     'node_modules/expect.js/expect.js',
-    'src/client/_*.js'
+    'src/client/main-test.js',
+    { pattern: 'src/client/*.js', included: false}
 ];
 
 
 // list of files to exclude
 exclude = [
-
+    'src/client/require.js',
+    'src/client/app.js',
+    'src/client/main.js'
 ];
 
 

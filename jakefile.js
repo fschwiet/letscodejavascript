@@ -76,7 +76,7 @@ task("test", ["testClient", "testRemaining", "testSmokeAsRegularTest", "testSlow
 
 task("testClient", function() {
 
-    promiseJake(karma.runTests());
+    promiseJake(karma.runTests(path.resolve("./build/karma/karma.conf.js")));
 
 }, {
     async: true

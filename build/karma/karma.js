@@ -7,8 +7,8 @@ var childProcess = require('child_process');
 var karmaScript = "./node_modules/karma/bin/karma";
 var phantomKarmaClientScript = "./build/karma/phantom-client";
 
-exports.runServer = function() {
-    var process = childProcess.spawn('node', [karmaScript, "start"], { detached: true, stdio: [ 'ignore', 'ignore', 'ignore' ] });
+exports.runServer = function(configFile) {
+    var process = childProcess.spawn('node', [karmaScript, "start", configFile], { detached: true, stdio: [ 'ignore', 'ignore', 'ignore' ] });
     process.unref();    
 };
 
@@ -17,7 +17,7 @@ exports.runClient = function() {
     process.unref();    
 };
 
-exports.runTests = function() {
+exports.runTests = function(configFile) {
 
   var deferred = Q.defer();
 
@@ -43,7 +43,9 @@ exports.runTests = function() {
 
       var dedupe = false;
 
-      karma.run({}, function(exitCode) {
+      var options = {cmd: "run", configFile:configFile};
+
+      karma.run(options, function(exitCode) {
 
         //  We're getting multiple failure callbacks per run()....
         if (dedupe) {
@@ -57,7 +59,7 @@ exports.runTests = function() {
 
           if (needServer && !triedServer) {
             console.log("Starting karma server and client (and leaving them running)");
-            exports.runServer();
+            exports.runServer(configFile);
             exports.runClient();
             triedServer = true;
 
