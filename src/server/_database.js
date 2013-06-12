@@ -1,6 +1,7 @@
 var Q = require("q");
 var uuid = require('node-uuid');
 var expect = require("expect.js");
+var assert = require("assert");
 
 var setup = require("../test/setup");
 var database = require("./database");
@@ -53,3 +54,41 @@ setup.qtest(exports, "findOrCreateUserByGoogleIdentifier can save and load users
                 });
         });
 });
+
+setup.qtest(exports, "saveSubscriptions treats duplicates as updates", function() {
+
+    return findOrCreateUserByGoogleIdentifier(uuid.v4(), getGoogleProfile("Duper"))
+        .then(function(user) {
+
+            var userId = user.id;
+
+            return database.saveSubscriptions(userId, 
+                [
+                    {name:"nameA", rssUrl:"rssA", htmlUrl:"htmlA"},
+                    {name:"nameB", rssUrl:"rssB", htmlUrl:"htmlB"}
+                ])
+                .then(function() {
+                    return database.saveSubscriptions(userId,
+                        [
+                            {name:"nameB", rssUrl:"rssB", htmlUrl:"htmlB"},
+                            {name:"nameC", rssUrl:"rssC", htmlUrl:"htmlC"}
+                        ]);
+                })
+                .then(function() {
+                    return database.loadSubscriptions(userId);
+                })
+                .then(function(results){
+
+                    //  We'll expect the results to be sorts by the order they were added.
+                    console.log("results", results);
+
+                    assert.deepEqual(results, 
+                        [
+                            {name:"nameB", rssUrl:"rssB", htmlUrl:"htmlB"},
+                            {name:"nameC", rssUrl:"rssC", htmlUrl:"htmlC"},
+                            {name:"nameA", rssUrl:"rssA", htmlUrl:"htmlA"}
+                        ]);
+                });
+        });
+});
+

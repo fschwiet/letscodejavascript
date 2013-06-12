@@ -147,8 +147,6 @@ exports.saveSubscriptions = function(userId, subscriptions) {
     });
 };
 
-
-
 function saveSubscriptionsInternal(connection, userId, subscriptions) {
 
     if (subscriptions.length === 0) {
@@ -160,12 +158,14 @@ function saveSubscriptionsInternal(connection, userId, subscriptions) {
     return Q.npost(connection, "query", ["SELECT userId FROM subscriptions S WHERE S.userId = ? AND S.rssUrl = ?", [userId, first.rssUrl]])
     .then(function(results) {
 
-        return Q.ninvoke(connection, "query", "INSERT INTO subscriptions SET ?", {
-            userId: userId,
-            name: first.name,
-            rssUrl: first.rssUrl,
-            htmlUrl: first.htmlUrl
-        });
+        if (results[0].length === 0) {
+            return Q.ninvoke(connection, "query", "INSERT INTO subscriptions SET ?", {
+                userId: userId,
+                name: first.name,
+                rssUrl: first.rssUrl,
+                htmlUrl: first.htmlUrl
+            });
+        }
     })
     .then(function() {
         return saveSubscriptionsInternal(connection, userId, subscriptions.slice(1));
