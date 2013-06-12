@@ -385,7 +385,7 @@ task("verifyNodeVersion", function() {
 
 desc("Run the server locally");
 task("runServer", function() {
-    var port = 8083;
+    var port = nconf.get("server_port");
     console.log("running the server on", port);
     var server = require("./src/server/server.js");
     server.start(port);
