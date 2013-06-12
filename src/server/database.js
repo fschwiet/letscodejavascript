@@ -165,6 +165,11 @@ function saveSubscriptionsInternal(connection, userId, subscriptions) {
                 rssUrl: first.rssUrl,
                 htmlUrl: first.htmlUrl
             });
+        } else {
+            return Q.ninvoke(connection, "query", "UPDATE subscriptions SET ? WHERE userId = ? AND rssUrl = ?", [{
+                name: first.name,
+                htmlUrl: first.htmlUrl
+            }, userId, first.rssUrl]);
         }
     })
     .then(function() {

@@ -2,6 +2,7 @@ var Q = require("q");
 var uuid = require('node-uuid');
 var expect = require("expect.js");
 var assert = require("assert");
+var _ = require("underscore");
 
 var setup = require("../test/setup");
 var database = require("./database");
@@ -70,7 +71,7 @@ setup.qtest(exports, "saveSubscriptions treats duplicates as updates", function(
                 .then(function() {
                     return database.saveSubscriptions(userId,
                         [
-                            {name:"nameB", rssUrl:"rssB", htmlUrl:"htmlB"},
+                            {name:"modified nameB", rssUrl:"rssB", htmlUrl:"htmlB"},
                             {name:"nameC", rssUrl:"rssC", htmlUrl:"htmlC"}
                         ]);
                 })
@@ -79,14 +80,24 @@ setup.qtest(exports, "saveSubscriptions treats duplicates as updates", function(
                 })
                 .then(function(results){
 
-                    //  We'll expect the results to be sorts by the order they were added.
-                    console.log("results", results);
+                    // filter out the fields we're testing for
+                    results = results.map(function(value) {
+                        return {
+                            name : value.name,
+                            rssUrl: value.rssUrl,
+                            htmlUrl: value.htmlUrl
+                        };
+                    });
+
+                    // put the results in a consistent order
+                    results = _.sortBy(results, function(v) { return v.rssUrl;});
 
                     assert.deepEqual(results, 
                         [
-                            {name:"nameB", rssUrl:"rssB", htmlUrl:"htmlB"},
+                            {name:"nameA", rssUrl:"rssA", htmlUrl:"htmlA"},
+                            {name:"modified nameB", rssUrl:"rssB", htmlUrl:"htmlB"},
                             {name:"nameC", rssUrl:"rssC", htmlUrl:"htmlC"},
-                            {name:"nameA", rssUrl:"rssA", htmlUrl:"htmlA"}
+                            
                         ]);
                 });
         });
