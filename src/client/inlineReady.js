@@ -5,4 +5,4 @@ window.ready = function(callback) {
         function() { 
             callback();
         });
-}
+};
