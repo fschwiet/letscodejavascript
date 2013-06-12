@@ -9,7 +9,7 @@ requirejs.config({
 
     paths: {
         "jquery": "//ajax.googleapis.com/ajax/libs/jquery/2.0.0/jquery.min",
-        "sinon": "../../node_modules/sinon/lib/sinon"
+        "sinon": "../../node_modules/sinon/pkg/sinon-1.7.2"
     },
 
     shim: {

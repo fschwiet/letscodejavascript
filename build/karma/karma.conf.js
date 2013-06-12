@@ -14,7 +14,7 @@ files = [
     REQUIRE_ADAPTER,
     'node_modules/expect.js/expect.js',
     'src/client/main-test.js',
-    { pattern: 'node_modules/sinon/lib/**/*.js', included: false},
+    { pattern: 'node_modules/sinon/pkg/**/*.js', included: false},
     { pattern: 'src/client/*.js', included: false}
 ];
 
