@@ -1,5 +1,4 @@
 GOAL:
-  don't insert duplicate feeds
   allow users to add a feed
   allow users to delete a feed
 
