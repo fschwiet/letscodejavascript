@@ -2,8 +2,8 @@ doctype 5
 html
   head
     title= title
-    script(src="//ajax.googleapis.com/ajax/libs/jquery/2.0.0/jquery.min.js")
     script(src='//requirejs.org/docs/release/2.1.6/minified/require.js',data-main="client/app")
+    script(src='/client/inlineReady.js')
   body
     - if (isAuthenticated)
         a(href="/logout") Logout

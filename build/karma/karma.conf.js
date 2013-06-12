@@ -8,8 +8,8 @@ basePath = '../../';
 
 // list of files / patterns to load in the browser
 files = [
-    MOCHA,
-    MOCHA_ADAPTER,
+    JASMINE,
+    JASMINE_ADAPTER,
     REQUIRE,
     REQUIRE_ADAPTER,
     'node_modules/expect.js/expect.js',

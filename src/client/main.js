@@ -1,3 +1,2 @@
-require(["testModule"], function(testModule) { 
-    testModule.helloWorld();
+require([], function() { 
 });
