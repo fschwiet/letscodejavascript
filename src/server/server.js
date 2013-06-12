@@ -51,6 +51,8 @@
             throw new Error("Ooops!");
         });
 
+        app.use("/client", express.static(__dirname + './../client/'));
+
         var errorLoggingFile = path.resolve(nconf.tempPathForLogs(), "errors.json");
 
         var transports = [];

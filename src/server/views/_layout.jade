@@ -3,6 +3,7 @@ html
   head
     title= title
     script(src="//ajax.googleapis.com/ajax/libs/jquery/2.0.0/jquery.min.js")
+    script(src='client/require.js',data-main="client/app")
   body
     - if (isAuthenticated)
         a(href="/logout") Logout
