@@ -181,7 +181,7 @@ exports.unsubscribe = function(userId, rssUrl) {
 
     var connection = getConnection();
 
-    return Q.npost(connection, "query", ["DELETE FROM subscriptions WHERE ?", { rssUrl: rssUrl}])
+    return Q.npost(connection, "query", ["DELETE FROM subscriptions WHERE rssUrl = ? AND userId = ?", [rssUrl, userId]])
     .fin(function() {
         connection.end();
     });

@@ -144,3 +144,59 @@ setup.qtest(exports, "deleteSubscription should remove subscriptions", function(
         });
 })
 
+setup.qtest(exports, "deleteSubscription shouldn't remove other people's subscriptions", function() {
+
+    var otherUserId;
+
+    return findOrCreateUserByGoogleIdentifier(uuid.v4(), getGoogleProfile("Other"))
+        .then(function(user) {
+            otherUserId = user.id;
+        })
+        .then(function() {
+            return findOrCreateUserByGoogleIdentifier(uuid.v4(), getGoogleProfile("User"));
+        })
+        .then(function(user) {
+            return database.saveSubscriptions(user.id, 
+                [
+                    {name:"nameA", rssUrl:"rssA", htmlUrl:"htmlA"}
+                ])
+                .then(function() {
+                    return database.saveSubscriptions(otherUserId, 
+                    [
+                        {name:"nameA", rssUrl:"rssA", htmlUrl:"htmlA"}
+                    ]);
+                })
+                .then(function() {
+                    return database.unsubscribe(user.id, "rssA");
+                })
+                .then(function() {
+                    return database.loadSubscriptions(user.id);
+                })
+                .then(function(results){
+
+                    expect(results.length).to.be(0);
+                })
+                .then(function() {
+                    return database.loadSubscriptions(otherUserId);
+                })
+                .then(function(results){
+                    // filter out the fields we're testing for
+                    results = results.map(function(value) {
+                        return {
+                            name : value.name,
+                            rssUrl: value.rssUrl,
+                            htmlUrl: value.htmlUrl
+                        };
+                    });
+
+                    // put the results in a consistent order
+                    results = _.sortBy(results, function(v) { return v.rssUrl;});
+
+                    assert.deepEqual(results, 
+                        [
+                            {name:"nameA", rssUrl:"rssA", htmlUrl:"htmlA"}
+                        ]);
+                });
+        });
+})
+
