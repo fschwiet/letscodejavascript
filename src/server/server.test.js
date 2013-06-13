@@ -31,7 +31,7 @@
                 test.ok(err === null, "Error: " + err);
 
                 test.equal(response.statusCode, 200, "Expected 200 response code for url " + url);
-                test.notEqual(-1, body.indexOf("this is homepage.html"));
+                test.notEqual(-1, body.indexOf("<title>homepage</title>"));
 
                 server.stop();
                 test.done();
