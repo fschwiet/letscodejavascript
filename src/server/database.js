@@ -185,4 +185,4 @@ exports.unsubscribe = function(userId, rssUrl) {
     .fin(function() {
         connection.end();
     });
-}
+};

@@ -142,7 +142,7 @@ setup.qtest(exports, "deleteSubscription should remove subscriptions", function(
                 });
 
         });
-})
+});
 
 setup.qtest(exports, "deleteSubscription shouldn't remove other people's subscriptions", function() {
 
@@ -198,5 +198,5 @@ setup.qtest(exports, "deleteSubscription shouldn't remove other people's subscri
                         ]);
                 });
         });
-})
+});
 
