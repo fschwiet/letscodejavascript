@@ -1,19 +1,15 @@
-
-extends _layout
-
-block content
-    div The file you want to upload can be found 
-        a(href="http://www.google.com/reader/subscriptions/export") here
-    form.uploadRss(method='post', enctype="multipart/form-data")
-        input(type='file', name="subscriptionsXml")
-        input(type='submit')
-    table
+div The file you want to upload can be found 
+    a(href="http://www.google.com/reader/subscriptions/export") here
+form.uploadRss(method='post', enctype="multipart/form-data")
+    input(type='file', name="subscriptionsXml")
+    input(type='submit')
+table
+tr
+    th name
+    th xml url
+    th html url
+each row in rows
     tr
-        th name
-        th xml url
-        th html url
-    each row in rows
-        tr
-            td #{row.name}
-            td #{row.rssUrl} 
-            td #{row.htmlUrl}
+        td #{row.name}
+        td #{row.rssUrl} 
+        td #{row.htmlUrl}

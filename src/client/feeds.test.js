@@ -5,7 +5,8 @@ define(["feeds", "jquery", "views/feeds.jade", "sinon"], function(feeds, $, feed
 
         beforeEach(function() {
 
-            this.fixture.append(feedsView({title:"this is the title", isAuthenticated:false, rows:[], isPartialView:true}));
+            var templateResult = feedsView({title:"this is the title", isAuthenticated:false, rows:[]});
+            this.fixture.append(templateResult);
         });
 
         describe("feeds.js", function() {

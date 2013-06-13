@@ -20,12 +20,12 @@ function handleUploadFromGoogleRequest(request, response) {
 
             model.rows = subscriptions;
 
-            response.render('feeds', model);
+            response.render('feedsPage', model);
         });
     }
     else {
 
-        response.render('feeds_unauthenticated', model);
+        response.render('feedsPage_unauthenticated', model);
     }
 }
 
