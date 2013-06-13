@@ -14,6 +14,7 @@ files = [
     REQUIRE_ADAPTER,
     'node_modules/expect.js/expect.js',
     'src/client/main-test.js',
+    { pattern: 'build/karma/init.js', included: false},
     { pattern: 'node_modules/sinon/pkg/**/*.js', included: false},
     { pattern: 'src/client/*.js', included: false},
     { pattern: 'src/server/views/*.jade', included: false}
