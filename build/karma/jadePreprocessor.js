@@ -4,10 +4,13 @@ var jade = require("jade");
 
 module.exports = function(content, file, basePath, done) {
 
+    file.path = file.path + '.js';
+
     var jadeOptions = {
         filename: file.originalPath,
-        client: true
+        client: true,
+        pretty: true
     };
 
-    done("module.exports = " + jade.compile(content, jadeOptions) +";");
+    done("define(['jadeRuntime'], function(jade) { return " + jade.compile(content, jadeOptions) +"; });");
 };

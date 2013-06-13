@@ -1,6 +1,5 @@
-require([], function() {
+define([], function() {
 
     return {
-        
     };
 });

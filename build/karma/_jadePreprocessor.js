@@ -7,12 +7,12 @@ var fs = require('fs');
 exports["can process jade files"] = function(test) {
 
     var baseDir =  path.resolve(__dirname, "../../src/server/views");
-    var jadeFile = path.resolve(__dirname, "../../src/server/views/index.jade");
+    var jadeFile = path.resolve(__dirname, "../../src/server/views/index.jade").replace((/\\/g), "/");
 
     // some preprocessors write to file.path
     var file = {
-        path : jadeFile.replace((/\\/g), "/"),
-        originalPath : jadeFile.replace((/\\/g), "/")
+        path : jadeFile,
+        originalPath : jadeFile
     };
 
     /*  The 2nd parameter, the "file", had the below form when testing:
@@ -30,6 +30,7 @@ exports["can process jade files"] = function(test) {
 
     jadePreprocessor(fs.readFileSync(jadeFile, "utf8"), file, baseDir, function(result) {
         test.equal(typeof result, "string");
+        assert.equal(file.path, jadeFile + ".js");  // view.jade will be served as view.jade.js
         test.done();
     });
 };

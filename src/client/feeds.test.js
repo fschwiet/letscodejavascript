@@ -1,5 +1,5 @@
 
-define(["feeds", "jquery", "sinon"], function(feeds, $) {
+define(["feeds", "jquery", "views/error500.jade", "sinon"], function(feeds, $, error500) {
 
     var fake;
 
@@ -23,6 +23,7 @@ define(["feeds", "jquery", "sinon"], function(feeds, $) {
 
         it("supports the delete button", function() {
 
+            console.log("error500", error500({title:"this is the title", isAuthenticated:false}));
             $.get("/html");
             expect(fake.requests.length).to.be(1);
         });

@@ -15,7 +15,8 @@ files = [
     'node_modules/expect.js/expect.js',
     'src/client/main-test.js',
     { pattern: 'node_modules/sinon/pkg/**/*.js', included: false},
-    { pattern: 'src/client/*.js', included: false}
+    { pattern: 'src/client/*.js', included: false},
+    { pattern: 'src/server/views/*.jade', included: false}
 ];
 
 
@@ -71,3 +72,8 @@ captureTimeout = 60000;
 // Continuous Integration mode
 // if true, it capture browsers, run tests and exit
 singleRun = false;
+
+
+preprocessors = {
+  '**/*.jade': 'jade'
+};

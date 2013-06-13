@@ -33,6 +33,7 @@ task("lint", function() {
 
     var list = getFileListWithTypicalExcludes();
     list.include("**/*.js");
+    list.exclude("jadeRuntime.js");
 
     var runner = require("./build/lint/lint_runner.js");
 

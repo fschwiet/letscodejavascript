@@ -13,6 +13,9 @@ TODO:
   non-empty homepage lists feeds
   manage has tabs to home, feeds
 
+  error logging isn't indicating that login isn't working against server using http://192.168.1.248
+
+
   - MySQL connection pooling?
       https://npmjs.org/package/mysql-simple
       - stale by 2 years

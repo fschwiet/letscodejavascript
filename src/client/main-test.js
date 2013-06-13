@@ -9,7 +9,9 @@ requirejs.config({
 
     paths: {
         "jquery": "//ajax.googleapis.com/ajax/libs/jquery/2.0.0/jquery.min",
-        "sinon": "../../node_modules/sinon/pkg/sinon-1.7.2"
+        "sinon": "../../node_modules/sinon/pkg/sinon-1.7.2",
+        "jadeRuntime" : '../../src/client/jadeRuntime',
+        "views": "../../src/server/views"
     },
 
     shim: {
