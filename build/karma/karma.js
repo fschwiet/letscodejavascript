@@ -78,4 +78,4 @@ exports.runTests = function(configFile) {
   attempt();
 
   return deferred.promise;
-}
+};

@@ -27,4 +27,4 @@ exports.extendTask = function(task, jake) {
     });
 
     return tracedTask;
-}
+};
