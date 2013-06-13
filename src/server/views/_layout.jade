@@ -1,17 +1,20 @@
-doctype 5
-html
-  head
-    title= title
-    script(src='//requirejs.org/docs/release/2.1.6/minified/require.js',data-main="client/app")
-    script(src='/client/inlineReady.js')
-  body
-    - if (isAuthenticated)
-        a(href="/logout") Logout
-    - else
-        a(href="/auth/google") Login
+- if (!isPartialView)
+  doctype 5
+  html
+    head
+      title= title
+      script(src='//requirejs.org/docs/release/2.1.6/minified/require.js',data-main="client/app")
+      script(src='/client/inlineReady.js')
+    body
+      - if (isAuthenticated)
+          a(href="/logout") Logout
+      - else
+          a(href="/auth/google") Login
 
-    - if (typeof flash !== "undefined")
-        -if (flash.info)
-            span.info #{flash.info}
+      - if (typeof flash !== "undefined")
+          -if (flash.info)
+              span.info #{flash.info}
 
-    block content
+      block content
+- else
+  block content
