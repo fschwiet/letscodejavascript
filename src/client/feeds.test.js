@@ -5,21 +5,62 @@ define(["feeds", "jquery", "views/feeds.jade", "sinon"], function(feeds, $, feed
 
         beforeEach(function() {
 
-            var templateResult = feedsView({rows:[]});
+            function subscription(name) {
+                return {
+                    name : name,
+                    htmlUrl : "http://server.com/" + name,
+                    rssUrl: "http://server.com/" + name + "/rss"
+                };
+            }
+
+            var templateResult = feedsView({rows:[
+                    subscription("first"),
+                    subscription("second"),
+                    subscription("third")
+                ]});
+
             this.fixture.append(templateResult);
+
+            feeds.initialize(this.fixture);
         });
 
-        describe("feeds.js", function() {
+        describe("when the unsubscribe button is clicked", function() {
+
+            var secondRow;
+            var secondRowRssUrl;
 
             beforeEach(function() {
+
                 this.fakeServer = this.sinon.useFakeXMLHttpRequest();
+
+                secondRow = $("tr:eq(2)", this.fixture);
+                secondRowRssUrl = secondRow.data("rssurl");
+
+                expect(secondRow.length).to.be(1);
+
+                this.fixtureContainsSecondRow = function() {
+                    return jQuery.contains(this.fixture[0], secondRow[0]);
+                };
+
+                expect(this.fixtureContainsSecondRow()).to.be(true);
+                expect(secondRowRssUrl).to.be("http://server.com/second/rss");
+
+                secondRow.find("a.js-unsubscribe").click();
             });
 
-            it("supports the delete button", function() {
+            it("will hide the row ", function() {
+                expect(this.fixtureContainsSecondRow()).to.be(false);
+            });
 
-                $.get("/html");
+            it("will notify the server", function() {
+                
                 expect(this.fakeServer.requests.length).to.be(1);
-                expect($("table", this.fixture).length).to.be(1);
+
+                var request = this.fakeServer.requests[0];
+
+                expect(request.url).to.be("/feeds/delete");
+                expect(request.method).to.be("POST");
+                expect(request.parameters).to.be({rssUrl : secondRowRssUrl});
             });
         });
     });
