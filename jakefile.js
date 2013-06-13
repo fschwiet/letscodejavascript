@@ -17,9 +17,9 @@ var util = require("util");
 var runServer = require("./src/test/runServer.js");
 var beautify = require('js-beautify');
 
-var allTests = "**/_*.js";
-var slowTests = "**/_*.slow.js";
-var smokeTests = "**/_*.smoke.js";
+var allTests = "**/*.test.js";
+var slowTests = "**/*.slow.test.js";
+var smokeTests = "**/*.smoke.test.js";
 var clientCode = "src/client/**";
 
 task = require("./build/jake-util.js").extendTask(task, jake);
