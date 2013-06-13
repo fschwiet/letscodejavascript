@@ -58,9 +58,9 @@ define(["feeds", "jquery", "views/feeds.jade", "sinon"], function(feeds, $, feed
 
                 var request = this.fakeServer.requests[0];
 
-                expect(request.url).to.be("/feeds/delete");
+                expect(request.url).to.be("/feeds/unsubscribe");
                 expect(request.method).to.be("POST");
-                expect(request.parameters).to.be({rssUrl : secondRowRssUrl});
+                expect(request.requestBody).to.be(JSON.stringify({rssUrl : secondRowRssUrl}));
             });
         });
     });
