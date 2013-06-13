@@ -11,12 +11,13 @@ define(["feeds", "jquery", "views/feeds.jade", "sinon"], function(feeds, $, feed
         describe("feeds.js", function() {
 
             beforeEach(function() {
-                fake = this.sinon.useFakeXMLHttpRequest();
+                this.fakeServer = this.sinon.useFakeXMLHttpRequest();
             });
 
             it("supports the delete button", function() {
 
                 $.get("/html");
+                expect(this.fakeServer.requests.length).to.be(1);
                 expect($("table", this.fixture).length).to.be(1);
             });
         });

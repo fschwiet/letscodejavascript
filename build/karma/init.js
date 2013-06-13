@@ -1,4 +1,7 @@
 define(["jquery", "sinon"], function($) {
+
+    window.mocha.globals(['jQuery*']);
+
     beforeEach(function() {
         this.sinon = sinon.sandbox.create();
 
