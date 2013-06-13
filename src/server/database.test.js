@@ -103,3 +103,44 @@ setup.qtest(exports, "saveSubscriptions treats duplicates as updates", function(
         });
 });
 
+setup.qtest(exports, "deleteSubscription should remove subscriptions", function() {
+
+    return findOrCreateUserByGoogleIdentifier(uuid.v4(), getGoogleProfile("Duper"))
+        .then(function(user) {
+
+            var userId = user.id;
+
+            return database.saveSubscriptions(userId, 
+                [
+                    {name:"nameA", rssUrl:"rssA", htmlUrl:"htmlA"},
+                    {name:"nameB", rssUrl:"rssB", htmlUrl:"htmlB"}
+                ])
+                .then(function() {
+                    return database.unsubscribe(userId, "rssB");
+                })
+                .then(function() {
+                    return database.loadSubscriptions(userId);
+                })
+                .then(function(results){
+
+                    // filter out the fields we're testing for
+                    results = results.map(function(value) {
+                        return {
+                            name : value.name,
+                            rssUrl: value.rssUrl,
+                            htmlUrl: value.htmlUrl
+                        };
+                    });
+
+                    // put the results in a consistent order
+                    results = _.sortBy(results, function(v) { return v.rssUrl;});
+
+                    assert.deepEqual(results, 
+                        [
+                            {name:"nameA", rssUrl:"rssA", htmlUrl:"htmlA"}
+                        ]);
+                });
+
+        });
+})
+

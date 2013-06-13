@@ -176,3 +176,13 @@ function saveSubscriptionsInternal(connection, userId, subscriptions) {
         return saveSubscriptionsInternal(connection, userId, subscriptions.slice(1));
     });
 }
+
+exports.unsubscribe = function(userId, rssUrl) {
+
+    var connection = getConnection();
+
+    return Q.npost(connection, "query", ["DELETE FROM subscriptions WHERE ?", { rssUrl: rssUrl}])
+    .fin(function() {
+        connection.end();
+    });
+}
