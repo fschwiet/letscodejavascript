@@ -27,3 +27,9 @@ TODO:
 
   - name it
     
+
+HMMM
+    can I write a jade preprocessor for karma?
+      https://gist.github.com/ryanfitz/834768
+      https://github.com/karma-runner/karma/issues/565    
+      - canary build of karma may allow registering a preprocessor
