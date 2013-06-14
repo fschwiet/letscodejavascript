@@ -8,6 +8,7 @@
     var Q = require("q");
     var nconf = require("../server/config.js");
     var waitUntil = require("./waitUntil.js");
+    var assertPage = require("../requirements/assertPage.js");
 
     var app = express();
     var server;
@@ -68,10 +69,7 @@
                         assert.equal(status, "success");
                     })
                     .then(function() {
-                        return page.promise.get("content");
-                    })
-                    .then(function(content) {
-                        assert.ok(content.indexOf("This page has no links") > -1, "Expected page content");
+                        return assertPage.containsContent(page, "This page has no links");
                     });
             }));
 

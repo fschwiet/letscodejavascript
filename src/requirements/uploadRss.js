@@ -1,14 +1,10 @@
 
 var path = require("path");
+var assertPage = require("./assertPage");
 
 module.exports = function(page) {
     var fileToUpload = path.resolve(__dirname, "subscriptions.xml");
-    return page.promise.evaluate(function() {
-            return window.location.pathname;
-        })
-        .then(function(pathname) {
-            assert.equal(pathname, "/feeds");
-        })
+    return assertPage.isAtPath(page, "/feeds")
         .then(function() {
             return page.promise.uploadFile('form.uploadRss input[type=file]', fileToUpload);
         })
