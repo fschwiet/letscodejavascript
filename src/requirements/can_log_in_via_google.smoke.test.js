@@ -3,7 +3,7 @@ var setup = require("../test/setup");
 var config = require("../server/config");
 var login = require("./login");
 
-check_login_from(config.urlFor("/"));
+check_login_from(config.urlFor("/feeds"));
 check_login_from(config.urlFor("/status"));
 
 function check_login_from(startPage) {
