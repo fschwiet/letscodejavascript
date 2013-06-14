@@ -79,7 +79,7 @@ rss = {
                     }
                 });
 
-                results = results.sort(function(a,b) { return a.length - b.length;})
+                results = results.sort(function(a,b) { return a.length - b.length;});
 
                 if (results.length > 0) {
                     callback(null, { rssUrl: results[0]});
@@ -106,7 +106,7 @@ function testRssLookup(htmlUrl, rssUrl) {
             }
             test.done();
         });
-    }
+    };
 }
 
 /*
