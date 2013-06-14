@@ -10,7 +10,7 @@ html
                 - if (isAuthenticated)
                     a(href="/logout") Logout
                 - else
-                    a(href="/auth/google") Login
+                    include loginButton
 
                 - if (typeof flash !== "undefined")
                     -if (flash.info)
