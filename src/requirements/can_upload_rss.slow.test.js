@@ -23,9 +23,19 @@ setup.qtest(exports, "can upload rss", setup.usingPhantom(function(page) {
             });   
     }
 
-    function test2() {
-            return page.promise.evaluate(function() { return { hi:document.querySelectorAll("form.uploadRss input[type=file]").length };});
-        }
+    function getSubscriptionsFromUI() {
+        return page.promise.evaluate(function() {
+            var result = {};
+            var rows = document.querySelectorAll("[data-rssurl]");
+            for(var i = 0; i < rows.length; i++) {
+                var row = rows[i];
+                result[row.getAttribute("data-rssurl")] =  {
+                    title: row.querySelector('td').innerHTML
+                };
+            }
+            return result;
+        });
+    }
 
     return page.promise.open(config.urlFor("/feeds"))
         .then(getPageStatus)
@@ -57,26 +67,17 @@ setup.qtest(exports, "can upload rss", setup.usingPhantom(function(page) {
                 });
             }, 2000);
         })
-        .then(function() {
-            return page.promise.get("content");
-        })
-        .then(function(content) {
-            assertContainsRSSFeeds(content);
+        .then(getSubscriptionsFromUI)
+        .then(function(results) {
+            expect(results["http://blog.stackoverflow.com/"]).to.have.property("title", "stackoverflow");
+            expect(results["http://feeds.feedburner.com/tedtalks_video"]).to.have.property("title", "TEDTalks (video)");
         })
         .then(function() {
             return page.promise.open(config.urlFor("/feeds"));
         })
-        .then(function() {
-            return page.promise.get("content");
-        })
-        .then(function(content) {
-            assertContainsRSSFeeds(content);
+        .then(getSubscriptionsFromUI)
+        .then(function(results) {
+            expect(results["http://blog.stackoverflow.com/"]).to.have.property("title", "stackoverflow");
+            expect(results["http://feeds.feedburner.com/tedtalks_video"]).to.have.property("title", "TEDTalks (video)");
         });
 }));
-
-
-function assertContainsRSSFeeds(content) {
-    assert.notEqual(content.indexOf("TEDTalks (video)"), -1, "Expected to find subscription title");
-    assert.notEqual(content.indexOf("http://feeds.feedburner.com/tedtalks_video"), -1, "Expected to find xml url.");
-    assert.notEqual(content.indexOf("http://www.ted.com/talks/list"), -1, "Expected to find html url.");
-}
