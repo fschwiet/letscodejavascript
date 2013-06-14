@@ -23,6 +23,8 @@ setup.qtest(exports, "can upload rss", setup.usingPhantom(function(page) {
             });   
     }
 
+    var unsubscribeButton = "tr[data-rssurl='http://blog.stackoverflow.com/'] a.js-unsubscribe[href='#']";
+
     function getSubscriptionsFromUI() {
         return page.promise.evaluate(function() {
             var result = {};
@@ -79,5 +81,20 @@ setup.qtest(exports, "can upload rss", setup.usingPhantom(function(page) {
         .then(function(results) {
             expect(results["http://blog.stackoverflow.com/"]).to.have.property("title", "stackoverflow");
             expect(results["http://feeds.feedburner.com/tedtalks_video"]).to.have.property("title", "TEDTalks (video)");
+        })
+        .then(function() {
+            return waitUntil("page has initialized", function() {
+                return page.promise.evaluate(function() { return window.mainInitialized === true;});
+            });       
+        })
+        .then(function() {
+            return page.promise.clickElement(unsubscribeButton);
+        })
+        .then(function() {
+            return page.promise.open(config.urlFor("/feeds"));
+        })
+        .then(getSubscriptionsFromUI)
+        .then(function(results) {
+            expect(results["http://blog.stackoverflow.com/"]).to.be(undefined);
         });
 }));

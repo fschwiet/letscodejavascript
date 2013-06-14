@@ -8,6 +8,7 @@ var database = require("./database");
 module.exports = function(app) {
     app.get("/feeds", handleUploadFromGoogleRequest);
     app.post("/feeds", handleUploadFromGooglePostRequest);
+    app.post("/feeds/unsubscribe", handleUnsubscribe);
 };
 
 function handleUploadFromGoogleRequest(request, response) {
@@ -85,3 +86,12 @@ function loadSubscriptionsFromGoogleXml(filepath) {
     return deferred.promise;
 }
 
+function handleUnsubscribe(request, response, next) {
+
+   database.unsubscribe(request.user.id, request.body.rssUrl)
+    .then(function() {
+        response.send();
+    }, function(err) {
+        next(err);
+    });
+}
