@@ -3,8 +3,10 @@
 
 
 /*
-https://npmjs.org/package/feedfinder -> seems to have best results, need to resolve ambiguity
-  possible strategy:  pick the shortest url, not counting an whatever url prefix matches the incoming url
+https://npmjs.org/package/feedfinder -> seems to have best results, 
+  need to handle request errors
+  need to resolve ambiguity    possible strategy:  pick the shortest url, not counting an whatever url prefix matches the incoming url
+  benefit of request pipeline is we should be able to capture a name without extra requests
 https://npmjs.org/package/detectfeed ->  seems to miss some
 https://npmjs.org/package/discovery  -> hasn't been updated in 2 years, seems to merge results of previous calls, yuk.
 https://npmjs.org/package/parsse  -> requires python
@@ -33,6 +35,9 @@ rss = {
 
 */
 
+
+/*
+
 var detectFeed = require("detectfeed").detectFeedUrl;
 
 rss = {
@@ -49,7 +54,9 @@ rss = {
     }
 };
 
-/*
+*/
+
+
 
 var request = require('request');
 var endpoint = require('endpoint');
@@ -83,7 +90,6 @@ rss = {
           }));
     }
 };
-*/
 
 
 function testRssLookup(htmlUrl, rssUrl) {
