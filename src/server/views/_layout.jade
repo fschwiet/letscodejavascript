@@ -12,9 +12,9 @@ html
                 - else
                     include loginButton
 
-                - if (typeof flash !== "undefined")
-                    -if (flash.info)
-                        span.info #{flash.info}
+        - if (typeof flash !== "undefined")
+            -if (flash.info)
+                span.info !{flash.info}
 
         div(style='padding:10px')
             block content

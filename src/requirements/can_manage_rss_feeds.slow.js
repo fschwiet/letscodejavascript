@@ -52,7 +52,7 @@ setup.qtest(exports, "can upload rss", setup.usingPhantom(function(page) {
             assert.equal(status.loginButtonCount, 0);
         })
         .then(function() {
-            return require("uploadRss")(page);
+            return require("./uploadRss.js")(page);
         })
         .then(getSubscriptionsFromUI)
         .then(function(results) {

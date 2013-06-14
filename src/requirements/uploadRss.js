@@ -1,6 +1,8 @@
 
 var path = require("path");
-var assertPage = require("./assertPage");
+var assertPage = require("./assertPage.js");
+var waitUntil = require("../test/waitUntil.js");
+
 
 module.exports = function(page) {
     var fileToUpload = path.resolve(__dirname, "subscriptions.xml");

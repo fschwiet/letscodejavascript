@@ -23,5 +23,14 @@ setup.qtest(exports, "New user is guided to import feeds and read them.", setup.
     })
     .then(function(){
         return assertPage.isAtPath(page, "/feeds");
+    })
+    .then(function() {
+        return require("./uploadRss.js")(page);
+    })
+    .then(function() {
+        return page.promise.clickElement(".info a");
+    })
+    .then(function() {
+        return assertPage.isAtPath(page, "/");
     });
 }));

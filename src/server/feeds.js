@@ -39,7 +39,7 @@ function handleUploadFromGooglePostRequest(request, response, next) {
 
         database.saveSubscriptions(request.user.id, rows)
         .then(function() {
-            request.flash("info", "Upload complete");
+            request.flash("info", "Upload complete.  Now just go to the <a href='/'>homepage</a> when you want to read them.");
             response.redirect("/feeds");
         }, function(err) {
             next(err);

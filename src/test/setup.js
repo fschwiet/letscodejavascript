@@ -4,7 +4,10 @@ var nconf = require("./../server/config.js");
 var assert = require("assert");
 var path = require("path");
 
+Q.longStackSupport = true;
+
 exports.qtest = function(context, name, testImplementation) {
+
     context[name] = function(test) {
 
         testImplementation = testImplementation || function(promise) {
@@ -86,7 +89,6 @@ exports.usingPhantom = function(callback) {
                                     });
                             })
                             .fin(function() {
-                                console.log("ph.exit called");
                                 phantom.exit();
                             });
                         //}
