@@ -5,13 +5,16 @@ html
         script(src='//requirejs.org/docs/release/2.1.6/minified/require.js',data-main="client/app")
         script(src='/client/inlineReady.js')
     body
-        - if (isAuthenticated)
-            a(href="/logout") Logout
-        - else
-            a(href="/auth/google") Login
+        div(style='overflow:hidden;position:absolute;top:0px;right:0px;padding:10px')
+            div(style='float:right')
+                - if (isAuthenticated)
+                    a(href="/logout") Logout
+                - else
+                    a(href="/auth/google") Login
 
-        - if (typeof flash !== "undefined")
-            -if (flash.info)
-                span.info #{flash.info}
+                - if (typeof flash !== "undefined")
+                    -if (flash.info)
+                        span.info #{flash.info}
 
-        block content
+        div(style='padding:10px')
+            block content
