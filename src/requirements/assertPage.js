@@ -4,7 +4,7 @@ var assert = require("assert");
 
 exports.isAtPath = function(page, path)
 {
-    page.promise.evaluate(function() {
+    return page.promise.evaluate(function() {
         return window.location.pathname;
     })
     .then(function(pathname) {

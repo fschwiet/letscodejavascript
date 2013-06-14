@@ -88,7 +88,13 @@
 
     function handleHomepageRequest(request, response) {
 
-        response.render('index', modelFor("homepage", request));
+        var model = modelFor("homepage", request);
+
+        if (model.isAuthenticated) {
+            response.redirect("/feeds");
+        } else {
+            response.render('index', model);
+        }
     }
 
     function canWrite(owner, inGroup, mode) {
