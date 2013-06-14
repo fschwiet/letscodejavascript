@@ -1,13 +1,10 @@
 var assert = require("assert");
-var path = require("path");
 var expect = require("expect.js");
 
 var setup = require("../test/setup");
 var config = require("../server/config.js");
 var waitUntil = require("../test/waitUntil");
 var login = require("./login");
-
-var fileToUpload = path.resolve(__dirname, "subscriptions.xml");
 
 setup.whenRunningTheServer(exports);
 
@@ -55,19 +52,7 @@ setup.qtest(exports, "can upload rss", setup.usingPhantom(function(page) {
             assert.equal(status.loginButtonCount, 0);
         })
         .then(function() {
-            return page.promise.uploadFile('form.uploadRss input[type=file]', fileToUpload);
-        })
-        .then(function() {
-            return page.promise.clickElement('form.uploadRss input[type=submit]');
-        })
-        .then(function() {
-
-            return waitUntil("upload is complete", function() {
-                return page.promise.get("content")
-                .then(function(content) {
-                    return content.indexOf("Upload complete") > -1;
-                });
-            }, 2000);
+            return require("uploadRss")(page);
         })
         .then(getSubscriptionsFromUI)
         .then(function(results) {

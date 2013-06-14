@@ -11,7 +11,6 @@ var childProcess = require("child_process");
 var nconf = require("./src/server/config.js");
 var Q = require("q");
 var request = require("request");
-var statusChecker = require("./src/requirements/statusChecker.js");
 var nodeVersion = new(require("node-version").version)();
 var util = require("util");
 var runServer = require("./src/test/runServer.js");

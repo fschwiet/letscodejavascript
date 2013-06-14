@@ -3,11 +3,12 @@
 
     var config = require("../server/config.js");
     var request = require("request");
+    var assert = require("assert");
 
     function assertStatusIsGood(contents) {
         checkStatus(contents, (/Database status:(.*)/mi), "connected (localhost)");
         checkStatus(contents, (/Upload path status:(.*)/mi), "writeable");
-    };
+    }
 
     function checkStatus(contents, expectedPattern, expectedStatus) {
         var match = expectedPattern.exec(contents);
