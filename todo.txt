@@ -1,7 +1,4 @@
 GOAL:
-  allow users to add a feed
-  allow users to delete a feed
-
   should be able to read feeds
 
   should have error logging when login fails using http://192.168.1.248 (hostname doesn't match configuration hostname)
@@ -12,6 +9,8 @@ GOAL:
 
 
 TODO:
+  rss.js class takes an rssUrl and calculates an htmlUrl and name
+
   empty homepage has call to action leading to login, then go to /feeds
   non-empty homepage has tabs to home,feeds
   non-empty homepage lists feeds
@@ -30,6 +29,8 @@ TODO:
 
   - name it
     
+LATER:
+    allow users to add a feed
 
 HMMM
     can I write a jade preprocessor for karma?
