@@ -2,10 +2,24 @@
     "use strict";
 
     var config = require("../server/config.js");
-    var statusChecker = require("./statusChecker.js");
     var request = require("request");
 
-    exports.test_shouldReportIfConfigurationIsWorking = function(test) {
+    function assertStatusIsGood(contents) {
+        checkStatus(contents, (/Database status:(.*)/mi), "connected (localhost)");
+        checkStatus(contents, (/Upload path status:(.*)/mi), "writeable");
+    };
+
+    function checkStatus(contents, expectedPattern, expectedStatus) {
+        var match = expectedPattern.exec(contents);
+
+        assert.ok(match !== null, "Did not find " + expectedPattern.toString());
+
+        if (match !== null) {
+            assert.equal(match[1].trim(), expectedStatus);
+        }
+    }
+
+    exports["should report if /status page looks good"] = function(test) {
 
         var target = config.urlFor("/status");
         console.log("requesting status page at", target);
@@ -16,7 +30,7 @@
             } else if (response.statusCode != 200) {
                 test.ok(false, "Expected 200 status code, actually was " + response.statusCode);
             } else {
-                statusChecker.assertStatusIsGood(body);
+                assertStatusIsGood(body);
             }
             test.done();
         });
