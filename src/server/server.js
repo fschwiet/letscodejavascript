@@ -86,12 +86,24 @@
         }
     };
 
-    function handleHomepageRequest(request, response) {
+    function handleHomepageRequest(request, response, next) {
 
         var model = modelFor("homepage", request);
 
         if (model.isAuthenticated) {
-            response.redirect("/feeds");
+
+            database.loadSubscriptions(request.user.id)
+            .then(function(subscriptions) {
+                console.log("subscriptions", subscriptions);
+                if (subscriptions.length > 0) {
+                    response.render('index', model);
+                } else {
+                    response.redirect("/feeds");
+                }
+            }, function(err) {
+                next(err);
+            });
+            
         } else {
             response.render('index', model);
         }

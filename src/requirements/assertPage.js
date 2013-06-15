@@ -1,14 +1,17 @@
 
 
 var assert = require("assert");
+var waitUntil = require("../test/waitUntil.js");
 
 exports.isAtPath = function(page, path)
 {
-    return page.promise.evaluate(function() {
-        return window.location.pathname;
-    })
-    .then(function(pathname) {
-        assert.equal(pathname, path, "Expected to be at path " + path + ", but was actually at " + pathname);
+    return waitUntil("page is at path " + path, function() {
+        return page.promise.evaluate(function() {
+            return window.location.pathname;
+        })
+        .then(function(pathname){
+            return pathname == path;
+        });
     });
 };
 
