@@ -10,6 +10,8 @@ GOAL:
 
 TODO:
 
+  tests are failing because they're reusing the same user.  Have test delete the googleprofile/userid association to startup.
+
   - MySQL connection pooling?
       https://npmjs.org/package/mysql-simple
       - stale by 2 years
