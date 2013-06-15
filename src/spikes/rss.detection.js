@@ -1,4 +1,5 @@
 
+var Q = require("q");
 //var rss = require("rss");
 
 
@@ -63,13 +64,20 @@ var endpoint = require('endpoint');
 var feedfinder = require('feedfinder');
 
 rss = {
-    detectUrl: function(htmlUrl, callback) {
-        request(htmlUrl)
+    detectUrl: function(htmlUrl) {
+
+        var deferred = Q.defer();
+
+        request(htmlUrl, function(error, response, body) {
+            if (error !== null) {
+                deferred.reject(error);
+            }
+        })
           .pipe(feedfinder(htmlUrl))
           .pipe(endpoint({objectMode: true}, function (err, links) {
 
             if (err !== null) {
-                callback(err, null);
+                deferred.reject(err);
             } else {
                 var results = [];
                 console.log("links", links);
@@ -82,12 +90,14 @@ rss = {
                 results = results.sort(function(a,b) { return a.length - b.length;});
 
                 if (results.length > 0) {
-                    callback(null, { rssUrl: results[0]});
+                    deferred.resolve({ rssUrl: results[0]});
                 } else {
-                    callback(new Error("not found"));
+                    deferred.reject(new Error("not found"));
                 }
             }
-          }));
+        }));
+
+        return deferred.promise;
     }
 };
 
@@ -98,30 +108,28 @@ function testRssLookup(htmlUrl, rssUrl) {
 
         console.log("looking up " + htmlUrl);
 
-        rss.detectUrl(htmlUrl, function(err, result) {
-            test.ifError(err);
-
-            if (err === null) {
-                test.equal(result.rssUrl, rssUrl);
-            }
+        rss.detectUrl(htmlUrl)
+        .then(function(result) {
+            test.equal(result.rssUrl, rssUrl);
             test.done();
+        }, function(err) {
+            test.ifErr(err || "Unexpected error");
         });
     };
 }
 
-/*
 
 exports["should be able to report failure"] = function(test) {
 
 
-    rss.detectUrl("http://notyourserver.boo/lol", function(err, result) {
-
-        test.ok(err !== null, "expected an error");
+    rss.detectUrl("http://notyourserver.boo/lol")
+    .then(function() {
+        test.ok(false, "Error expected");
+    }, function(err) {
         test.done();
     });
 };
 
-*/
 
 /*
 var feeds = require("./feeds");
