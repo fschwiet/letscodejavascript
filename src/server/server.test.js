@@ -24,7 +24,7 @@
     exports.test_servesFileForHomepage = function(test) {
 
         server.start(port, function() {
-            var url = "http://localhost:" + port + "/";
+            var url = nconf.urlFor("/");
 
             request(url, function(err, response, body) {
 
@@ -42,13 +42,30 @@
     exports.test_has404Page = function(test) {
 
         server.start(port, function() {
-            var url = "http://localhost:" + port + "/non-existing";
+            var url = nconf.urlFor("/non-existing");
 
             request(url, function(err, response, body) {
 
                 test.ok(err === null, "Error: " + err);
 
                 test.equal(response.statusCode, 404, "Expected 404 response code for url " + url);
+                server.stop();
+                test.done();
+            });
+        });
+    };
+
+    exports.test_servesBuiltClientSide = function(test) {
+
+        server.start(port, function() {
+            var url = nconf.urlFor("/main-built.js");
+
+            request(url, function(err, response, body) {
+
+                test.ok(err === null, "Error: " + err);
+
+                test.equal(response.statusCode, 200, "Expected 200 response code for url " + url);
+
                 server.stop();
                 test.done();
             });

@@ -51,6 +51,17 @@
             throw new Error("Ooops!");
         });
 
+        app.get("/main-built.js", function(req,res) {
+            var mainBuilt = path.resolve(__dirname + '../../../temp/main-built.js');
+            fs.exists(mainBuilt, function(exists) {
+                if (exists) {
+                    res.sendfile(mainBuilt);
+                } else {
+                    res.status(404).send("not found");
+                }
+            });
+        });
+        
         app.use("/client", express.static(__dirname + './../client/'));
 
         var errorLoggingFile = path.resolve(nconf.tempPathForLogs(), "errors.json");
