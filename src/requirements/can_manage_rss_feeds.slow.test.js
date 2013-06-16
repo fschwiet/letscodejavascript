@@ -8,7 +8,16 @@ var login = require("./login");
 
 setup.whenRunningTheServer(exports);
 
-setup.qtest(exports, "can upload rss", setup.usingPhantom(function(page) {
+exports.withCleanDatabase = {
+};
+
+exports.withCleanDatabase.setUp = function(done) {
+    console.log("running more setup");
+    require("../server/database.js").emptyDatabase(done);
+};
+
+
+setup.qtest(exports.withCleanDatabase, "can upload rss", setup.usingPhantom(function(page) {
 
     function getPageStatus() {
         return page.promise.evaluate(
