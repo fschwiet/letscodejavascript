@@ -1,3 +1,15 @@
+client-side templating with jade:
+  during test (config.bundleScript = false):
+    server has path set to load /views that have been jade.parse()d
+    main.js maps view path so they can be required
+    runtime.js is included by the generated jade templates
+  on deployment (config.bundleScript = false):
+    a jakefile task produces the bundle
+    
+
+  smoke test should verify list of feeds (which use the templates) load
+
+
 GOAL:
   should be able to read feeds
 
@@ -9,6 +21,13 @@ GOAL:
 
 
 TODO:
+
+  reader page
+    - on page load, a list of feeds is rendered as a JSON object
+    - client-side code takes the list, and for each makes a request to load feeds.
+    - that feed goes to the server, which then returns however many feed items were found
+      - the feed items contain a timestamp and html field
+    - the client-side code inserts the results in order
 
   tests are failing because they're reusing the same user.  Have test delete the googleprofile/userid association to startup.
 
