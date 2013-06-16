@@ -25,8 +25,7 @@ task = require("./build/jake-util.js").extendTask(task, jake);
 
 task("default", ["verifyNodeVersion", "lint", "writeSampleConfig", "test"], function() { });
 
-task("verifyClientCode", ["lint",  "removeClientBundle", "testClient"], function() { });
-
+task("verifyClientCode", ["lint", "testClient"], function() { });
 desc("lint");
 task("lint", function() {
 
