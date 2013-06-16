@@ -20,11 +20,16 @@ function getConnectionInfo(includeDatabasename) {
     return connectionInfo;
 }
 
-exports.ensureTestDatabaseIsClean = function(callback) {
+function assertDatabaseIsNotProduction(name) {
 
     if (nconf.get("isProduction") !== false) {
-        throw new Error("Attempted to clean test database is production environment.");
+        throw new Error("Attempted to call " + name + " against a database is production environment.");
     }
+}
+
+exports.ensureTestDatabaseIsClean = function(callback) {
+
+    assertDatabaseIsNotProduction("ensureTestDatabaseIsClean");
 
     var connection = mysql.createConnection(getConnectionInfo());
 
@@ -37,6 +42,36 @@ exports.ensureTestDatabaseIsClean = function(callback) {
 
     connection.end();
 };
+
+exports.emptyDatabase = function(callback) {
+
+    assertDatabaseIsNotProduction("emptyDatabase");
+
+    var connection = getConnection();
+
+    var query = Q.nbind(connection.query, connection);
+
+    return Q.ninvoke(connection, "query", "SHOW TABLES")
+    .then(function(results) {
+        
+        var fieldName = results[1][0].name;
+
+        var remainingWork = results[0].map(function(result) {
+            var tableName = result[fieldName];
+            
+            return function() { return query("DELETE FROM " + tableName);
+            }
+        });
+
+        console.log("remainingWork", remainingWork[0]);
+
+        return remainingWork.reduce(Q.when, Q());
+    })
+    .then(function() {
+        connection.end();
+    })
+    .then(callback, callback)
+}
 
 exports.getStatus = function(callback) {
 
