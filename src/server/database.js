@@ -58,13 +58,13 @@ exports.emptyDatabase = function(callback) {
 
         var remainingWork = results[0].map(function(result) {
             var tableName = result[fieldName];
-            
-            return function() { 
-                return query("DELETE FROM " + tableName);
-            };
-        });
 
-        console.log("remainingWork", remainingWork[0]);
+            if (tableName !== "migrations") {
+                return function() { 
+                    return query("DELETE FROM " + tableName);
+                };
+            }
+        });
 
         return remainingWork.reduce(Q.when, Q());
     })
