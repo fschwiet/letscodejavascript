@@ -51,3 +51,6 @@ HMMM
       https://gist.github.com/ryanfitz/834768
       https://github.com/karma-runner/karma/issues/565    
       - canary build of karma may allow registering a preprocessor
+
+
+    should I build runtime.js as part of the build in case jade is updated?
