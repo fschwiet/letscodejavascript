@@ -6,7 +6,15 @@ var assert = require("assert");
 
 setup.whenRunningTheServer(exports);
 
-setup.qtest(exports, "New user is guided to import feeds and read them.", setup.usingPhantom(function(page) {
+exports.withCleanDatabase = {
+};
+
+exports.withCleanDatabase.setUp = function(done) {
+    console.log("running more setup");
+    require("../server/database.js").emptyDatabase(done);
+};
+
+setup.qtest(exports.withCleanDatabase, "New user is guided to import feeds and read them.", setup.usingPhantom(function(page) {
 
     var callToAction = "Import your feeds.";
 

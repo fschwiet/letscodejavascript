@@ -25,7 +25,7 @@ task = require("./build/jake-util.js").extendTask(task, jake);
 
 task("default", ["verifyNodeVersion", "lint", "writeSampleConfig", "test"], function() { });
 
-task("verifyClientCode", ["lint", "testClient"], function() { });
+task("verifyClientCode", ["lint",  "removeClientBundle", "testClient"], function() { });
 
 desc("lint");
 task("lint", function() {
@@ -90,7 +90,9 @@ function runTestsWithNodeunit(testList) {
     });
 }
 
-task("testSlow", ["prepareTempDirectory", "prepareTestDatabase"], function() {
+task("commonTestPrequisites", ["prepareTempDirectory", "prepareTestDatabase","buildClientBundle"], function() {});
+
+task("testSlow", ["commonTestPrequisites"], function() {
 
     var testList = getFileListWithTypicalExcludes();
 
@@ -102,7 +104,7 @@ task("testSlow", ["prepareTempDirectory", "prepareTestDatabase"], function() {
     async: true
 });
 
-task("testSmokeAsRegularTest", ["prepareTempDirectory", "prepareTestDatabase", "startSmokeServer", "testSmoke", "stopSmokeServer"], function() {});
+task("testSmokeAsRegularTest", ["commonTestPrequisites", "startSmokeServer", "testSmoke", "stopSmokeServer"], function() {});
 
 task("testSmoke", function() {
 
@@ -130,7 +132,7 @@ task("stopSmokeServer", function() {
     async: true
 });
 
-task("testRemaining", ["prepareTempDirectory", "prepareTestDatabase"], function() {
+task("testRemaining", ["commonTestPrequisites"], function() {
 
     var testList = getFileListWithTypicalExcludes();
 
@@ -291,6 +293,12 @@ task("deployToIIS", ["verifyEmptyGitStatus", "testForRelease"], function() {
                                     });
                             })
                             .then(function() {
+                                console.log("building client script bundle");
+                                return spawnProcess("migration task", "node", ["./node_modules/jake/bin/cli.js", "buildClientBundle"], {
+                                        cwd: deployPath
+                                    });
+                            })
+                            .then(function() {
                                 console.log("calling execFile on ./src/iis/install.ps1, listening to " + smoketest_port);
 
                                 var iisPath = path.join(deployPath, "src/iis");
@@ -389,6 +397,24 @@ task("runServer", function() {
     console.log("running the server on", port);
     var server = require("./src/server/server.js");
     server.start(port);
+});
+
+var clientBundle = path.resolve(__dirname + "/temp/main-built.js");
+
+desc("Builds a compiled version of client-side script");
+task("buildClientBundle", function() {
+
+    console.log("building " + clientBundle);
+
+    promiseJake(spawnProcess("node r.js", "node", ["./node_modules/requirejs/bin/r.js", "-o", "./src/client/build"]));
+}, { async:true });
+
+desc("Removes compiled version of client-side script");
+task("removeClientBundle", function() {
+
+    if (fs.existsSync(clientBundle)) {
+        fs.unlinkSync(clientBundle);
+    }
 });
 
 desc("Run database migrations");
