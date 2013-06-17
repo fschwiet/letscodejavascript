@@ -36,9 +36,10 @@ nconf.getDefaults = getDefaults;
 
 var baseUrl = "http://localhost:" + nconf.get("server_port") + "/";
 
-nconf.urlFor = function(path) {
+nconf.urlFor = function(path, query) {
     var parts = urlParser.parse(baseUrl);
     parts.pathname = path;
+    parts.query = query;
     return urlParser.format(parts);
 };
 
