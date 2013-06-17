@@ -1,8 +1,6 @@
 (function() {
     "use strict";
 
-    var homepageFile = "views/homepage.html";
-
     var http = require('http');
     var fs = require('fs-extra');
     var path = require('path');
