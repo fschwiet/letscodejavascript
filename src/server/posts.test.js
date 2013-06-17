@@ -11,27 +11,33 @@ var config = require("../server/config.js");
 var setup = require("../test/setup.js");
 
 
-
 setup.whenRunningTheServer(exports);
 
-setup.qtest(exports, "Should be able to load RSS feeds", function() {
+var server;
+var sampleFeed = fs.readFileSync(__dirname+"/../test/data/simpleFeed.xml");
 
-    var sampleFeed = fs.readFileSync(__dirname+"/../test/data/simpleFeed.xml");
+exports.withFeedServer = {
+    setUp : function(done) {
+        var app = require('express')();
+        app.get("/rss", function(req, res) {
+            res.send(sampleFeed);
+        });
 
-    var app = require('express')();
-    app.get("/rss", function(req, res) {
-        res.send(sampleFeed);
-    });
+        server = http.createServer(app);
 
-    server = http.createServer(app);
-    
-    return Q.ninvoke(server, "listen", 8081, "127.0.0.76")
-    .then(function() {
+        server.listen(8081, "127.0.0.76", done);
 
-        var url = config.urlFor("/posts", { rssUrl: "http://127.0.0.76:8081/rss"});
+    },
+    tearDown: function(done) {
+        server.close(done);
+    }
+};
 
-        return Q.nfcall(request, url);
-    })
+setup.qtest(exports.withFeedServer, "Should be able to load RSS feeds", function() {
+
+    var url = config.urlFor("/posts", { rssUrl: "http://127.0.0.76:8081/rss"});
+
+    return Q.nfcall(request, url)
     .then(function(arr) {
 
         var body = arr[1];
@@ -44,11 +50,5 @@ setup.qtest(exports, "Should be able to load RSS feeds", function() {
                     postUrl: "http://www.feedforall.com/restaurant.htm"
                 }
             ]));
-    })
-    .fin(function() {
-
-        return Q.ninvoke(server, "close");
     });
-
-
 });

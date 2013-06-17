@@ -52,11 +52,11 @@ function loadFeeds(rssUrl) {
                         feedName : val.meta.title,
                         postName: val.title,
                         postUrl: val.link
-                    }
+                    };
                 }));
             }
-        } catch(err) {
-            deferred.reject(err);
+        } catch(e) {
+            deferred.reject(e);
         }
     }));
 
