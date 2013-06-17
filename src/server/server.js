@@ -41,6 +41,7 @@
         app.use(connectFlash());
 
         require("./google-auth")(port, app);
+        require("./posts")(app);
 
         app.get("/", handleHomepageRequest);
         app.get("/status", handleStatusRequest);
