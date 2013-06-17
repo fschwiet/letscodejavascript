@@ -1,14 +1,34 @@
 
-var path = require("path");
 var assertPage = require("./assertPage.js");
-var waitUntil = require("../test/waitUntil.js");
+var fs = require("fs");
+var path = require("path");
 
+var config = require("../server/config.js");
+
+var waitUntil = require("../test/waitUntil.js");
+var testData = require("../test/test-data.js");
 
 module.exports = function(page) {
-    var fileToUpload = path.resolve(__dirname, "subscriptions.xml");
+
+    var tempFile = config.tempPathFor("subscriptions.xml");
+    fs.writeFileSync(tempFile, testData.load("subscriptions.xml", {
+        feeds : [
+            {
+                name: "stackoverflow",
+                rssUrl: "http://blog.stackoverflow.com/",
+                htmlUrl: "http://blog.stackoverflow.com/"
+            },
+            {
+                name: "TEDTalks (video)",
+                rssUrl: "http://feeds.feedburner.com/tedtalks_video",
+                htmlUrl: "http://www.ted.com/talks/list"
+            }
+        ]
+    }));
+
     return assertPage.isAtPath(page, "/feeds")
         .then(function() {
-            return page.promise.uploadFile('form.uploadRss input[type=file]', fileToUpload);
+            return page.promise.uploadFile('form.uploadRss input[type=file]', tempFile);
         })
         .then(function() {
             return page.promise.clickElement('form.uploadRss input[type=submit]');
