@@ -29,8 +29,8 @@ define(["reader"], function(Reader) {
         it("requests entries for all feeds", function() {
             expect(this.fakeServer.requests.length).to.be(2);
 
-            assertRequestIsGetFor(this.fakeServer.requests[0], "/loadFeed?" + JSON.stringify({rssUrl : "http://servera.com/rss"}));
-            assertRequestIsGetFor(this.fakeServer.requests[1], "/loadFeed?" + JSON.stringify({rssUrl : "http://serverb.com/rss"}));
+            assertRequestIsGetFor(this.fakeServer.requests[0], "/posts?" + JSON.stringify({rssUrl : "http://servera.com/rss"}));
+            assertRequestIsGetFor(this.fakeServer.requests[1], "/posts?" + JSON.stringify({rssUrl : "http://serverb.com/rss"}));
         });
 
         describe("when the entries are returned for a feed", function() {
@@ -40,8 +40,8 @@ define(["reader"], function(Reader) {
                 var feedsReturned = [ 
                     {
                         feedName: "first feed",
-                        entryName: "first post",
-                        entryUrl: "http://someservera.com/firstPost"
+                        postName: "first post",
+                        postUrl: "http://someservera.com/firstPost"
                     }
                 ];
 
@@ -53,8 +53,8 @@ define(["reader"], function(Reader) {
                     var article = $(value);
                     return {
                         feedName : article.find(".js-feedName").text(),
-                        entryName : article.find(".js-entryName").text(),
-                        entryUrl : article.find(".js-entryLink").attr("href")
+                        postName : article.find(".js-postName").text(),
+                        postUrl : article.find(".js-postLink").attr("href")
                     };
                 });
 
