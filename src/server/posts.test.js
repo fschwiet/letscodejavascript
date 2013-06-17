@@ -11,12 +11,11 @@ var RSS = require("rss");
 var config = require("../server/config.js");
 var setup = require("../test/setup.js");
 
-
-setup.whenRunningTheServer(exports);
+var testBlock = setup.whenRunningTheServer(exports);
 
 var server;
 
-exports.withFeedServer = {
+testBlock.withFeedServer = {
     setUp : function(done) {
         var app = require('express')();
         app.get("/rss", function(req, res) {
@@ -43,7 +42,7 @@ exports.withFeedServer = {
     }
 };
 
-setup.qtest(exports.withFeedServer, "Should be able to load RSS feeds", function() {
+setup.qtest(testBlock.withFeedServer, "Should be able to load RSS feeds", function() {
 
     var url = config.urlFor("/posts", { rssUrl: "http://127.0.0.76:8081/rss"});
 

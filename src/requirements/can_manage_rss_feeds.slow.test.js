@@ -6,18 +6,9 @@ var config = require("../server/config.js");
 var waitUntil = require("../test/waitUntil");
 var login = require("../test/login.js");
 
-setup.whenRunningTheServer(exports);
+var testBlock = setup.whenRunningTheServer(setup.givenCleanDatabase(exports));
 
-exports.withCleanDatabase = {
-};
-
-exports.withCleanDatabase.setUp = function(done) {
-    console.log("running more setup");
-    require("../server/database.js").emptyDatabase(done);
-};
-
-
-setup.qtest(exports.withCleanDatabase, "can upload rss", setup.usingPhantom(function(page) {
+setup.qtest(testBlock, "can upload rss", setup.usingPhantom(function(page) {
 
     function getPageStatus() {
         return page.promise.evaluate(

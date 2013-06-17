@@ -1,10 +1,12 @@
-var phantom = require("./node-phantom-shim.js");
 var Q = require('q');
-var nconf = require("./../server/config.js");
 var assert = require("assert");
 var path = require("path");
 
-Q.longStackSupport = true;
+var nconf = require("./../server/config.js");
+var database = require("../server/database.js");
+
+var phantom = require("./node-phantom-shim.js");
+
 
 exports.qtest = function(context, name, testImplementation) {
 
@@ -112,8 +114,26 @@ exports.clearPhantomCache = function() {
 
 var runServer = require("./runServer");
 
-exports.whenRunningTheServer = function(inner) {
+exports.whenRunningTheServer = function(outer) {
+
+    var inner = {};
+
+    outer.whenRunningTheServer = inner;
 
     inner.setUp = runServer.startServerLikeIIS;
     inner.tearDown = runServer.stopServer;
+
+    return inner;
 };
+
+exports.givenCleanDatabase = function(outer) {
+
+    var inner = {};
+
+    outer.givenCleanDatabase = inner;
+
+    inner.setUp = require("../server/database.js").emptyDatabase;
+
+    return inner;
+};
+

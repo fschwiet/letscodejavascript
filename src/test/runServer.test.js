@@ -5,11 +5,11 @@
     var config = require("../server/config");
     var request = require("request");
 
-    setup.whenRunningTheServer(exports);
+    var testBlock = setup.whenRunningTheServer(exports);
 
     var url = config.urlFor("/");
 
-    exports.test_canRunServer = function(test) {
+    testBlock.test_canRunServer = function(test) {
 
         request(url, function(err, response, responseBody) {
             test.ifError(err);
