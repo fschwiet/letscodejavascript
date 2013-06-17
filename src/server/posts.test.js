@@ -1,48 +1,13 @@
-
-
 var assert = require("assert");
 var Q = require("q");
-var fs = require("fs");
-var http = require("http");
 var request = require("request");
-var RSS = require("rss");
-
 
 var config = require("../server/config.js");
 var setup = require("../test/setup.js");
 
-var testBlock = setup.whenRunningTheServer(exports);
+var testBlock = setup.given3rdPartyRssServer(setup.whenRunningTheServer(exports));
 
-var server;
-
-testBlock.withFeedServer = {
-    setUp : function(done) {
-        var app = require('express')();
-        app.get("/rss", function(req, res) {
-
-            var feed = new RSS({
-                title:"FeedForAll Sample Feed"
-            });
-
-            feed.item({
-                title: "RSS Solutions for Restaurants",
-                url: "http://www.feedforall.com/restaurant.htm"
-            });
-
-            res.send(feed.xml());
-        });
-
-        server = http.createServer(app);
-
-        server.listen(8081, "127.0.0.76", done);
-
-    },
-    tearDown: function(done) {
-        server.close(done);
-    }
-};
-
-setup.qtest(testBlock.withFeedServer, "Should be able to load RSS feeds", function() {
+setup.qtest(testBlock, "Should be able to load RSS feeds", function() {
 
     var url = config.urlFor("/posts", { rssUrl: "http://127.0.0.76:8081/rss"});
 

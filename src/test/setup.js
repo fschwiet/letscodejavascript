@@ -1,6 +1,9 @@
 var Q = require('q');
 var assert = require("assert");
+var fs = require("fs");
+var http = require("http");
 var path = require("path");
+var RSS = require("rss");
 
 var nconf = require("./../server/config.js");
 var database = require("../server/database.js");
@@ -133,6 +136,44 @@ exports.givenCleanDatabase = function(outer) {
     outer.givenCleanDatabase = inner;
 
     inner.setUp = require("../server/database.js").emptyDatabase;
+
+    return inner;
+};
+
+
+exports.given3rdPartyRssServer = function(outer) {
+
+var server;
+
+    var inner = {};
+
+    outer.given3rdPartyRssServer = inner;
+
+    inner.setUp = function(done) {
+        var app = require('express')();
+        app.get("/rss", function(req, res) {
+
+            var feed = new RSS({
+                title:"FeedForAll Sample Feed"
+            });
+
+            feed.item({
+                title: "RSS Solutions for Restaurants",
+                url: "http://www.feedforall.com/restaurant.htm"
+            });
+
+            res.send(feed.xml());
+        });
+
+        server = http.createServer(app);
+
+        server.listen(8081, "127.0.0.76", done);
+
+    };
+
+    inner.tearDown = function(done) {
+        server.close(done);
+    };
 
     return inner;
 };
