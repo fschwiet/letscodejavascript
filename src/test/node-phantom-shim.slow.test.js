@@ -8,7 +8,7 @@
     var Q = require("q");
     var nconf = require("../server/config.js");
     var waitUntil = require("./waitUntil.js");
-    var assertPage = require("../requirements/assertPage.js");
+    var assertPage = require("./assertPage.js");
 
     var app = express();
     var server;

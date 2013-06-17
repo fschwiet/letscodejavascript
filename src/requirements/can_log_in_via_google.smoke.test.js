@@ -1,7 +1,7 @@
 var assert = require("assert");
 var setup = require("../test/setup");
 var config = require("../server/config");
-var login = require("./login");
+var login = require("../test/login.js");
 
 check_login_from(config.urlFor("/feeds"));
 check_login_from(config.urlFor("/status"));

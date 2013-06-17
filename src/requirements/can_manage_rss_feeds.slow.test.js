@@ -4,7 +4,7 @@ var expect = require("expect.js");
 var setup = require("../test/setup");
 var config = require("../server/config.js");
 var waitUntil = require("../test/waitUntil");
-var login = require("./login");
+var login = require("../test/login.js");
 
 setup.whenRunningTheServer(exports);
 
@@ -61,7 +61,7 @@ setup.qtest(exports.withCleanDatabase, "can upload rss", setup.usingPhantom(func
             assert.equal(status.loginButtonCount, 0);
         })
         .then(function() {
-            return require("./uploadRss.js")(page);
+            return require("../test/uploadRss.js")(page);
         })
         .then(getSubscriptionsFromUI)
         .then(function(results) {

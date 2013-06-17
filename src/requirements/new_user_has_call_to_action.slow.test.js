@@ -1,7 +1,7 @@
 
 var config = require("../server/config.js");
 var setup = require("../test/setup.js");
-var assertPage = require("./assertPage.js");
+var assertPage = require("../test/assertPage.js");
 var assert = require("assert");
 
 setup.whenRunningTheServer(exports);
@@ -27,13 +27,13 @@ setup.qtest(exports.withCleanDatabase, "New user is guided to import feeds and r
         return assertPage.containsContent(page, callToAction);
     })
     .then(function(){
-        return require("./login").doLogin(page);
+        return require("../test/login.js").doLogin(page);
     })
     .then(function(){
         return assertPage.isAtPath(page, "/feeds");
     })
     .then(function() {
-        return require("./uploadRss.js")(page);
+        return require("../test/uploadRss.js")(page);
     })
     .then(function() {
         return page.promise.clickElement(".info a");
