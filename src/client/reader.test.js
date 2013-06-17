@@ -1,4 +1,3 @@
-/*
 
 define(["reader"], function(Reader) {
 
@@ -53,16 +52,15 @@ define(["reader"], function(Reader) {
                 var contents = articles.map(function(value) {
                     var article = $(value);
                     return {
-                        feedName : article.find(".js-feedName"),
-                        entryName : article.find(".js-entryName"),
-                        entryUrl : article.find(".js-entryLink").attribute("href")
+                        feedName : article.find(".js-feedName").text(),
+                        entryName : article.find(".js-entryName").text(),
+                        entryUrl : article.find(".js-entryLink").attr("href")
                     };
                 });
 
-                expect(contents).to.be(feedsReturned);
+                expect(JSON.stringify(contents)).to.be(JSON.stringify(feedsReturned));
             });
         });
     });
 });
 
-*/
