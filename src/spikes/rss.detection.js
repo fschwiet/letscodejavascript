@@ -59,6 +59,8 @@ rss = {
 
 
 
+// TODO did I not try https://npmjs.org/package/find-rss
+
 var request = require('request');
 var endpoint = require('endpoint');
 var feedfinder = require('feedfinder');
