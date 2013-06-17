@@ -5,6 +5,7 @@ var Q = require("q");
 var fs = require("fs");
 var http = require("http");
 var request = require("request");
+var RSS = require("rss");
 
 
 var config = require("../server/config.js");
@@ -14,13 +15,22 @@ var setup = require("../test/setup.js");
 setup.whenRunningTheServer(exports);
 
 var server;
-var sampleFeed = fs.readFileSync(__dirname+"/../test/data/simpleFeed.xml");
 
 exports.withFeedServer = {
     setUp : function(done) {
         var app = require('express')();
         app.get("/rss", function(req, res) {
-            res.send(sampleFeed);
+
+            var feed = new RSS({
+                title:"FeedForAll Sample Feed"
+            });
+
+            feed.item({
+                title: "RSS Solutions for Restaurants",
+                url: "http://www.feedforall.com/restaurant.htm"
+            });
+
+            res.send(feed.xml());
         });
 
         server = http.createServer(app);
