@@ -22,6 +22,7 @@ module.exports = function(app) {
 
         loadFeeds(rssUrl)
         .then(function(results) {
+            res.setHeader("Content-Type", "application/json");
             res.send(JSON.stringify(results));
         }, function(err) {
             next(err);

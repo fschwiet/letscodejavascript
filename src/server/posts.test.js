@@ -15,6 +15,7 @@ setup.qtest(testBlock, "Should be able to load RSS feeds", function() {
     return Q.nfcall(request, url)
     .then(function(arr) {
 
+        var response = arr[0];
         var body = arr[1];
         console.log("body", body);
 
@@ -25,6 +26,8 @@ setup.qtest(testBlock, "Should be able to load RSS feeds", function() {
                     postUrl: "http://www.feedforall.com/restaurant.htm"
                 }
             ]));
+
+        assert.equal(response.headers["content-type"], "application/json");
     });
 });
 
