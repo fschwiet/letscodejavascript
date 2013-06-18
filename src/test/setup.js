@@ -4,8 +4,9 @@ var fs = require("fs");
 var http = require("http");
 var path = require("path");
 var RSS = require("rss");
+var setDefault = require('set-default');
 
-var nconf = require("./../server/config.js");
+var config = require("./../server/config.js");
 var database = require("../server/database.js");
 
 var phantom = require("./node-phantom-shim.js");
@@ -141,9 +142,21 @@ exports.givenCleanDatabase = function(outer) {
 };
 
 
-exports.given3rdPartyRssServer = function(outer) {
+exports.given3rdPartyRssServer = function(outer, opts) {
 
-var server;
+    console.log("opts", opts);
+
+    opts = setDefault(opts).to({
+        host: "127.0.0.76",
+        port: config.get("server_port"),
+        feedName: "FeedForAll Sample Feed",
+        postName: "RSS Solutions for Restaurants",
+        postUrl: "http://www.feedforall.com/restaurant.htm"
+    });
+
+    console.log("opts", JSON.stringify(opts).slice(0,40));
+
+    var server;
 
     var inner = {};
 
@@ -154,12 +167,12 @@ var server;
         app.get("/rss", function(req, res) {
 
             var feed = new RSS({
-                title:"FeedForAll Sample Feed"
+                title:opts.feedName
             });
 
             feed.item({
-                title: "RSS Solutions for Restaurants",
-                url: "http://www.feedforall.com/restaurant.htm"
+                title: opts.postName,
+                url: opts.postUrl
             });
 
             res.send(feed.xml());
@@ -167,7 +180,7 @@ var server;
 
         server = http.createServer(app);
 
-        server.listen(8081, "127.0.0.76", done);
+        server.listen(opts.port, opts.host, done);
 
     };
 
