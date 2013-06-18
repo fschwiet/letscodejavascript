@@ -23,7 +23,8 @@ setup.qtest(testBlock, "Should be able to load RSS feeds", function() {
             assert.equal(body, JSON.stringify([{
                             feedName: "FeedForAll Sample Feed",
                             postName: "RSS Solutions for Restaurants",
-                            postUrl: "http://www.feedforall.com/restaurant.htm"
+                            postUrl: "http://www.feedforall.com/restaurant.htm",
+                            postDate: new Date("June 1, 2013")
                         }
                     ]));
 

@@ -58,7 +58,8 @@ function loadFeeds(rssUrl) {
                                 return {
                                     feedName: val.meta.title,
                                     postName: val.title,
-                                    postUrl: val.link
+                                    postUrl: val.link,
+                                    postDate: val.date
                                 };
                             }));
                 }

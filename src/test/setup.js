@@ -151,7 +151,8 @@ exports.given3rdPartyRssServer = function(outer, opts) {
             port: config.get("server_port"),
             feedName: "FeedForAll Sample Feed",
             postName: "RSS Solutions for Restaurants",
-            postUrl: "http://www.feedforall.com/restaurant.htm"
+            postUrl: "http://www.feedforall.com/restaurant.htm",
+            postDate: "June 1, 2013"
         });
 
     console.log("opts", JSON.stringify(opts).slice(0, 40));
@@ -172,7 +173,8 @@ exports.given3rdPartyRssServer = function(outer, opts) {
 
             feed.item({
                     title: opts.postName,
-                    url: opts.postUrl
+                    url: opts.postUrl,
+                    date: opts.postDate
                 });
 
             res.send(feed.xml());
