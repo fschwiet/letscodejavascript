@@ -64,3 +64,5 @@ function loadFeeds(rssUrl) {
 
     return deferred.promise;
 }
+
+module.exports.loadFeeds = loadFeeds;

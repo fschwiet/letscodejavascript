@@ -180,7 +180,7 @@ exports.given3rdPartyRssServer = function(outer, opts) {
 
         app.get("/status", function(req,res) {
             res.send("given3rdPartyRssServer OK");
-        })
+        });
 
         server = http.createServer(app);
 
