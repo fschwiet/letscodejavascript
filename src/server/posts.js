@@ -36,6 +36,8 @@ function loadFeeds(rssUrl) {
     request(rssUrl, function(error, response, body) {
         if (error !== null) {
             deferred.reject(error);
+        } else if (Math.floor(response.statusCode / 100) !== 2) {
+            deferred.reject("Expected 200 response code, was " + response.statusCode);
         }
     })
     .pipe(feedparser({

@@ -14,7 +14,7 @@ define(["views/post.jade"], function(postView) {
             $.ajax({
                 type:"GET",
                 url:"/posts",
-                data: JSON.stringify({ rssUrl: feed.rssUrl}),
+                data: { rssUrl: feed.rssUrl},
                 contentType: "application/json; charset=utf-8",
                 success: function(posts) {
 

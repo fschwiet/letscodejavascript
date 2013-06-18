@@ -62,6 +62,7 @@
         });
         
         app.use("/client", express.static(__dirname + './../client/'));
+        app.use("/client/views", express.static(__dirname + './../../temp/views'));
 
         var errorLoggingFile = path.resolve(nconf.tempPathForLogs(), "errors.json");
 

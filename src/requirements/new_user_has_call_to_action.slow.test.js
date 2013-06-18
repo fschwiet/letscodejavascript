@@ -37,7 +37,7 @@ setup.qtest(testBlock, "New user is guided to import feeds and read them.", setu
             feeds: [ 
                 {
                     name: "ignored",
-                    rssUrl: "http://127.0.0.76:" + config.get("server_port") + "/",
+                    rssUrl: "http://127.0.0.76:" + config.get("server_port") + "/rss",
                     htmlUrl: "http://ignored/"
                 }
             ]
@@ -53,10 +53,8 @@ setup.qtest(testBlock, "New user is guided to import feeds and read them.", setu
         return page.promise.get("content");
     })
     .then(function(content) {
-        /*
         assert.ok(content.indexOf(expectedFeedName) > -1);
         assert.ok(content.indexOf(expectedPostName) > -1);
         assert.ok(content.indexOf(expectedPostUrl) > -1);
-        */
     });
 }));

@@ -9,3 +9,6 @@ block content
                 |  with your google account.
             li Import your feeds.
             li And you are done!
+    - if (typeof feeds !== "undefined")
+        - var subscribedFeeds = "<script> window.subscribedFeeds = " + JSON.stringify(feeds) + "; </script>"
+        | !{subscribedFeeds}

@@ -71,4 +71,21 @@
             });
         });
     };
-})();
+
+    exports["can compile jade views"] = function(test) {
+        server.start(port, function() {
+            var url = nconf.urlFor("/client/views/error500.jade.js");
+
+            request(url, function(err, response, body) {
+
+                test.ok(err === null, "Error: " + err);
+
+                test.equal(response.statusCode, 200, "Expected 200 response code for url " + url);
+
+                server.stop();
+                test.done();
+            });
+        });
+    };
+
+ })();

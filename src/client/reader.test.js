@@ -29,8 +29,8 @@ define(["reader"], function(Reader) {
         it("requests entries for all feeds", function() {
             expect(this.fakeServer.requests.length).to.be(2);
 
-            assertRequestIsGetFor(this.fakeServer.requests[0], "/posts?" + JSON.stringify({rssUrl : "http://servera.com/rss"}));
-            assertRequestIsGetFor(this.fakeServer.requests[1], "/posts?" + JSON.stringify({rssUrl : "http://serverb.com/rss"}));
+            assertRequestIsGetFor(this.fakeServer.requests[0], "/posts?" + $.param({rssUrl : "http://servera.com/rss"}));
+            assertRequestIsGetFor(this.fakeServer.requests[1], "/posts?" + $.param({rssUrl : "http://serverb.com/rss"}));
         });
 
         describe("when the entries are returned for a feed", function() {
