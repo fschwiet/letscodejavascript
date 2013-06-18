@@ -36,31 +36,76 @@ define(["reader"], function(Reader) {
 
         describe("when the entries are returned for a feed", function() {
 
-            it("renders the feed on the page", function() {
+            var feedsReturnedByFirstServer = [{
+                    feedName: "first feed",
+                    postName: "first post",
+                    postUrl: "http://someservera.com/firstPost",
+                    postDate: new Date("June 2, 2013")
+                }
+            ];
 
-                var feedsReturned = [{
-                        feedName: "first feed",
-                        postName: "first post",
-                        postUrl: "http://someservera.com/firstPost"
-                    }
-                ];
+            beforeEach(function() {
 
                 this.fakeServer.requests[0].respond(200, {
                         "Content-Type": "application/json"
-                    }, JSON.stringify(feedsReturned));
+                    }, JSON.stringify(feedsReturnedByFirstServer));
+            });
 
-                var articles = [].slice.apply(this.fixture[0].querySelectorAll(".js-post"));
+            function extractPostsFromPage(fixture) {
+                var articles = [].slice.apply(fixture[0].querySelectorAll(".js-post"));
 
-                var contents = articles.map(function(value) {
+                return articles.map(function(value) {
                     var article = $(value);
                     return {
                         feedName: article.find(".js-feedName").text().trim(),
                         postName: article.find(".js-postName").text().trim(),
-                        postUrl: article.find(".js-postLink").attr("href").trim()
+                        postUrl: article.find(".js-postLink").attr("href").trim(),
+                        postDate: article.data("postdate")
                     };
                 });
+            }
 
-                expect(JSON.stringify(contents)).to.be(JSON.stringify(feedsReturned));
+            it("renders the feed on the page", function() {
+
+                var contents = extractPostsFromPage(this.fixture);
+
+                expect(JSON.stringify(contents)).to.be(JSON.stringify(feedsReturnedByFirstServer));
+            });
+
+            describe("when the entries are received for a second feed", function() {
+
+                var feedsReturnedBySecondServer = [
+                    {
+                        feedName: "second feed",
+                        postName: "earlier post",
+                        postUrl: "http://someservera.com/earlierPost",
+                        postDate: new Date("June 1, 2013")
+                    }, 
+                    {
+                        feedName: "second feed",
+                        postName: "later post",
+                        postUrl: "http://someservera.com/laterPost",
+                        postDate: new Date("June 3, 2013")
+                    }
+                ];
+
+                beforeEach(function() {
+
+                    this.fakeServer.requests[1].respond(200, {
+                            "Content-Type": "application/json"
+                        }, JSON.stringify(feedsReturnedBySecondServer));
+                });
+
+                it("inserts the feed items in chronological order", function() {
+
+                    var titles = extractPostsFromPage(this.fixture).map(function(val) { return val.postName; });
+
+                    expect(JSON.stringify(titles)).to.be(JSON.stringify([
+                            "earlier post",
+                            "first post",
+                            "later post"
+                        ]));
+                });
             });
         });
     });

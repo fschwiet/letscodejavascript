@@ -21,12 +21,34 @@ define(["views/post.jade"], function(postView) {
                     success: function(posts) {
 
                         posts.forEach(function(post) {
-                            var view = postView(post);
-                            that.container.append(view);
+                            that.insertPost(post);
                         });
                     }
                 });
         });
+    };
+
+    Reader.prototype.insertPost = function(post) {
+        var postDate = post.postDate;
+        var view = postView(post);
+
+        var target = null;
+
+        this.container.find(".js-post").each(function() {
+            var next = $(this);
+            var nextDate = next.data("postdate");
+
+            if (nextDate > postDate) {
+                target = next;
+                return false;
+            }
+        });
+
+        if (target !== null) {
+            target.before(view);
+        } else {
+            this.container.append(view);
+        }
     };
 
     return Reader;
