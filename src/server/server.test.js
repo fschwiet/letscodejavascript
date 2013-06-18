@@ -58,7 +58,7 @@
     exports.test_servesBuiltClientSide = function(test) {
 
         server.start(port, function() {
-            var url = nconf.urlFor("/main-built.js");
+            var url = nconf.urlFor("/client/main-built.js");
 
             request(url, function(err, response, body) {
 

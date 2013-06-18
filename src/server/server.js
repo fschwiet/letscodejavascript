@@ -50,7 +50,7 @@
             throw new Error("Ooops!");
         });
 
-        app.get("/main-built.js", function(req,res) {
+        app.get("/client/main-built.js", function(req,res) {
             var mainBuilt = path.resolve(__dirname + '../../../temp/main-built.js');
             fs.exists(mainBuilt, function(exists) {
                 if (exists) {
@@ -104,7 +104,9 @@
 
             database.loadSubscriptions(request.user.id)
             .then(function(subscriptions) {
-                console.log("subscriptions", subscriptions);
+
+                model.feeds = subscriptions;
+
                 if (subscriptions.length > 0) {
                     response.render('index', model);
                 } else {

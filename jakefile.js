@@ -4,6 +4,7 @@ var karma = require('./build/karma/karma');
 var mysql = require('mysql');
 var database = require("./src/server/database.js");
 var path = require("path");
+var find = require("find");
 var fs = require('fs-extra');
 var rimraf = require("rimraf");
 var spawnProcess = require("./src/test/spawn-process.js");
@@ -15,6 +16,8 @@ var nodeVersion = new(require("node-version").version)();
 var util = require("util");
 var runServer = require("./src/test/runServer.js");
 var beautify = require('js-beautify');
+
+var jadePreprocessor = require("./build/karma/jadePreprocessor.js");
 
 var allTests = "**/*.test.js";
 var slowTests = "**/*.slow.test.js";
@@ -402,8 +405,26 @@ task("runServer", function() {
 
 var clientBundle = path.resolve(__dirname + "/temp/main-built.js");
 
+desc("compiles jade views");
+task("compileJadeViews", function() {
+
+    var root = path.resolve(__dirname + "/src/server/views");
+    var newRoot = path.resolve(__dirname + "/temp/views");
+
+    fs.mkdirsSync(newRoot);
+
+    var files = find.fileSync((/\.jade/), root);
+
+    files.forEach(function(file) {
+        var target = file.replace(root, newRoot) + ".js";
+
+        var compiledContent = jadePreprocessor.compile(file);
+        fs.writeFileSync(target, compiledContent);
+    });
+});
+
 desc("Builds a compiled version of client-side script");
-task("buildClientBundle", function() {
+task("buildClientBundle", ["compileJadeViews"], function() {
 
     console.log("building " + clientBundle);
 
@@ -418,6 +439,10 @@ task("removeClientBundle", function() {
     }
 });
 
+/*
+    promiseJake(spawnProcess("node jade-amd", "node", ["./node_modules/jade-amd/bin/jade-amd", "-o", "./src/client/build"]));
+}, {async:true});
+*/
 desc("Run database migrations");
 task("runMigrations", function() {
 
