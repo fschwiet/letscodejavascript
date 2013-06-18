@@ -178,6 +178,10 @@ exports.given3rdPartyRssServer = function(outer, opts) {
             res.send(feed.xml());
         });
 
+        app.get("/status", function(req,res) {
+            res.send("given3rdPartyRssServer OK");
+        })
+
         server = http.createServer(app);
 
         server.listen(opts.port, opts.host, done);

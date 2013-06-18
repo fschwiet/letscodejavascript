@@ -26,3 +26,17 @@ setup.qtest(testBlock, "Should be able to load RSS feeds", function() {
             ]));
     });
 });
+
+setup.qtest(testBlock, "Should give error if the http request fails", function() {
+
+    return setup.shouldFail(function() {
+        return Q.nfcall(request, "http://nonexistsantserver.coommmm/rss");
+    }, "getaddrinfo ENOTFOUND");
+});
+
+setup.qtest(testBlock, "Should error if the format of the document was invalid.", function() {
+
+    return setup.shouldFail(function() {
+        return Q.nfcall(request, "http://127.0.0.76:8081/status");
+    }, "Not a feed");
+});
