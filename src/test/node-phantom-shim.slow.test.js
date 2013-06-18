@@ -110,7 +110,7 @@
                         return waitUntil("browser is redirected to /empty", function() {
                             return page.promise.get("url").then(function(url) {
                                 console.log("url was", url);
-                                return url == "http://localhost:" + port + "/empty";
+                                return url == config.urlFor("/empty");
                             });
                         }, 1000);
                     });
@@ -129,7 +129,7 @@
                         return waitUntil("browser is redirected to /empty", function() {
                             return page.promise.get("url").then(function(url) {
                                 console.log("url was", url);
-                                return url == "http://localhost:" + port + "/empty";
+                                return url == config.urlFor("/empty");
                             });
                         }, 1000);
                     });

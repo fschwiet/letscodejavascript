@@ -16,6 +16,7 @@ function getDefaults() {
 
         "server_friendlyName": "letscodejavascript",
         "server_port": 8081,
+        "server_hostname": "localhost",
         "server_tempPath": "./temp",
         "server_sessionKey": "foo",
         "isProduction": false,
@@ -34,7 +35,7 @@ nconf.defaults(getDefaults());
 
 nconf.getDefaults = getDefaults;
 
-var baseUrl = "http://localhost:" + nconf.get("server_port") + "/";
+var baseUrl = "http://" + nconf.get("server_hostname") + ":" + nconf.get("server_port") + "/";
 
 nconf.urlFor = function(path, query) {
     var parts = urlParser.parse(baseUrl);

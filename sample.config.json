@@ -6,6 +6,7 @@
     "database_password": "",
     "server_friendlyName": "letscodejavascript",
     "server_port": 8081,
+    "server_hostname": "localhost",
     "server_tempPath": "./temp",
     "server_sessionKey": "foo",
     "isProduction": false,
