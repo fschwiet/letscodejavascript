@@ -1,18 +1,18 @@
 
-var assertPage = require("./assertPage.js");
 var fs = require("fs");
 var path = require("path");
+var setDefault = require('set-default');
 
 var config = require("../server/config.js");
 
-var waitUntil = require("../test/waitUntil.js");
-var testData = require("../test/test-data.js");
+var waitUntil = require("./waitUntil.js");
+var testData = require("./test-data.js");
+var assertPage = require("./assertPage.js");
 
-module.exports = function(page) {
+module.exports = function(page, options) {
 
-    var tempFile = config.tempPathFor("subscriptions.xml");
-    fs.writeFileSync(tempFile, testData.load("subscriptions.xml", {
-        feeds : [
+    options = setDefault(options).to({
+        feeds: [
             {
                 name: "stackoverflow",
                 rssUrl: "http://blog.stackoverflow.com/",
@@ -24,6 +24,11 @@ module.exports = function(page) {
                 htmlUrl: "http://www.ted.com/talks/list"
             }
         ]
+    });
+
+    var tempFile = config.tempPathFor("subscriptions.xml");
+    fs.writeFileSync(tempFile, testData.load("subscriptions.xml", {
+        feeds : options.feeds
     }));
 
     return assertPage.isAtPath(page, "/feeds")

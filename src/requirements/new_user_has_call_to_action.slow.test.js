@@ -4,7 +4,15 @@ var setup = require("../test/setup.js");
 var assertPage = require("../test/assertPage.js");
 var assert = require("assert");
 
-var testBlock = setup.whenRunningTheServer(setup.givenCleanDatabase(exports));
+var expectedFeedName = "expectedFeedName";
+var expectedPostName = "expectedPostName";
+var expectedPostUrl = "http://expectedPostUrl.com/readme";
+
+var testBlock = setup.given3rdPartyRssServer(setup.whenRunningTheServer(setup.givenCleanDatabase(exports)), {
+    feedName: expectedFeedName,
+    postName: expectedPostName,
+    postUrl: expectedPostUrl
+});
 
 setup.qtest(testBlock, "New user is guided to import feeds and read them.", setup.usingPhantom(function(page) {
 
@@ -25,12 +33,30 @@ setup.qtest(testBlock, "New user is guided to import feeds and read them.", setu
         return assertPage.isAtPath(page, "/feeds");
     })
     .then(function() {
-        return require("../test/uploadRss.js")(page);
+        return require("../test/uploadRss.js")(page, {
+            feeds: [ 
+                {
+                    name: "ignored",
+                    rssUrl: "http://127.0.0.76:" + config.get("server_port") + "/",
+                    htmlUrl: "http://ignored/"
+                }
+            ]
+        });
     })
     .then(function() {
         return page.promise.clickElement(".info a");
     })
     .then(function() {
         return assertPage.isAtPath(page, "/");
+    })
+    .then(function() {
+        return page.promise.get("content");
+    })
+    .then(function(content) {
+        /*
+        assert.ok(content.indexOf(expectedFeedName) > -1);
+        assert.ok(content.indexOf(expectedPostName) > -1);
+        assert.ok(content.indexOf(expectedPostUrl) > -1);
+        */
     });
 }));
