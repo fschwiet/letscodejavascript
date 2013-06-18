@@ -54,9 +54,9 @@ define(["reader"], function(Reader) {
                 var contents = articles.map(function(value) {
                     var article = $(value);
                     return {
-                        feedName: article.find(".js-feedName").text(),
-                        postName: article.find(".js-postName").text(),
-                        postUrl: article.find(".js-postLink").attr("href")
+                        feedName: article.find(".js-feedName").text().trim(),
+                        postName: article.find(".js-postName").text().trim(),
+                        postUrl: article.find(".js-postLink").attr("href").trim()
                     };
                 });
 
