@@ -40,29 +40,31 @@ function loadFeeds(rssUrl) {
             deferred.reject("Expected 200 response code, was " + response.statusCode);
         }
     })
-        .pipe(feedparser({
-                feedurl: rssUrl
-            }))
-        .pipe(endpoint({
-                objectMode: true
-            }, function(err, results) {
+    .on('error', function(err) { deferred.reject(err); })
+    .pipe(feedparser({
+            feedurl: rssUrl
+        }))
+    .on('error', function(err) { deferred.reject(err); })
+    .pipe(endpoint({
+            objectMode: true
+        }, function(err, results) {
 
-                try {
-                    if (err !== null) {
-                        deferred.reject(err);
-                    } else {
-                        deferred.resolve(results.map(function(val) {
-                                    return {
-                                        feedName: val.meta.title,
-                                        postName: val.title,
-                                        postUrl: val.link
-                                    };
-                                }));
-                    }
-                } catch (e) {
-                    deferred.reject(e);
+            try {
+                if (err !== null) {
+                    deferred.reject(err);
+                } else {
+                    deferred.resolve(results.map(function(val) {
+                                return {
+                                    feedName: val.meta.title,
+                                    postName: val.title,
+                                    postUrl: val.link
+                                };
+                            }));
                 }
-            }));
+            } catch (e) {
+                deferred.reject(e);
+            }
+        }));
 
     return deferred.promise;
 }
