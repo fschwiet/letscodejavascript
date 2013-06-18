@@ -1,5 +1,11 @@
 
 GOAL:
+  need to make hostname work
+    -> add configuration value for hostname, use it in urlFor
+    -> add jake task that verifies that hostname resolves to local machine (127.0.0.1)
+      in error message, recommend the hosts file be modified.
+      
+
   should have error logging when login fails using http://192.168.1.248 (hostname doesn't match configuration hostname)
 
   should track what feeds have already been read

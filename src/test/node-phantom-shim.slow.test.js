@@ -6,14 +6,14 @@
     var express = require("express");
     var http = require('http');
     var Q = require("q");
-    var nconf = require("../server/config.js");
+    var config = require("../server/config.js");
     var waitUntil = require("./waitUntil.js");
     var assertPage = require("./assertPage.js");
 
     var app = express();
     var server;
 
-    var port = nconf.get("server_port");
+    var port = config.get("server_port");
 
     exports.setUp = function(callback) {
 
@@ -64,7 +64,7 @@
             }));
 
     setup.qtest(exports, "should be able to load page content as a string", setup.usingPhantom(function(page) {
-                return page.promise.open("http://localhost:" + port + "/empty")
+                return page.promise.open(config.urlFor("/empty"))
                     .then(function(status) {
                         assert.equal(status, "success");
                     })
@@ -75,7 +75,7 @@
 
     setup.qtest(exports.clickElement, "should give useful error when not found", setup.usingPhantom(function(page) {
                 return setup.shouldFail(function() {
-                    return page.promise.open("http://localhost:" + port + "/empty")
+                    return page.promise.open(config.urlFor("/empty"))
                         .then(function(status) {
                             assert.equal(status, "success");
                         })
@@ -87,7 +87,7 @@
 
     setup.qtest(exports.clickElement, "should give useful error when multiple found", setup.usingPhantom(function(page) {
                 return setup.shouldFail(function() {
-                    return page.promise.open("http://localhost:" + port + "/multiple")
+                    return page.promise.open(config.urlFor("/multiple"))
                         .then(function(status) {
                             assert.equal(status, "success");
                         })
@@ -98,7 +98,7 @@
             }));
 
     setup.qtest(exports.clickElement, "should click element when found", setup.usingPhantom(function(page) {
-                return page.promise.open("http://localhost:" + port + "/links-to-empty")
+                return page.promise.open(config.urlFor("/links-to-empty"))
                     .then(function(status) {
                         assert.equal(status, "success");
                     })
@@ -117,7 +117,7 @@
             }));
 
     setup.qtest(exports.clickElement, "should allow less-strict clicking where uniqueness is not required", setup.usingPhantom(function(page) {
-                return page.promise.open("http://localhost:" + port + "/duplicate-links-to-empty")
+                return page.promise.open(config.urlFor("/duplicate-links-to-empty"))
                     .then(function(status) {
                         assert.equal(status, "success");
                     })
