@@ -1,14 +1,3 @@
-client-side templating with jade:
-  during test (config.bundleScript = false):
-    server has path set to load /views that have been jade.parse()d
-    main.js maps view path so they can be required
-    runtime.js is included by the generated jade templates
-  on deployment (config.bundleScript = false):
-    a jakefile task produces the bundle
-    
-
-  smoke test should verify list of feeds (which use the templates) load
-
 
 GOAL:
   should be able to read feeds
@@ -21,6 +10,8 @@ GOAL:
 
 
 TODO:
+
+  feeds should be inserted in order
 
   reader page
     - on page load, a list of feeds is rendered as a JSON object

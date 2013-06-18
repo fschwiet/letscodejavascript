@@ -24,7 +24,8 @@ module.exports = function(app) {
                 res.setHeader("Content-Type", "application/json");
                 res.send(JSON.stringify(results));
             }, function(err) {
-                next(err);
+                res.setHeader("Content-Type", "application/json");
+                res.send(JSON.stringify([]));
             });
     });
 };
