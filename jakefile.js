@@ -72,7 +72,7 @@ task("writeSampleConfig", function() {
 
     var defaults = nconf.getDefaults();
 
-    fs.writeFileSync("./sample.config.json", JSON.stringify(defaults, null, "    ").replace("\n", "\r\n"));
+    fs.writeFileSync("./sample.config.json", JSON.stringify(defaults, null, "    "));
 });
 
 desc("test everything");
