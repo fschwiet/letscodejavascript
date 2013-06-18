@@ -38,7 +38,7 @@ define(["views/post.jade"], function(postView) {
             var next = $(this);
             var nextDate = next.data("postdate");
 
-            if (nextDate > postDate) {
+            if (postDate > nextDate) {
                 target = next;
                 return false;
             }

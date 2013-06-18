@@ -101,9 +101,9 @@ define(["reader"], function(Reader) {
                     var titles = extractPostsFromPage(this.fixture).map(function(val) { return val.postName; });
 
                     expect(JSON.stringify(titles)).to.be(JSON.stringify([
-                            "earlier post",
+                            "later post",
                             "first post",
-                            "later post"
+                            "earlier post"
                         ]));
                 });
             });
