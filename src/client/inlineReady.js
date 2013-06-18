@@ -1,8 +1,6 @@
-
 window.ready = function(callback) {
     require(
-        ["jquery"], 
-        function() { 
+        ["jquery"], function() {
             callback();
         });
 };

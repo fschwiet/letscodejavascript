@@ -4,5 +4,5 @@ define(["ignore"], function(testModule) {
 
             expect(testModule.truth()).to.be(true);
         });
-});});
-
+    });
+});

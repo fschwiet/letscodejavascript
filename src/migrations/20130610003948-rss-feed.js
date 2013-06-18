@@ -60,15 +60,15 @@ exports.down = function(db, callback) {
     var dropTable = Q.nbind(db.dropTable, db);
 
     dropTable('subscriptions')
-    .then(function() {
-        return dropTable('googleProfiles');  
-    })
-    .then(function() {
-       return dropTable('users'); 
-    })
-    .then(function() {
-        callback();
-    }, function(err) {
-        callback(err);
-    });
+        .then(function() {
+            return dropTable('googleProfiles');
+        })
+        .then(function() {
+            return dropTable('users');
+        })
+        .then(function() {
+            callback();
+        }, function(err) {
+            callback(err);
+        });
 };

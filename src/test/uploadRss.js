@@ -1,4 +1,3 @@
-
 var fs = require("fs");
 var path = require("path");
 var setDefault = require('set-default');
@@ -12,24 +11,22 @@ var assertPage = require("./assertPage.js");
 module.exports = function(page, options) {
 
     options = setDefault(options).to({
-        feeds: [
-            {
-                name: "stackoverflow",
-                rssUrl: "http://blog.stackoverflow.com/",
-                htmlUrl: "http://blog.stackoverflow.com/"
-            },
-            {
-                name: "TEDTalks (video)",
-                rssUrl: "http://feeds.feedburner.com/tedtalks_video",
-                htmlUrl: "http://www.ted.com/talks/list"
-            }
-        ]
-    });
+            feeds: [{
+                    name: "stackoverflow",
+                    rssUrl: "http://blog.stackoverflow.com/",
+                    htmlUrl: "http://blog.stackoverflow.com/"
+                }, {
+                    name: "TEDTalks (video)",
+                    rssUrl: "http://feeds.feedburner.com/tedtalks_video",
+                    htmlUrl: "http://www.ted.com/talks/list"
+                }
+            ]
+        });
 
     var tempFile = config.tempPathFor("subscriptions.xml");
     fs.writeFileSync(tempFile, testData.load("subscriptions.xml", {
-        feeds : options.feeds
-    }));
+                feeds: options.feeds
+            }));
 
     return assertPage.isAtPath(page, "/feeds")
         .then(function() {
@@ -42,9 +39,9 @@ module.exports = function(page, options) {
 
             return waitUntil("upload is complete", function() {
                 return page.promise.get("content")
-                .then(function(content) {
-                    return content.indexOf("Upload complete") > -1;
-                });
+                    .then(function(content) {
+                        return content.indexOf("Upload complete") > -1;
+                    });
             }, 2000);
-        });        
+        });
 };

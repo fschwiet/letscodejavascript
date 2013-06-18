@@ -122,7 +122,7 @@
                         assert.equal(status, "success");
                     })
                     .then(function() {
-                        return page.promise.clickElement("a.target",true);
+                        return page.promise.clickElement("a.target", true);
                     })
                     .then(function() {
                         var start = new Date();

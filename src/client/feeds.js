@@ -10,11 +10,13 @@ define([], function() {
                 row.remove();
 
                 $.ajax({
-                    type:"POST",
-                    url:"/feeds/unsubscribe",
-                    data: JSON.stringify({ rssUrl: rssUrl}),
-                    contentType: "application/json; charset=utf-8"
-                });
+                        type: "POST",
+                        url: "/feeds/unsubscribe",
+                        data: JSON.stringify({
+                                rssUrl: rssUrl
+                            }),
+                        contentType: "application/json; charset=utf-8"
+                    });
             });
 
             $(unsubscribeLink, region).attr("href", "#");

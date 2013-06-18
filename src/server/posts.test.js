@@ -10,25 +10,26 @@ var testBlock = setup.given3rdPartyRssServer(setup.whenRunningTheServer(exports)
 
 setup.qtest(testBlock, "Should be able to load RSS feeds", function() {
 
-    var url = config.urlFor("/posts", { rssUrl: "http://127.0.0.76:8081/rss"});
+    var url = config.urlFor("/posts", {
+            rssUrl: "http://127.0.0.76:8081/rss"
+        });
 
     return Q.nfcall(request, url)
-    .then(function(arr) {
+        .then(function(arr) {
 
-        var response = arr[0];
-        var body = arr[1];
-        console.log("body", body);
+            var response = arr[0];
+            var body = arr[1];
+            console.log("body", body);
 
-        assert.equal(body, JSON.stringify([
-                {
-                    feedName: "FeedForAll Sample Feed",
-                    postName: "RSS Solutions for Restaurants",
-                    postUrl: "http://www.feedforall.com/restaurant.htm"
-                }
-            ]));
+            assert.equal(body, JSON.stringify([{
+                            feedName: "FeedForAll Sample Feed",
+                            postName: "RSS Solutions for Restaurants",
+                            postUrl: "http://www.feedforall.com/restaurant.htm"
+                        }
+                    ]));
 
-        assert.equal(response.headers["content-type"], "application/json");
-    });
+            assert.equal(response.headers["content-type"], "application/json");
+        });
 });
 
 setup.qtest(testBlock, "Should give error if the http request fails", function() {

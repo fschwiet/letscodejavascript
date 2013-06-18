@@ -1,4 +1,4 @@
-require(["feeds", "reader", "jquery"], function(feeds, Reader, $) { 
+require(["feeds", "reader", "jquery"], function(feeds, Reader, $) {
     feeds.initialize($("body"));
 
     window.mainInitialized = true;

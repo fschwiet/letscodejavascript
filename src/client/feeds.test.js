@@ -1,4 +1,3 @@
-
 define(["feeds", "jquery", "views/feeds.jade", "sinon"], function(feeds, $, feedsView) {
 
     describe("when the feeds page is shown", function() {
@@ -7,17 +6,19 @@ define(["feeds", "jquery", "views/feeds.jade", "sinon"], function(feeds, $, feed
 
             function subscription(name) {
                 return {
-                    name : name,
-                    htmlUrl : "http://server.com/" + name,
+                    name: name,
+                    htmlUrl: "http://server.com/" + name,
                     rssUrl: "http://server.com/" + name + "/rss"
                 };
             }
 
-            var templateResult = feedsView({rows:[
-                    subscription("first"),
-                    subscription("second"),
-                    subscription("third")
-                ]});
+            var templateResult = feedsView({
+                    rows: [
+                        subscription("first"),
+                        subscription("second"),
+                        subscription("third")
+                    ]
+                });
 
             this.fixture.append(templateResult);
 
@@ -53,16 +54,17 @@ define(["feeds", "jquery", "views/feeds.jade", "sinon"], function(feeds, $, feed
             });
 
             it("will notify the server", function() {
-                
+
                 expect(this.fakeServer.requests.length).to.be(1);
 
                 var request = this.fakeServer.requests[0];
 
                 expect(request.url).to.be("/feeds/unsubscribe");
                 expect(request.method).to.be("POST");
-                expect(request.requestBody).to.be(JSON.stringify({rssUrl : secondRowRssUrl}));
+                expect(request.requestBody).to.be(JSON.stringify({
+                            rssUrl: secondRowRssUrl
+                        }));
             });
         });
     });
 });
-

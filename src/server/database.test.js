@@ -63,41 +63,61 @@ setup.qtest(exports, "saveSubscriptions treats duplicates as updates", function(
 
             var userId = user.id;
 
-            return database.saveSubscriptions(userId, 
-                [
-                    {name:"nameA", rssUrl:"rssA", htmlUrl:"htmlA"},
-                    {name:"nameB", rssUrl:"rssB", htmlUrl:"htmlB"}
+            return database.saveSubscriptions(userId, [{
+                        name: "nameA",
+                        rssUrl: "rssA",
+                        htmlUrl: "htmlA"
+                    }, {
+                        name: "nameB",
+                        rssUrl: "rssB",
+                        htmlUrl: "htmlB"
+                    }
                 ])
                 .then(function() {
-                    return database.saveSubscriptions(userId,
-                        [
-                            {name:"modified nameB", rssUrl:"rssB", htmlUrl:"htmlB"},
-                            {name:"nameC", rssUrl:"rssC", htmlUrl:"htmlC"}
+                    return database.saveSubscriptions(userId, [{
+                                name: "modified nameB",
+                                rssUrl: "rssB",
+                                htmlUrl: "htmlB"
+                            }, {
+                                name: "nameC",
+                                rssUrl: "rssC",
+                                htmlUrl: "htmlC"
+                            }
                         ]);
                 })
                 .then(function() {
                     return database.loadSubscriptions(userId);
                 })
-                .then(function(results){
+                .then(function(results) {
 
                     // filter out the fields we're testing for
                     results = results.map(function(value) {
                         return {
-                            name : value.name,
+                            name: value.name,
                             rssUrl: value.rssUrl,
                             htmlUrl: value.htmlUrl
                         };
                     });
 
                     // put the results in a consistent order
-                    results = _.sortBy(results, function(v) { return v.rssUrl;});
+                    results = _.sortBy(results, function(v) {
+                        return v.rssUrl;
+                    });
 
-                    assert.deepEqual(results, 
-                        [
-                            {name:"nameA", rssUrl:"rssA", htmlUrl:"htmlA"},
-                            {name:"modified nameB", rssUrl:"rssB", htmlUrl:"htmlB"},
-                            {name:"nameC", rssUrl:"rssC", htmlUrl:"htmlC"},
-                            
+                    assert.deepEqual(results, [{
+                                name: "nameA",
+                                rssUrl: "rssA",
+                                htmlUrl: "htmlA"
+                            }, {
+                                name: "modified nameB",
+                                rssUrl: "rssB",
+                                htmlUrl: "htmlB"
+                            }, {
+                                name: "nameC",
+                                rssUrl: "rssC",
+                                htmlUrl: "htmlC"
+                            },
+
                         ]);
                 });
         });
@@ -110,10 +130,15 @@ setup.qtest(exports, "deleteSubscription should remove subscriptions", function(
 
             var userId = user.id;
 
-            return database.saveSubscriptions(userId, 
-                [
-                    {name:"nameA", rssUrl:"rssA", htmlUrl:"htmlA"},
-                    {name:"nameB", rssUrl:"rssB", htmlUrl:"htmlB"}
+            return database.saveSubscriptions(userId, [{
+                        name: "nameA",
+                        rssUrl: "rssA",
+                        htmlUrl: "htmlA"
+                    }, {
+                        name: "nameB",
+                        rssUrl: "rssB",
+                        htmlUrl: "htmlB"
+                    }
                 ])
                 .then(function() {
                     return database.unsubscribe(userId, "rssB");
@@ -121,23 +146,27 @@ setup.qtest(exports, "deleteSubscription should remove subscriptions", function(
                 .then(function() {
                     return database.loadSubscriptions(userId);
                 })
-                .then(function(results){
+                .then(function(results) {
 
                     // filter out the fields we're testing for
                     results = results.map(function(value) {
                         return {
-                            name : value.name,
+                            name: value.name,
                             rssUrl: value.rssUrl,
                             htmlUrl: value.htmlUrl
                         };
                     });
 
                     // put the results in a consistent order
-                    results = _.sortBy(results, function(v) { return v.rssUrl;});
+                    results = _.sortBy(results, function(v) {
+                        return v.rssUrl;
+                    });
 
-                    assert.deepEqual(results, 
-                        [
-                            {name:"nameA", rssUrl:"rssA", htmlUrl:"htmlA"}
+                    assert.deepEqual(results, [{
+                                name: "nameA",
+                                rssUrl: "rssA",
+                                htmlUrl: "htmlA"
+                            }
                         ]);
                 });
 
@@ -156,15 +185,19 @@ setup.qtest(exports, "deleteSubscription shouldn't remove other people's subscri
             return findOrCreateUserByGoogleIdentifier(uuid.v4(), getGoogleProfile("User"));
         })
         .then(function(user) {
-            return database.saveSubscriptions(user.id, 
-                [
-                    {name:"nameA", rssUrl:"rssA", htmlUrl:"htmlA"}
+            return database.saveSubscriptions(user.id, [{
+                        name: "nameA",
+                        rssUrl: "rssA",
+                        htmlUrl: "htmlA"
+                    }
                 ])
                 .then(function() {
-                    return database.saveSubscriptions(otherUserId, 
-                    [
-                        {name:"nameA", rssUrl:"rssA", htmlUrl:"htmlA"}
-                    ]);
+                    return database.saveSubscriptions(otherUserId, [{
+                                name: "nameA",
+                                rssUrl: "rssA",
+                                htmlUrl: "htmlA"
+                            }
+                        ]);
                 })
                 .then(function() {
                     return database.unsubscribe(user.id, "rssA");
@@ -172,31 +205,34 @@ setup.qtest(exports, "deleteSubscription shouldn't remove other people's subscri
                 .then(function() {
                     return database.loadSubscriptions(user.id);
                 })
-                .then(function(results){
+                .then(function(results) {
 
                     expect(results.length).to.be(0);
                 })
                 .then(function() {
                     return database.loadSubscriptions(otherUserId);
                 })
-                .then(function(results){
+                .then(function(results) {
                     // filter out the fields we're testing for
                     results = results.map(function(value) {
                         return {
-                            name : value.name,
+                            name: value.name,
                             rssUrl: value.rssUrl,
                             htmlUrl: value.htmlUrl
                         };
                     });
 
                     // put the results in a consistent order
-                    results = _.sortBy(results, function(v) { return v.rssUrl;});
+                    results = _.sortBy(results, function(v) {
+                        return v.rssUrl;
+                    });
 
-                    assert.deepEqual(results, 
-                        [
-                            {name:"nameA", rssUrl:"rssA", htmlUrl:"htmlA"}
+                    assert.deepEqual(results, [{
+                                name: "nameA",
+                                rssUrl: "rssA",
+                                htmlUrl: "htmlA"
+                            }
                         ]);
                 });
         });
 });
-

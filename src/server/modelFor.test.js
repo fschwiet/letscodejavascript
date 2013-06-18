@@ -6,7 +6,9 @@
 
     function fakeRequest() {
         return {
-            flash : function() { return {}; }
+            flash: function() {
+                return {};
+            }
         };
     }
 

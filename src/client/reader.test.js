@@ -1,4 +1,3 @@
-
 define(["reader"], function(Reader) {
 
     var reader;
@@ -16,45 +15,48 @@ define(["reader"], function(Reader) {
 
             reader = new Reader();
 
-            reader.startReader(this.fixture, [
-                {
-                    rssUrl: "http://servera.com/rss"
-                },
-                {
-                    rssUrl: "http://serverb.com/rss"
-                }
-            ]);
+            reader.startReader(this.fixture, [{
+                        rssUrl: "http://servera.com/rss"
+                    }, {
+                        rssUrl: "http://serverb.com/rss"
+                    }
+                ]);
         });
 
         it("requests entries for all feeds", function() {
             expect(this.fakeServer.requests.length).to.be(2);
 
-            assertRequestIsGetFor(this.fakeServer.requests[0], "/posts?" + $.param({rssUrl : "http://servera.com/rss"}));
-            assertRequestIsGetFor(this.fakeServer.requests[1], "/posts?" + $.param({rssUrl : "http://serverb.com/rss"}));
+            assertRequestIsGetFor(this.fakeServer.requests[0], "/posts?" + $.param({
+                        rssUrl: "http://servera.com/rss"
+                    }));
+            assertRequestIsGetFor(this.fakeServer.requests[1], "/posts?" + $.param({
+                        rssUrl: "http://serverb.com/rss"
+                    }));
         });
 
         describe("when the entries are returned for a feed", function() {
 
             it("renders the feed on the page", function() {
 
-                var feedsReturned = [ 
-                    {
+                var feedsReturned = [{
                         feedName: "first feed",
                         postName: "first post",
                         postUrl: "http://someservera.com/firstPost"
                     }
                 ];
 
-                this.fakeServer.requests[0].respond(200, { "Content-Type": "application/json"}, JSON.stringify(feedsReturned));
+                this.fakeServer.requests[0].respond(200, {
+                        "Content-Type": "application/json"
+                    }, JSON.stringify(feedsReturned));
 
                 var articles = [].slice.apply(this.fixture[0].querySelectorAll(".js-post"));
 
                 var contents = articles.map(function(value) {
                     var article = $(value);
                     return {
-                        feedName : article.find(".js-feedName").text(),
-                        postName : article.find(".js-postName").text(),
-                        postUrl : article.find(".js-postLink").attr("href")
+                        feedName: article.find(".js-feedName").text(),
+                        postName: article.find(".js-postName").text(),
+                        postUrl: article.find(".js-postLink").attr("href")
                     };
                 });
 
@@ -63,4 +65,3 @@ define(["reader"], function(Reader) {
         });
     });
 });
-

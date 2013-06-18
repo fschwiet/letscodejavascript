@@ -147,14 +147,14 @@ exports.given3rdPartyRssServer = function(outer, opts) {
     console.log("opts", opts);
 
     opts = setDefault(opts).to({
-        host: "127.0.0.76",
-        port: config.get("server_port"),
-        feedName: "FeedForAll Sample Feed",
-        postName: "RSS Solutions for Restaurants",
-        postUrl: "http://www.feedforall.com/restaurant.htm"
-    });
+            host: "127.0.0.76",
+            port: config.get("server_port"),
+            feedName: "FeedForAll Sample Feed",
+            postName: "RSS Solutions for Restaurants",
+            postUrl: "http://www.feedforall.com/restaurant.htm"
+        });
 
-    console.log("opts", JSON.stringify(opts).slice(0,40));
+    console.log("opts", JSON.stringify(opts).slice(0, 40));
 
     var server;
 
@@ -167,18 +167,18 @@ exports.given3rdPartyRssServer = function(outer, opts) {
         app.get("/rss", function(req, res) {
 
             var feed = new RSS({
-                title:opts.feedName
-            });
+                    title: opts.feedName
+                });
 
             feed.item({
-                title: opts.postName,
-                url: opts.postUrl
-            });
+                    title: opts.postName,
+                    url: opts.postUrl
+                });
 
             res.send(feed.xml());
         });
 
-        app.get("/status", function(req,res) {
+        app.get("/status", function(req, res) {
             res.send("given3rdPartyRssServer OK");
         });
 
@@ -194,4 +194,3 @@ exports.given3rdPartyRssServer = function(outer, opts) {
 
     return inner;
 };
-

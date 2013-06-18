@@ -10,7 +10,7 @@ define(["jquery", "sinon"], function($) {
         $("body").append(this.fixture);
     });
 
-    afterEach(function(){
+    afterEach(function() {
 
         this.fixture.remove();
         this.sinon.restore();

@@ -50,7 +50,7 @@
             throw new Error("Ooops!");
         });
 
-        app.get("/client/main-built.js", function(req,res) {
+        app.get("/client/main-built.js", function(req, res) {
             var mainBuilt = path.resolve(__dirname + '../../../temp/main-built.js');
             fs.exists(mainBuilt, function(exists) {
                 if (exists) {
@@ -60,7 +60,7 @@
                 }
             });
         });
-        
+
         app.use("/client", express.static(__dirname + './../client/'));
         app.use("/client/views", express.static(__dirname + './../../temp/views'));
 
@@ -104,19 +104,19 @@
         if (model.isAuthenticated) {
 
             database.loadSubscriptions(request.user.id)
-            .then(function(subscriptions) {
+                .then(function(subscriptions) {
 
-                model.feeds = subscriptions;
+                    model.feeds = subscriptions;
 
-                if (subscriptions.length > 0) {
-                    response.render('index', model);
-                } else {
-                    response.redirect("/feeds");
-                }
-            }, function(err) {
-                next(err);
-            });
-            
+                    if (subscriptions.length > 0) {
+                        response.render('index', model);
+                    } else {
+                        response.redirect("/feeds");
+                    }
+                }, function(err) {
+                    next(err);
+                });
+
         } else {
             response.render('index', model);
         }

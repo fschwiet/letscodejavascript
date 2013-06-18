@@ -52,26 +52,26 @@ exports.emptyDatabase = function(callback) {
     var query = Q.nbind(connection.query, connection);
 
     return Q.ninvoke(connection, "query", "SHOW TABLES")
-    .then(function(results) {
-        
-        var fieldName = results[1][0].name;
+        .then(function(results) {
 
-        var remainingWork = results[0].map(function(result) {
-            var tableName = result[fieldName];
+            var fieldName = results[1][0].name;
 
-            if (tableName !== "migrations") {
-                return function() { 
-                    return query("DELETE FROM " + tableName);
-                };
-            }
-        });
+            var remainingWork = results[0].map(function(result) {
+                var tableName = result[fieldName];
 
-        return remainingWork.reduce(Q.when, Q());
-    })
-    .then(function() {
-        connection.end();
-    })
-    .then(callback, callback);
+                if (tableName !== "migrations") {
+                    return function() {
+                        return query("DELETE FROM " + tableName);
+                    };
+                }
+            });
+
+            return remainingWork.reduce(Q.when, Q());
+        })
+        .then(function() {
+            connection.end();
+        })
+        .then(callback, callback);
 };
 
 
@@ -166,12 +166,12 @@ exports.loadSubscriptions = function(userId) {
     var connection = getConnection();
 
     return Q.ninvoke(connection, "query", "SELECT * FROM subscriptions WHERE userId = ?", userId)
-    .then(function(results) {
-        return results[0];
-    })
-    .fin(function() {
-        connection.end();
-    });
+        .then(function(results) {
+            return results[0];
+        })
+        .fin(function() {
+            connection.end();
+        });
 };
 
 exports.saveSubscriptions = function(userId, subscriptions) {
@@ -179,9 +179,9 @@ exports.saveSubscriptions = function(userId, subscriptions) {
     var connection = getConnection();
 
     return saveSubscriptionsInternal(connection, userId, subscriptions)
-    .fin(function() {
-        connection.end();
-    });
+        .fin(function() {
+            connection.end();
+        });
 };
 
 function saveSubscriptionsInternal(connection, userId, subscriptions) {
@@ -193,25 +193,27 @@ function saveSubscriptionsInternal(connection, userId, subscriptions) {
     var first = subscriptions[0];
 
     return Q.npost(connection, "query", ["SELECT userId FROM subscriptions S WHERE S.userId = ? AND S.rssUrl = ?", [userId, first.rssUrl]])
-    .then(function(results) {
+        .then(function(results) {
 
-        if (results[0].length === 0) {
-            return Q.ninvoke(connection, "query", "INSERT INTO subscriptions SET ?", {
-                userId: userId,
-                name: first.name,
-                rssUrl: first.rssUrl,
-                htmlUrl: first.htmlUrl
-            });
-        } else {
-            return Q.ninvoke(connection, "query", "UPDATE subscriptions SET ? WHERE userId = ? AND rssUrl = ?", [{
-                name: first.name,
-                htmlUrl: first.htmlUrl
-            }, userId, first.rssUrl]);
-        }
-    })
-    .then(function() {
-        return saveSubscriptionsInternal(connection, userId, subscriptions.slice(1));
-    });
+            if (results[0].length === 0) {
+                return Q.ninvoke(connection, "query", "INSERT INTO subscriptions SET ?", {
+                        userId: userId,
+                        name: first.name,
+                        rssUrl: first.rssUrl,
+                        htmlUrl: first.htmlUrl
+                    });
+            } else {
+                return Q.ninvoke(connection, "query", "UPDATE subscriptions SET ? WHERE userId = ? AND rssUrl = ?", [{
+                            name: first.name,
+                            htmlUrl: first.htmlUrl
+                        },
+                        userId, first.rssUrl
+                    ]);
+            }
+        })
+        .then(function() {
+            return saveSubscriptionsInternal(connection, userId, subscriptions.slice(1));
+        });
 }
 
 exports.unsubscribe = function(userId, rssUrl) {
@@ -219,7 +221,7 @@ exports.unsubscribe = function(userId, rssUrl) {
     var connection = getConnection();
 
     return Q.npost(connection, "query", ["DELETE FROM subscriptions WHERE rssUrl = ? AND userId = ?", [rssUrl, userId]])
-    .fin(function() {
-        connection.end();
-    });
+        .fin(function() {
+            connection.end();
+        });
 };

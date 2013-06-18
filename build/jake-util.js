@@ -1,4 +1,3 @@
-
 exports.extendTask = function(task, jake) {
 
     var taskRuntimes = [];
@@ -13,7 +12,10 @@ exports.extendTask = function(task, jake) {
         });
 
         result.addListener('complete', function() {
-            taskRuntimes.push({task:name, ms:new Date().getTime() - start});
+            taskRuntimes.push({
+                    task: name,
+                    ms: new Date().getTime() - start
+                });
         });
 
         return result;

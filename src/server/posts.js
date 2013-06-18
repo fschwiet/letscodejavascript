@@ -1,4 +1,3 @@
-
 /* possible RSS parsers:
 
 https://npmjs.org/package/feedparser
@@ -21,12 +20,12 @@ module.exports = function(app) {
         var rssUrl = req.query.rssUrl;
 
         loadFeeds(rssUrl)
-        .then(function(results) {
-            res.setHeader("Content-Type", "application/json");
-            res.send(JSON.stringify(results));
-        }, function(err) {
-            next(err);
-        });
+            .then(function(results) {
+                res.setHeader("Content-Type", "application/json");
+                res.send(JSON.stringify(results));
+            }, function(err) {
+                next(err);
+            });
     });
 };
 
@@ -41,27 +40,29 @@ function loadFeeds(rssUrl) {
             deferred.reject("Expected 200 response code, was " + response.statusCode);
         }
     })
-    .pipe(feedparser({
-        feedurl: rssUrl
-    }))
-    .pipe(endpoint({objectMode: true}, function (err, results) {
+        .pipe(feedparser({
+                feedurl: rssUrl
+            }))
+        .pipe(endpoint({
+                objectMode: true
+            }, function(err, results) {
 
-        try {
-            if (err !== null) {
-                deferred.reject(err);
-            } else {
-                deferred.resolve(results.map(function(val) {
-                    return {
-                        feedName : val.meta.title,
-                        postName: val.title,
-                        postUrl: val.link
-                    };
-                }));
-            }
-        } catch(e) {
-            deferred.reject(e);
-        }
-    }));
+                try {
+                    if (err !== null) {
+                        deferred.reject(err);
+                    } else {
+                        deferred.resolve(results.map(function(val) {
+                                    return {
+                                        feedName: val.meta.title,
+                                        postName: val.title,
+                                        postUrl: val.link
+                                    };
+                                }));
+                    }
+                } catch (e) {
+                    deferred.reject(e);
+                }
+            }));
 
     return deferred.promise;
 }

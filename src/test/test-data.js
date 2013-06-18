@@ -1,4 +1,3 @@
-
 var fs = require("fs");
 var jade = require("jade");
 var path = require("path");
@@ -10,7 +9,7 @@ exports.load = function(template, content) {
     var fileContents = fs.readFileSync(filename);
 
     return jade.compile(fileContents, {
-        filename : filename,
-        pretty: true
-    })(content);
+            filename: filename,
+            pretty: true
+        })(content);
 };

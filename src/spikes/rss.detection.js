@@ -1,4 +1,3 @@
-
 var Q = require("q");
 //var rss = require("rss");
 
@@ -75,29 +74,35 @@ rss = {
                 deferred.reject(error);
             }
         })
-          .pipe(feedfinder(htmlUrl))
-          .pipe(endpoint({objectMode: true}, function (err, links) {
+            .pipe(feedfinder(htmlUrl))
+            .pipe(endpoint({
+                    objectMode: true
+                }, function(err, links) {
 
-            if (err !== null) {
-                deferred.reject(err);
-            } else {
-                var results = [];
-                console.log("links", links);
-                links.forEach(function(link) {
-                    if (link.type == "rss" || link.type == "atom") {
-                        results.push(link.href);
+                    if (err !== null) {
+                        deferred.reject(err);
+                    } else {
+                        var results = [];
+                        console.log("links", links);
+                        links.forEach(function(link) {
+                            if (link.type == "rss" || link.type == "atom") {
+                                results.push(link.href);
+                            }
+                        });
+
+                        results = results.sort(function(a, b) {
+                            return a.length - b.length;
+                        });
+
+                        if (results.length > 0) {
+                            deferred.resolve({
+                                    rssUrl: results[0]
+                                });
+                        } else {
+                            deferred.reject(new Error("not found"));
+                        }
                     }
-                });
-
-                results = results.sort(function(a,b) { return a.length - b.length;});
-
-                if (results.length > 0) {
-                    deferred.resolve({ rssUrl: results[0]});
-                } else {
-                    deferred.reject(new Error("not found"));
-                }
-            }
-        }));
+                }));
 
         return deferred.promise;
     }
@@ -111,12 +116,12 @@ function testRssLookup(htmlUrl, rssUrl) {
         console.log("looking up " + htmlUrl);
 
         rss.detectUrl(htmlUrl)
-        .then(function(result) {
-            test.equal(result.rssUrl, rssUrl);
-            test.done();
-        }, function(err) {
-            test.ifErr(err || "Unexpected error");
-        });
+            .then(function(result) {
+                test.equal(result.rssUrl, rssUrl);
+                test.done();
+            }, function(err) {
+                test.ifErr(err || "Unexpected error");
+            });
     };
 }
 
@@ -125,11 +130,11 @@ exports["should be able to report failure"] = function(test) {
 
 
     rss.detectUrl("http://notyourserver.boo/lol")
-    .then(function() {
-        test.ok(false, "Error expected");
-    }, function(err) {
-        test.done();
-    });
+        .then(function() {
+            test.ok(false, "Error expected");
+        }, function(err) {
+            test.done();
+        });
 };
 
 
@@ -247,4 +252,3 @@ testRssLookup("http://xprogramming.com", "http://xprogramming.com/feed/");
 testRssLookup("http://haacked.com/Default.aspx", "http://feeds.haacked.com/haacked/");
 testRssLookup("http://www.cartwrightreed.com/", "http://www.cartwrightreed.com/atom.xml");
 testRssLookup("http://codelikebozo.com", "http://codelikebozo.com/rss.xml");
-

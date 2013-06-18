@@ -17,14 +17,13 @@ function handleUploadFromGoogleRequest(request, response) {
 
     if (typeof request.user == "object") {
         database.loadSubscriptions(request.user.id)
-        .then(function(subscriptions) {
+            .then(function(subscriptions) {
 
-            model.rows = subscriptions;
+                model.rows = subscriptions;
 
-            response.render('feedsPage', model);
-        });
-    }
-    else {
+                response.render('feedsPage', model);
+            });
+    } else {
 
         response.render('feedsPage_unauthenticated', model);
     }
@@ -35,16 +34,16 @@ function handleUploadFromGooglePostRequest(request, response, next) {
     var subscriptionsPath = request.files.subscriptionsXml.path;
 
     loadSubscriptionsFromGoogleXml(subscriptionsPath)
-    .then(function(rows) {
+        .then(function(rows) {
 
-        database.saveSubscriptions(request.user.id, rows)
-        .then(function() {
-            request.flash("info", "Upload complete.  Now just go to the <a href='/'>homepage</a> when you want to read them.");
-            response.redirect("/feeds");
-        }, function(err) {
-            next(err);
+            database.saveSubscriptions(request.user.id, rows)
+                .then(function() {
+                    request.flash("info", "Upload complete.  Now just go to the <a href='/'>homepage</a> when you want to read them.");
+                    response.redirect("/feeds");
+                }, function(err) {
+                    next(err);
+                });
         });
-    });
 }
 
 function loadSubscriptionsFromGoogleXml(filepath) {
@@ -88,10 +87,10 @@ function loadSubscriptionsFromGoogleXml(filepath) {
 
 function handleUnsubscribe(request, response, next) {
 
-   database.unsubscribe(request.user.id, request.body.rssUrl)
-    .then(function() {
-        response.send();
-    }, function(err) {
-        next(err);
-    });
+    database.unsubscribe(request.user.id, request.body.rssUrl)
+        .then(function() {
+            response.send();
+        }, function(err) {
+            next(err);
+        });
 }

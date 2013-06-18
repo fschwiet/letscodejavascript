@@ -26,9 +26,9 @@ var clientCode = "src/client/**";
 
 task = require("./build/jake-util.js").extendTask(task, jake);
 
-task("default", ["verifyNodeVersion", "lint", "writeSampleConfig", "test"], function() { });
+task("default", ["verifyNodeVersion", "lint", "writeSampleConfig", "test"], function() {});
 
-task("verifyClientCode", ["lint", "testClient"], function() { });
+task("verifyClientCode", ["lint", "testClient"], function() {});
 
 
 desc("lint");
@@ -94,7 +94,7 @@ function runTestsWithNodeunit(testList) {
     });
 }
 
-task("commonTestPrequisites", ["prepareTempDirectory", "prepareTestDatabase","buildClientBundle"], function() {});
+task("commonTestPrequisites", ["prepareTempDirectory", "prepareTestDatabase", "buildClientBundle"], function() {});
 
 task("testSlow", ["commonTestPrequisites"], function() {
 
@@ -221,11 +221,11 @@ task("testForRelease", ["prepareTempDirectory"], function() {
 desc("Deploys to IIS after checking smoke tests.");
 task("deployToIIS", ["verifyEmptyGitStatus", "testForRelease"], function() {
 
-    var deploymentName      = nconf.get("server_friendlyName");
-    var productionConfig    = nconf.get("deployment_configFile");
-    var deployRoot          = nconf.get("deployment_basePath");
-    var smoketest_port    = nconf.get("deployment_smoketestPort");
-    var final_port     = nconf.get("deployment_port");
+    var deploymentName = nconf.get("server_friendlyName");
+    var productionConfig = nconf.get("deployment_configFile");
+    var deployRoot = nconf.get("deployment_basePath");
+    var smoketest_port = nconf.get("deployment_smoketestPort");
+    var final_port = nconf.get("deployment_port");
 
     if (!fs.existsSync(productionConfig)) {
         fail("Could not find file production.config.json, please create before deploying.  Consider using sample.config.json as a starting point.");
@@ -274,12 +274,10 @@ task("deployToIIS", ["verifyEmptyGitStatus", "testForRelease"], function() {
                 .then(function(configValues) {
                         try {
                             configValues = JSON.parse(configValues);
-                        }
-                        catch(err)
-                        {
+                        } catch (err) {
                             throw new Error("Error parsing " + productionConfig + ": " + err.toString());
                         }
-                        
+
                         configValues.server_tempPath = tempPath;
                         configValues.server_port = smoketest_port;
 
@@ -335,7 +333,7 @@ task("deployToIIS", ["verifyEmptyGitStatus", "testForRelease"], function() {
                             })
                             .then(assertExecFileSucceeded)
                             .then(function() {
-                                
+
                                 //  sad workaround:  the iis-hosted node application doesn't recognize the configuration change
                                 //  until after iisreset (the configuration is written before the iis site is created, so this seems
                                 //  like a iis, iisnode or carbon issue)
@@ -429,7 +427,9 @@ task("buildClientBundle", ["compileJadeViews"], function() {
     console.log("building " + clientBundle);
 
     promiseJake(spawnProcess("node r.js", "node", ["./node_modules/requirejs/bin/r.js", "-o", "./src/client/build"]));
-}, { async:true });
+}, {
+    async: true
+});
 
 desc("Removes compiled version of client-side script");
 task("removeClientBundle", function() {
@@ -484,8 +484,8 @@ function runMigrations(parameters) {
     builtParameters = builtParameters.concat.apply(builtParameters, ["--config", databaseMigrationConfig, "--env=db", "--migrations-dir", "./src/migrations"]);
 
     return Q.nbind(childProcess.execFile)("node", builtParameters, {
-                env: process.env
-            })
+            env: process.env
+        })
         .then(assertExecFileSucceeded)
         .then(function() {
             fs.unlinkSync(databaseMigrationConfig);

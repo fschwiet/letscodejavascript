@@ -1,4 +1,3 @@
-
 var fs = require("fs");
 var jade = require("jade");
 
@@ -21,7 +20,7 @@ function compile(file, content) {
         pretty: true
     };
 
-    return "define(['jadeRuntime'], function(jade) { return " + jade.compile(content, jadeOptions) +"; });";
+    return "define(['jadeRuntime'], function(jade) { return " + jade.compile(content, jadeOptions) + "; });";
 }
 
 module.exports.compile = compile;
