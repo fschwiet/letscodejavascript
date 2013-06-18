@@ -1,8 +1,10 @@
 
 GOAL:
-  should be able to read feeds
-
   should have error logging when login fails using http://192.168.1.248 (hostname doesn't match configuration hostname)
+
+  should track what feeds have already been read
+
+  layout shouldn't be terrible
 
   should have better error output when migrations fail (when database not found)
 
@@ -11,16 +13,7 @@ GOAL:
 
 TODO:
 
-  feeds should be inserted in order
-
-  reader page
-    - on page load, a list of feeds is rendered as a JSON object
-    - client-side code takes the list, and for each makes a request to load feeds.
-    - that feed goes to the server, which then returns however many feed items were found
-      - the feed items contain a timestamp and html field
-    - the client-side code inserts the results in order
-
-  tests are failing because they're reusing the same user.  Have test delete the googleprofile/userid association to startup.
+  
 
   - MySQL connection pooling?
       https://npmjs.org/package/mysql-simple
