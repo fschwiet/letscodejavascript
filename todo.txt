@@ -1,5 +1,5 @@
-
-add timestamp to the new tables
+add tests for when RSS feeds are re-read,
+or when posts are marked read redundantly.
 
 query to load unread feeds 
   - queries RSS feed and write results to database

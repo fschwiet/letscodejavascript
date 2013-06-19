@@ -3,6 +3,8 @@ var type = dbm.dataType;
 
 var Q = require("q");
 
+var utils = require("./utils/utils.js");
+
 exports.up = function(db, callback) {
 
     var runSql = Q.nbind(db.runSql, db);
@@ -15,21 +17,21 @@ exports.up = function(db, callback) {
         return "ALTER TABLE " + tableName + " ADD COLUMN dateModified DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP";
     }
 
-    runSql(addDateCreated("users"))
+    runSql(utils.addDateCreated("users"))
         .then(function() {
-            return runSql(addDateModified("users"));
+            return runSql(utils.addDateModified("users"));
         })
         .then(function() {
-            return runSql(addDateCreated("googleProfiles"));
+            return runSql(utils.addDateCreated("googleProfiles"));
         })
         .then(function() {
-            return runSql(addDateModified("googleProfiles"));
+            return runSql(utils.addDateModified("googleProfiles"));
         })
         .then(function() {
-            return runSql(addDateCreated("subscriptions"));
+            return runSql(utils.addDateCreated("subscriptions"));
         })
         .then(function() {
-            return runSql(addDateModified("subscriptions"));
+            return runSql(utils.addDateModified("subscriptions"));
         })
         .then(function() {
             callback();
@@ -42,25 +44,21 @@ exports.down = function(db, callback) {
 
     var runSql = Q.nbind(db.runSql, db);
 
-    function dropColumn(tableName, columnName) {
-        return "ALTER TABLE " + tableName + " DROP COLUMN " + columnName;
-    }
-
-    runSql(dropColumn("subscriptions", "dateModified"))
+    runSql(utils.dropColumn("subscriptions", "dateModified"))
         .then(function() {
-            return runSql(dropColumn("subscriptions", "dateCreated"));
+            return runSql(utils.dropColumn("subscriptions", "dateCreated"));
         })
         .then(function() {
-            return runSql(dropColumn("googleProfiles", "dateModified"));
+            return runSql(utils.dropColumn("googleProfiles", "dateModified"));
         })
         .then(function() {
-            return runSql(dropColumn("googleProfiles", "dateCreated"));
+            return runSql(utils.dropColumn("googleProfiles", "dateCreated"));
         })
         .then(function() {
-            return runSql(dropColumn("users", "dateModified"));
+            return runSql(utils.dropColumn("users", "dateModified"));
         })
         .then(function() {
-            return runSql(dropColumn("users", "dateCreated"));
+            return runSql(utils.dropColumn("users", "dateCreated"));
         })
         .then(function() {
             callback();
