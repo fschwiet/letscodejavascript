@@ -17,7 +17,6 @@ define(["views/post.jade"], function(postView) {
                     data: {
                         rssUrl: feed.rssUrl
                     },
-                    contentType: "application/json; charset=utf-8",
                     success: function(posts) {
 
                         posts.forEach(function(post) {
