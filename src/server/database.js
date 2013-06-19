@@ -247,4 +247,13 @@ exports.markPostAsRead = function(userId, url) {
 
 exports.markPostAsUnread = function(userId, url) {
 
+    var connection = getConnection();
+
+    return Q.ninvoke(connection, "query", "DELETE FROM userPostsRead WHERE userId = ? AND urlHash = ?", [userId, sha1(url)])
+    .then(function() {
+        // prevent the result from reaching the caller
+    })
+    .fin(function() {
+        connection.end();
+    });
 };
