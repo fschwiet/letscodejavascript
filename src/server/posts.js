@@ -112,7 +112,10 @@ function loadFeedsThroughDatabase(rssUrl, userId) {
         console.log("querying...");
         var connection = database.getConnection();
 
-        return Q.ninvoke(connection, "query", "SELECT * FROM feedPosts F LEFT JOIN userPostsRead U on f.postUrlHash = U.urlHash AND U.userId = ? WHERE rssUrlHash = ? AND U.id IS NULL", [userId, rssUrlHash])
+        return Q.ninvoke(connection, "query", 
+            "SELECT * FROM feedPosts F LEFT JOIN userPostsRead U on f.postUrlHash = U.urlHash AND U.userId = ? " + 
+            "WHERE rssUrlHash = ? AND U.id IS NULL", 
+            [userId, rssUrlHash])
         .then(function(result) {
             return result[0].map(function(val) {
                 return {
