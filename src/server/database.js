@@ -11,7 +11,8 @@ function getConnectionInfo(includeDatabasename) {
         user: nconf.get("database_user"),
         password: nconf.get("database_password"),
         multipleStatements: true,
-        port: nconf.get("database_port")
+        port: nconf.get("database_port"),
+        timezone: 'Z'
     };
 
     if (includeDatabasename) {
