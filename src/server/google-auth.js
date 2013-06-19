@@ -32,9 +32,9 @@ module.exports = function(port, app) {
 
         next();
     }, passport.authenticate('google', {
-            successRedirect: '/',
-            failureRedirect: '/'
-        }));
+        successRedirect: '/',
+        failureRedirect: '/'
+    }));
 
     app.get('/auth/google/return',
         passport.authenticate('google', {
