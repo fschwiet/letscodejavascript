@@ -186,7 +186,7 @@ function gitCloneTo(workingDirectory) {
 }
 
 desc("test all the things");
-task("testForRelease", ["prepareTempDirectory"], function() {
+task("testForRelease", ["default", "prepareTempDirectory"], function() {
 
     var workingDirectory = path.resolve(".\\temp\\workingDirectory");
 
