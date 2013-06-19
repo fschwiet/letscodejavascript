@@ -133,6 +133,12 @@
 
         var model = modelFor('Status', request);
 
+        if (typeof process.env.IISNODE_VERSION !== "undefined") {
+            model.iisnodeVersion = process.env.IISNODE_VERSION;
+        } else {
+            model.iisnodeVersion = "not used";
+        }
+
         database.getStatus(function(statusString) {
             model.databaseStatus = statusString;
 
