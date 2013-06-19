@@ -1,7 +1,5 @@
 
 GOAL:
-  need to make hostname work
-    -> add configuration value for hostname, use it in urlFor
     -> add jake task that verifies that hostname resolves to local machine (127.0.0.1)
       in error message, recommend the hosts file be modified.
       

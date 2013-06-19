@@ -23,10 +23,12 @@ To deploy to IIS:
   *  Set the "deployment_" configuration values in "config.json".
     * deployment_configFile will point to the configuration file like "config.json" the deployed environment will use (its "deployment_" values are not used).
     * Verify the ports are available.
+  *  Modify the hosts file so your configured server_hostname maps to localhost (if the hostname doesn't resolve to localhost already)
   *  clone the repository
   *  run set-executionpolicy unrestricted on powershell, in both x64 and x86.
   *  run .\jake.bat deployToIIS
     *  Directories will be created with appropriate permissions.
     *  First a test site is created in IIS (without disturbing existing deployments), then smoke tests are ran before the final iis site is created (overwriting any existing deployment).
+
 
 NOTE: an iisreset may be needed before calling releaseToIIS.  I suspect adding a iisreset to NodeOnIIS boxstarter fixed this but have not verified.
