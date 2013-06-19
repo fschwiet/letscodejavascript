@@ -72,3 +72,12 @@ HMMM
 
 
     should I build runtime.js as part of the build in case jade is updated?
+
+
+
+
+LESSONS LEARNED:
+  
+  Set SQL collation when you create a database.  The default probably isn't utf8.
+
+  node-mysql will treat incoming dates as being in the local timezone, set the timezone to Z to disable that.
