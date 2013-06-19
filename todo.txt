@@ -29,7 +29,7 @@ TODO:
       https://npmjs.org/package/node-mysql-pooled
       - stale by 8 months
 
-  - name it
+  reduce personal information requested from google (only using email, displayName)
     
 LATER:
     allow users to add a feed
