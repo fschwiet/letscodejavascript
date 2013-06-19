@@ -227,3 +227,11 @@ exports.unsubscribe = function(userId, rssUrl) {
             connection.end();
         });
 };
+
+exports.markPostAsRead = function(userId, url) {
+
+};
+
+exports.markPostAsUnread = function(userId, url) {
+
+};

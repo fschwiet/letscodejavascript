@@ -196,3 +196,18 @@ exports.given3rdPartyRssServer = function(outer, opts) {
 
     return inner;
 };
+
+
+exports.getGoogleProfile = function(postfix) {
+    return {
+        displayName: 'displayName' + postfix,
+        emails: [{
+                value: 'emailValue' + postfix
+            }
+        ],
+        name: {
+            familyName: 'familyName' + postfix,
+            givenName: 'givenName' + postfix
+        }
+    };
+};

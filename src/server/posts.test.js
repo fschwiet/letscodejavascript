@@ -1,13 +1,26 @@
 var assert = require("assert");
 var Q = require("q");
 var request = require("request");
+var uuid = require('node-uuid');
 
 var config = require("../server/config.js");
+var database = require("../server/database.js");
 var posts = require("../server/posts.js");
 var setup = require("../test/setup.js");
 
 var testWithRssOnly = setup.given3rdPartyRssServer(exports);
 var testBlock = setup.whenRunningTheServer(testWithRssOnly);
+
+
+function assertMatchesExpectedPosts(posts) {
+    assert.equal(JSON.stringify(posts), JSON.stringify([{
+                    feedName: "FeedForAll Sample Feed",
+                    postName: "RSS Solutions for Restaurants",
+                    postUrl: "http://www.feedforall.com/restaurant.htm",
+                    postDate: new Date("June 1, 2013")
+                }
+            ]));    
+}
 
 setup.qtest(testBlock, "Should be able to load RSS feeds", function() {
 
@@ -21,13 +34,7 @@ setup.qtest(testBlock, "Should be able to load RSS feeds", function() {
             var response = arr[0];
             var body = arr[1];
 
-            assert.equal(body, JSON.stringify([{
-                            feedName: "FeedForAll Sample Feed",
-                            postName: "RSS Solutions for Restaurants",
-                            postUrl: "http://www.feedforall.com/restaurant.htm",
-                            postDate: new Date("June 1, 2013")
-                        }
-                    ]));
+            assertMatchesExpectedPosts(JSON.parse(body));
 
             assert.equal(response.headers["content-type"], "application/json");
         });
@@ -54,16 +61,7 @@ setup.qtest(testBlock, "Should return empty result for invalid feeds", function(
 setup.qtest(testWithRssOnly, "loadFeeds should be able to load RSS feeds", function() {
 
     return posts.loadFeeds("http://127.0.0.76:8081/rss/foo")
-    .then(function(results) {
-
-        assert.equal(JSON.stringify(results), JSON.stringify([{
-                        feedName: "FeedForAll Sample Feed",
-                        postName: "RSS Solutions for Restaurants",
-                        postUrl: "http://www.feedforall.com/restaurant.htm",
-                        postDate: new Date("June 1, 2013")
-                    }
-                ]));
-    });
+    .then(assertMatchesExpectedPosts);
 });
 
 setup.qtest(testWithRssOnly, "loadFeeds should give error if the http request fails", function() {
@@ -81,17 +79,42 @@ setup.qtest(testWithRssOnly, "loadFeeds should give error if the http request fa
 });
 
 
+var findOrCreateUserByGoogleIdentifier = Q.nbind(database.findOrCreateUserByGoogleIdentifier);
+
+
 setup.qtest(testWithRssOnly, "loadFeedsThroughDatabase should be able to load RSS feeds", function() {
 
-    return posts.loadFeedsThroughDatabase("http://127.0.0.76:8081/rss/" + require('node-uuid').v4())
-    .then(function(results) {
+    return findOrCreateUserByGoogleIdentifier(uuid.v4(), setup.getGoogleProfile("user"))
+    .then(function(user) {
+        return posts.loadFeedsThroughDatabase("http://127.0.0.76:8081/rss/" + uuid.v4(), user.id)
+        .then(assertMatchesExpectedPosts);
+    });
+});
 
-        assert.equal(JSON.stringify(results), JSON.stringify([{
-                        feedName: "FeedForAll Sample Feed",
-                        postName: "RSS Solutions for Restaurants",
-                        postUrl: "http://www.feedforall.com/restaurant.htm",
-                        postDate: new Date("June 1, 2013")
-                    }
-                ]));
+
+setup.qtest(testWithRssOnly, "loadFeedsThroughDatabase should not return feeds that have been marked as read by the user", function() {
+
+    var postUrl = "http://www.feedforall.com/restaurant.htm";
+
+    return findOrCreateUserByGoogleIdentifier(uuid.v4(), setup.getGoogleProfile("user"))
+    .then(function(user) {
+        return posts.loadFeedsThroughDatabase("http://127.0.0.76:8081/rss/" + uuid.v4(), user.id)
+        .then(assertMatchesExpectedPosts)
+        .then(function() {
+            return database.markPostAsRead(user.id, postUrl);
+        })
+        .then(function() {
+            return posts.loadFeedsThroughDatabase("http://127.0.0.76:8081/rss/" + uuid.v4(), user.id);
+        })
+        .then(function(results) {
+            assert.equal(JSON.stringify(results, "[]"));
+        })
+        .then(function() {
+            return database.markPostAsUnread(user.id, postUrl);
+        })
+        .then(assertMatchesExpectedPosts)
+        .then(function() {
+            database.markPostAsRead(user.id, postUrl);
+        });
     });
 });

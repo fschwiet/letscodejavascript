@@ -9,27 +9,13 @@ var database = require("./database");
 
 var findOrCreateUserByGoogleIdentifier = Q.nbind(database.findOrCreateUserByGoogleIdentifier);
 
-function getGoogleProfile(postfix) {
-    return {
-        displayName: 'displayName' + postfix,
-        emails: [{
-                value: 'emailValue' + postfix
-            }
-        ],
-        name: {
-            familyName: 'familyName' + postfix,
-            givenName: 'givenName' + postfix
-        }
-    };
-}
-
 setup.qtest(exports, "findOrCreateUserByGoogleIdentifier can save and load users", function() {
 
     var firstGoogleIdentifier = uuid.v4();
-    var firstGoogleProfile = getGoogleProfile("First");
+    var firstGoogleProfile = setup.getGoogleProfile("First");
 
     var secondGoogleIdentifier = uuid.v4();
-    var secondGoogleProfile = getGoogleProfile("Second");
+    var secondGoogleProfile = setup.getGoogleProfile("Second");
 
     //  Load the first user
     return findOrCreateUserByGoogleIdentifier(firstGoogleIdentifier, firstGoogleProfile)
@@ -58,7 +44,7 @@ setup.qtest(exports, "findOrCreateUserByGoogleIdentifier can save and load users
 
 setup.qtest(exports, "saveSubscriptions treats duplicates as updates", function() {
 
-    return findOrCreateUserByGoogleIdentifier(uuid.v4(), getGoogleProfile("Duper"))
+    return findOrCreateUserByGoogleIdentifier(uuid.v4(), setup.getGoogleProfile("Duper"))
         .then(function(user) {
 
             var userId = user.id;
@@ -125,7 +111,7 @@ setup.qtest(exports, "saveSubscriptions treats duplicates as updates", function(
 
 setup.qtest(exports, "deleteSubscription should remove subscriptions", function() {
 
-    return findOrCreateUserByGoogleIdentifier(uuid.v4(), getGoogleProfile("Duper"))
+    return findOrCreateUserByGoogleIdentifier(uuid.v4(), setup.getGoogleProfile("Duper"))
         .then(function(user) {
 
             var userId = user.id;
@@ -177,12 +163,12 @@ setup.qtest(exports, "deleteSubscription shouldn't remove other people's subscri
 
     var otherUserId;
 
-    return findOrCreateUserByGoogleIdentifier(uuid.v4(), getGoogleProfile("Other"))
+    return findOrCreateUserByGoogleIdentifier(uuid.v4(), setup.getGoogleProfile("Other"))
         .then(function(user) {
             otherUserId = user.id;
         })
         .then(function() {
-            return findOrCreateUserByGoogleIdentifier(uuid.v4(), getGoogleProfile("User"));
+            return findOrCreateUserByGoogleIdentifier(uuid.v4(), setup.getGoogleProfile("User"));
         })
         .then(function(user) {
             return database.saveSubscriptions(user.id, [{
