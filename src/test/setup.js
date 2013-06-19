@@ -165,7 +165,7 @@ exports.given3rdPartyRssServer = function(outer, opts) {
 
     inner.setUp = function(done) {
         var app = require('express')();
-        app.get("/rss", function(req, res) {
+        app.get("/rss/*", function(req, res) {
 
             var feed = new RSS({
                     title: opts.feedName

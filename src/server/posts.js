@@ -12,6 +12,9 @@ var Q = require("q");
 var request = require("request");
 var feedparser = require("feedparser");
 var endpoint = require("endpoint");
+var sha1 = require("sha1");
+
+var database = require("./database");
 
 
 module.exports = function(app) {
@@ -72,3 +75,52 @@ function loadFeeds(rssUrl) {
 }
 
 module.exports.loadFeeds = loadFeeds;
+
+function loadFeedsThroughDatabase(rssUrl) {
+
+    var rssUrlHash = sha1(rssUrl);
+
+    return loadFeeds(rssUrl)
+    .then(function(posts){
+
+        var inserts = posts.map(function(post) {
+
+            var postRecord = JSON.parse(JSON.stringify(post));
+            
+            postRecord.rssUrl = rssUrl;
+            postRecord.postUrlHash = sha1(postRecord.postUrl);
+            postRecord.rssUrlHash = rssUrlHash;
+
+            var connection = database.getConnection();
+            
+            return Q.ninvoke(connection, "query", "INSERT INTO feedPosts SET ?", postRecord)
+            .fin(function() {
+                connection.end();
+            });
+        });
+
+        return inserts.reduce(Q.when, Q());
+    })
+    .then(function() {
+
+        console.log("querying...");
+        var connection = database.getConnection();
+
+        return Q.ninvoke(connection, "query", "SELECT * FROM feedPosts WHERE rssUrlHash = ?", rssUrlHash)
+        .then(function(result) {
+            return result[0].map(function(val) {
+                return {
+                    feedName: val.feedName,
+                    postName: val.postName,
+                    postUrl: val.postUrl,
+                    postDate: val.postDate
+                };
+            });
+        })
+        .fin(function() {
+            connection.end();
+        });
+    });
+}
+
+module.exports.loadFeedsThroughDatabase = loadFeedsThroughDatabase;

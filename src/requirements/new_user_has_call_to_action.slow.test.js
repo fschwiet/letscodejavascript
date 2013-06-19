@@ -37,7 +37,7 @@ setup.qtest(testBlock, "New user is guided to import feeds and read them.", setu
                     return require("../test/uploadRss.js")(page, {
                             feeds: [{
                                     name: "ignored",
-                                    rssUrl: "http://127.0.0.76:" + config.get("server_port") + "/rss",
+                                    rssUrl: "http://127.0.0.76:" + config.get("server_port") + "/rss/foo",
                                     htmlUrl: "http://ignored/"
                                 }
                             ]

@@ -103,6 +103,8 @@ function getConnection() {
     return connection;
 }
 
+exports.getConnection = getConnection;
+
 function useConnection(callback) {
 
     var connection = getConnection();

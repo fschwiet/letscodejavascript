@@ -6,12 +6,13 @@ var config = require("../server/config.js");
 var posts = require("../server/posts.js");
 var setup = require("../test/setup.js");
 
-var testBlock = setup.given3rdPartyRssServer(setup.whenRunningTheServer(exports));
+var testWithRssOnly = setup.given3rdPartyRssServer(exports);
+var testBlock = setup.whenRunningTheServer(testWithRssOnly);
 
 setup.qtest(testBlock, "Should be able to load RSS feeds", function() {
 
     var url = config.urlFor("/posts", {
-            rssUrl: "http://127.0.0.76:8081/rss"
+            rssUrl: "http://127.0.0.76:8081/rss/foo"
         });
 
     return Q.nfcall(request, url)
@@ -50,9 +51,9 @@ setup.qtest(testBlock, "Should return empty result for invalid feeds", function(
         });
 });
 
-setup.qtest(testBlock, "loadFeeds should be able to load RSS feeds", function() {
+setup.qtest(testWithRssOnly, "loadFeeds should be able to load RSS feeds", function() {
 
-    return posts.loadFeeds("http://127.0.0.76:8081/rss")
+    return posts.loadFeeds("http://127.0.0.76:8081/rss/foo")
     .then(function(results) {
 
         assert.equal(JSON.stringify(results), JSON.stringify([{
@@ -65,16 +66,32 @@ setup.qtest(testBlock, "loadFeeds should be able to load RSS feeds", function() 
     });
 });
 
-setup.qtest(testBlock, "loadFeeds should give error if the http request fails", function() {
+setup.qtest(testWithRssOnly, "loadFeeds should give error if the http request fails", function() {
 
     return setup.shouldFail(function() {
-        return posts.loadFeeds("http://nonexistsantserver.coommmm/rss");
+        return posts.loadFeeds("http://nonexistsantserver.coommmm/rss/foo");
     }, "getaddrinfo ENOTFOUND");
 });
 
-setup.qtest(testBlock, "loadFeeds should give error if the http request fails #2", function() {
+setup.qtest(testWithRssOnly, "loadFeeds should give error if the http request fails #2", function() {
 
     return setup.shouldFail(function() {
         return posts.loadFeeds("http://127.0.0.76:8081/notexistingPath");
     }, "Not a feed");
+});
+
+
+setup.qtest(testWithRssOnly, "loadFeedsThroughDatabase should be able to load RSS feeds", function() {
+
+    return posts.loadFeedsThroughDatabase("http://127.0.0.76:8081/rss/" + require('node-uuid').v4())
+    .then(function(results) {
+
+        assert.equal(JSON.stringify(results), JSON.stringify([{
+                        feedName: "FeedForAll Sample Feed",
+                        postName: "RSS Solutions for Restaurants",
+                        postUrl: "http://www.feedforall.com/restaurant.htm",
+                        postDate: new Date("June 1, 2013")
+                    }
+                ]));
+    });
 });
