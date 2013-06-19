@@ -1,4 +1,6 @@
 
+add timestamp to the new tables
+
 query to load unread feeds 
   - queries RSS feed and write results to database
     -> store a hash of the url so we can index them
