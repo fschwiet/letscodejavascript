@@ -1,5 +1,6 @@
 var mysql = require('mysql');
 var Q = require("q");
+var sha1 = require("sha1");
 
 var nconf = require('./config.js');
 
@@ -230,6 +231,18 @@ exports.unsubscribe = function(userId, rssUrl) {
 
 exports.markPostAsRead = function(userId, url) {
 
+    var connection = getConnection();
+
+    return Q.ninvoke(connection, "query", "INSERT INTO userPostsRead SET ?", {
+        userId: userId,
+        url: url,
+        urlHash : sha1(url)
+    }).then(function() {
+        // prevent the result from reaching the caller
+    })
+    .fin(function() {
+        connection.end();
+    });
 };
 
 exports.markPostAsUnread = function(userId, url) {

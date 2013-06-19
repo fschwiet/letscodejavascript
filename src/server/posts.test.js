@@ -107,14 +107,14 @@ setup.qtest(testWithRssOnly, "loadFeedsThroughDatabase should not return feeds t
             return posts.loadFeedsThroughDatabase("http://127.0.0.76:8081/rss/" + uuid.v4(), user.id);
         })
         .then(function(results) {
-            assert.equal(JSON.stringify(results, "[]"));
+            assert.deepEqual(results, []);
         })
         .then(function() {
             return database.markPostAsUnread(user.id, postUrl);
         })
-        .then(assertMatchesExpectedPosts)
         .then(function() {
-            database.markPostAsRead(user.id, postUrl);
-        });
+            return posts.loadFeedsThroughDatabase("http://127.0.0.76:8081/rss/" + uuid.v4(), user.id);
+        })
+        .then(assertMatchesExpectedPosts);
     });
 });

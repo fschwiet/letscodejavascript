@@ -76,7 +76,7 @@ function loadFeeds(rssUrl) {
 
 module.exports.loadFeeds = loadFeeds;
 
-function loadFeedsThroughDatabase(rssUrl) {
+function loadFeedsThroughDatabase(rssUrl, userId) {
 
     var rssUrlHash = sha1(rssUrl);
 
@@ -106,7 +106,7 @@ function loadFeedsThroughDatabase(rssUrl) {
         console.log("querying...");
         var connection = database.getConnection();
 
-        return Q.ninvoke(connection, "query", "SELECT * FROM feedPosts WHERE rssUrlHash = ?", rssUrlHash)
+        return Q.ninvoke(connection, "query", "SELECT * FROM feedPosts F LEFT JOIN userPostsRead U on f.postUrlHash = U.urlHash AND U.userId = ? WHERE rssUrlHash = ? AND U.id IS NULL", [userId, rssUrlHash])
         .then(function(result) {
             return result[0].map(function(val) {
                 return {
