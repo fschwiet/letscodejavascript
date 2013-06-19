@@ -92,6 +92,21 @@ setup.qtest(testWithRssOnly, "loadFeedsThroughDatabase should be able to load RS
 });
 
 
+setup.qtest(testWithRssOnly, "loadFeedsThroughDatabase should not insert duplicates", function() {
+
+    var rssUrl = "http://127.0.0.76:8081/rss/" + uuid.v4();
+
+    return findOrCreateUserByGoogleIdentifier(uuid.v4(), setup.getGoogleProfile("user"))
+    .then(function(user) {
+        return posts.loadFeedsThroughDatabase(rssUrl, user.id)
+        .then(function() {
+            return posts.loadFeedsThroughDatabase(rssUrl, user.id);
+        })
+        .then(assertMatchesExpectedPosts);
+    });
+});
+
+
 setup.qtest(testWithRssOnly, "loadFeedsThroughDatabase should not return feeds that have been marked as read by the user", function() {
 
     var postUrl = "http://www.feedforall.com/restaurant.htm";
