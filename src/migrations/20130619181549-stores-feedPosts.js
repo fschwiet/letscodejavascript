@@ -14,7 +14,7 @@ exports.up = function(db, callback) {
             feedName: { type: 'text' },
             postName: { type: 'text' },
             postUrl: { type: 'text' },
-            postDate: { type: 'text' },
+            postDate: { type: 'datetime' },
             postUrlHash: { type: 'string', length:40 },
             rssUrlHash: { type: 'string', length:40 }
         })
