@@ -1,4 +1,28 @@
 
+query to load unread feeds 
+  - queries RSS feed and write results to database
+    -> store a hash of the url so we can index them
+  - queries those results back from the database, filtering by user's read column
+  
+
+use npm module sha1 to build the hash  
+  
+feed results:
+  - rssUrl
+  - postName
+  - postUrl
+  - postDate
+  - postUrlHash (40 characters)
+  - rssUrlHash (40 characters)
+  
+  
+read feeds:
+  - userId
+  - urlHash (40 characters)
+
+
+
+
 GOAL:
     -> add jake task that verifies that hostname resolves to local machine (127.0.0.1)
       in error message, recommend the hosts file be modified.
