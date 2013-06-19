@@ -185,6 +185,11 @@ function gitCloneTo(workingDirectory) {
         });
 }
 
+
+//  The dependency on default is only there to be sure karma client and server
+//  are running from our local directory, so it doesn't get started from the
+//  working directory used during release.
+
 desc("test all the things");
 task("testForRelease", ["default", "prepareTempDirectory"], function() {
 
