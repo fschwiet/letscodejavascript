@@ -61,7 +61,15 @@ phantom.promise = {
                     var deferred = Q.defer();
 
                     page.evaluate(function(s, allowAmbiguousSelector) {
-                        var matches = document.querySelectorAll(s);
+                        var matches = null;
+
+                        if (s.indexOf('function') == 0) {
+                            //matches = document.querySelectorAll("a.target");
+                            matches = eval("(" + s + ")()");
+                        } else {
+                            matches = document.querySelectorAll(s);
+                        }
+                        
                         var count = matches.length;
 
                         if (count == 1 || (allowAmbiguousSelector && count > 1)) {
@@ -128,7 +136,7 @@ phantom.promise = {
                         } else {
                             deferred.resolve();
                         }
-                    }, selector, allowAmbiguousSelector);
+                    }, typeof selector == 'function' ? selector.toString() : selector, allowAmbiguousSelector);
 
                     return deferred.promise;
                 };

@@ -158,8 +158,6 @@ exports.given3rdPartyRssServer = function(outer, opts) {
             ]
         });
 
-    console.log("opts", JSON.stringify(opts).slice(0, 40));
-
     var server;
 
     var inner = {};

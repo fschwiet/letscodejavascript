@@ -116,6 +116,27 @@
                     });
             }));
 
+    setup.qtest(exports.clickElement, "should be able to click element found by evaluation", setup.usingPhantom(function(page) {
+                return page.promise.open(config.urlFor("/links-to-empty"))
+                    .then(function(status) {
+                        assert.equal(status, "success");
+                    })
+                    .then(function() {
+                        return page.promise.clickElement(function() {
+                            return document.querySelectorAll("a.target");
+                        });
+                    })
+                    .then(function() {
+                        var start = new Date();
+                        return waitUntil("browser is redirected to /empty", function() {
+                            return page.promise.get("url").then(function(url) {
+                                console.log("url was", url);
+                                return url == config.urlFor("/empty");
+                            });
+                        }, 1000);
+                    });
+            }));
+
     setup.qtest(exports.clickElement, "should allow less-strict clicking where uniqueness is not required", setup.usingPhantom(function(page) {
                 return page.promise.open(config.urlFor("/duplicate-links-to-empty"))
                     .then(function(status) {
