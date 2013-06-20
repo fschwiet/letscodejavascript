@@ -110,41 +110,97 @@ define(["reader"], function(Reader) {
 
             describe("when the 'mark finished' button is clicked", function() {
 
-                var markFinishedButton;
-                var existingRequests;
+                var finishRequest;
 
                 function findMarkFinishedButton(fixture) {
-                    return $(".js-post:contains('first post') a.js-finishedButton", fixture);
+                    return $(".js-post:contains('first post') a.js-finishedButton:visible", fixture);
+                }
+
+                function findMarkUnfinishedButton(fixture) {
+                    return $(".js-post:contains('first post') a.js-unfinishedButton:visible", fixture);
                 }
 
                 beforeEach(function() {
 
-                    markFinishedButton = findMarkFinishedButton(this.fixture);
-                    expect(markFinishedButton.length).to.be(1);
+                    this.fakeServer.requests = [];
 
-                    existingRequests = this.fakeServer.requests.length;
-
-                    markFinishedButton.click();
+                    expect(findMarkFinishedButton(this.fixture).length).to.be(1);
+                    expect(findMarkUnfinishedButton(this.fixture).length).to.be(0);
+                    findMarkFinishedButton(this.fixture).click();
                 });
 
 
                 it("sends a request marking the post as read", function() {
 
-                    expect(this.fakeServer.requests.length).to.be(existingRequests+1);
+                    expect(this.fakeServer.requests.length).to.be(1);
 
-                    var request = this.fakeServer.requests[existingRequests];
+                    var request = this.fakeServer.requests[0];
 
                     expect(request.url).to.be("/posts/finished");
                     expect(request.method).to.be("POST");
                     expect(request.requestBody).to.be(JSON.stringify({
                                 url: "http://someservera.com/firstPost"
                             }));
-
                 });
 
                 it("removes the button", function() {
 
                     expect(findMarkFinishedButton(this.fixture).length).to.be(0);
+                    expect(findMarkUnfinishedButton(this.fixture).length).to.be(0);
+                });
+
+                describe("when the finished request completes", function() {
+
+                    beforeEach(function() {
+                        this.fakeServer.requests[0].respond(200);
+                        this.fakeServer.requests = [];
+                    });
+
+                    it("shows the unfinish button", function() {
+                        expect(findMarkFinishedButton(this.fixture).length).to.be(0);
+                        expect(findMarkUnfinishedButton(this.fixture).length).to.be(1);
+                    });
+
+                    describe("when the unfinish button is clicked", function() {
+
+                        beforeEach(function() {
+
+                            findMarkUnfinishedButton(this.fixture).click();
+                        });
+
+                        it("sends a web request", function() {
+
+                            expect(this.fakeServer.requests.length).to.be(1);
+
+                            var request = this.fakeServer.requests[0];
+
+                            expect(request.url).to.be("/posts/unfinished");
+                            expect(request.method).to.be("POST");
+                            expect(request.requestBody).to.be(JSON.stringify({
+                                url: "http://someservera.com/firstPost"
+                            }));
+                        });
+
+                        it("hides the unfinished button", function() {
+
+                            expect(findMarkFinishedButton(this.fixture).length).to.be(0);
+                            expect(findMarkUnfinishedButton(this.fixture).length).to.be(0);
+                        });
+
+                        describe("when the 'unfinished' web request complets", function() {
+
+                            beforeEach(function() {
+                                this.fakeServer.requests[0].respond(200);
+                                this.fakeServer.requests = [];
+                            });
+
+                            it("shows the finish button", function() {
+
+                                expect(findMarkFinishedButton(this.fixture).length).to.be(1);
+                                expect(findMarkUnfinishedButton(this.fixture).length).to.be(0);
+                            });
+                        });
+                    });
                 });
             });
         });

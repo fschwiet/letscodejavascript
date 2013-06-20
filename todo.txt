@@ -1,28 +1,3 @@
-add tests for when RSS feeds are re-read,
-or when posts are marked read redundantly.
-
-query to load unread feeds 
-  - queries RSS feed and write results to database
-    -> store a hash of the url so we can index them
-  - queries those results back from the database, filtering by user's read column
-  
-
-use npm module sha1 to build the hash  
-  
-feed results:
-  - rssUrl
-  - postName
-  - postUrl
-  - postDate
-  - postUrlHash (40 characters)
-  - rssUrlHash (40 characters)
-  
-  
-read feeds:
-  - userId
-  - urlHash (40 characters)
-
-
 
 
 GOAL:
@@ -72,8 +47,6 @@ HMMM
 
 
     should I build runtime.js as part of the build in case jade is updated?
-
-
 
 
 LESSONS LEARNED:

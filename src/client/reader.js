@@ -28,18 +28,43 @@ define(["views/post.jade"], function(postView) {
 
         this.container.on("click", "a.js-finishedButton", function() {
 
+            var post = $(this).parents(".js-post");
+
             $.ajax({
                 type: "POST",
                 url: "/posts/finished",
                 data: JSON.stringify({
-                    url: $(this).parents(".js-post").find(".js-postLink").attr("href").trim()
+                    url: post.find(".js-postLink").attr("href").trim()
                 }),
-                contentType: "application/json; charset=utf-8"
+                contentType: "application/json; charset=utf-8",
+                success: function() {
+                    post.find(".js-unfinishedButton").show();
+                }
             });
 
-            $(this).remove();
+            $(this).hide();
+        });
+
+        this.container.on("click", "a.js-unfinishedButton", function() {
+
+            var post = $(this).parents(".js-post");
+
+            $.ajax({
+                type: "POST",
+                url: "/posts/unfinished",
+                data: JSON.stringify({
+                    url: post.find(".js-postLink").attr("href").trim()
+                }),
+                contentType: "application/json; charset=utf-8",
+                success: function() {
+                    post.find(".js-finishedButton").show();
+                }
+            });
+
+            $(this).hide();
         });
     };
+
 
     Reader.prototype.insertPost = function(post) {
         var postDate = post.postDate;
