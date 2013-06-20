@@ -107,6 +107,46 @@ define(["reader"], function(Reader) {
                         ]));
                 });
             });
+
+            describe("when the 'mark finished' button is clicked", function() {
+
+                var markFinishedButton;
+                var existingRequests;
+
+                function findMarkFinishedButton(fixture) {
+                    return $(".js-post:contains('first post') a.js-finishedButton", fixture);
+                }
+
+                beforeEach(function() {
+
+                    markFinishedButton = findMarkFinishedButton(this.fixture);
+                    expect(markFinishedButton.length).to.be(1);
+
+                    existingRequests = this.fakeServer.requests.length;
+
+                    markFinishedButton.click();
+                });
+
+
+                it("sends a request marking the post as read", function() {
+
+                    expect(this.fakeServer.requests.length).to.be(existingRequests+1);
+
+                    var request = this.fakeServer.requests[existingRequests];
+
+                    expect(request.url).to.be("/posts/finished");
+                    expect(request.method).to.be("POST");
+                    expect(request.requestBody).to.be(JSON.stringify({
+                                url: "http://someservera.com/firstPost"
+                            }));
+
+                });
+
+                it("removes the button", function() {
+
+                    expect(findMarkFinishedButton(this.fixture).length).to.be(0);
+                });
+            });
         });
     });
 });

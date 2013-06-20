@@ -25,6 +25,20 @@ define(["views/post.jade"], function(postView) {
                     }
                 });
         });
+
+        this.container.on("click", "a.js-finishedButton", function() {
+
+            $.ajax({
+                type: "POST",
+                url: "/posts/finished",
+                data: JSON.stringify({
+                    url: $(this).parents(".js-post").find(".js-postLink").attr("href").trim()
+                }),
+                contentType: "application/json; charset=utf-8"
+            });
+
+            $(this).remove();
+        });
     };
 
     Reader.prototype.insertPost = function(post) {
