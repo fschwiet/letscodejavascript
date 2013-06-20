@@ -9,10 +9,18 @@ var expectedFeedName = "expectedFeedName";
 var expectedPostName = "expectedPostName";
 var expectedPostUrl = "http://expectedPostUrl.com/readme";
 
+var secondPostName = "secondPostName";
+var secondPostUrl = "http://secondPostUrl.com/readme";
+
 var testBlock = setup.given3rdPartyRssServer(setup.whenRunningTheServer(setup.givenCleanDatabase(exports)), {
         feedName: expectedFeedName,
-        postName: expectedPostName,
-        postUrl: expectedPostUrl
+        posts: [{
+            postName: expectedPostName,
+            postUrl: expectedPostUrl
+        }, {
+            postName: secondPostName,
+            postUrl: secondPostUrl
+        }]
     });
 
 setup.qtest(testBlock, "New user is guided to import feeds and read them.", setup.usingPhantom(function(page) {

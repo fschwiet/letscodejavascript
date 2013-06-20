@@ -150,9 +150,12 @@ exports.given3rdPartyRssServer = function(outer, opts) {
             host: "127.0.0.76",
             port: config.get("server_port"),
             feedName: "FeedForAll Sample Feed",
-            postName: "RSS Solutions for Restaurants",
-            postUrl: "http://www.feedforall.com/restaurant.htm",
-            postDate: "June 1, 2013"
+            posts: [ {
+                    postName: "RSS Solutions for Restaurants",
+                    postUrl: "http://www.feedforall.com/restaurant.htm",
+                    postDate: "June 1, 2013"
+                }
+            ]
         });
 
     console.log("opts", JSON.stringify(opts).slice(0, 40));
@@ -171,11 +174,14 @@ exports.given3rdPartyRssServer = function(outer, opts) {
                     title: opts.feedName
                 });
 
-            feed.item({
-                    title: opts.postName,
-                    url: opts.postUrl,
-                    date: opts.postDate
-                });
+            opts.posts.forEach(function(post) {
+
+                feed.item({
+                        title: post.postName,
+                        url: post.postUrl,
+                        date: post.postDate
+                    });
+            });
 
             res.send(feed.xml());
         });
