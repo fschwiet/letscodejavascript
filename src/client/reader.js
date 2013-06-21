@@ -1,4 +1,4 @@
-define(["views/post.jade"], function(postView) {
+define(["views/post.jade", "endpoints"], function(postView, endpoints) {
 
     function Reader() {
         this.container = null;
@@ -29,17 +29,10 @@ define(["views/post.jade"], function(postView) {
         this.container.on("click", "a.js-finishedButton", function() {
 
             var post = $(this).parents(".js-post");
-
-            $.ajax({
-                type: "POST",
-                url: "/posts/finished",
-                data: JSON.stringify({
-                    url: post.find(".js-postLink").attr("href").trim()
-                }),
-                contentType: "application/json; charset=utf-8",
-                success: function() {
-                    post.find(".js-unfinishedButton").show();
-                }
+            var postUrl = post.find(".js-postLink").attr("href").trim();
+            
+            endpoints.markFinished(postUrl, function() {
+                post.find(".js-unfinishedButton").show();
             });
 
             $(this).hide();
@@ -48,18 +41,11 @@ define(["views/post.jade"], function(postView) {
         this.container.on("click", "a.js-unfinishedButton", function() {
 
             var post = $(this).parents(".js-post");
+            var postUrl = post.find(".js-postLink").attr("href").trim();
 
-            $.ajax({
-                type: "POST",
-                url: "/posts/unfinished",
-                data: JSON.stringify({
-                    url: post.find(".js-postLink").attr("href").trim()
-                }),
-                contentType: "application/json; charset=utf-8",
-                success: function() {
+            endpoints.markUnfinished(postUrl, function() {
                     post.find(".js-finishedButton").show();
-                }
-            });
+                });
 
             $(this).hide();
         });
