@@ -133,6 +133,12 @@
 
         var model = modelFor('Status', request);
 
+        if (typeof request.user === "object") {
+            model.userId = request.user.id;
+        } else {
+            model.userId = "none";
+        }
+
         if (typeof process.env.IISNODE_VERSION !== "undefined") {
             model.iisnodeVersion = process.env.IISNODE_VERSION;
         } else {
