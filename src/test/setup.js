@@ -21,13 +21,21 @@ exports.qtest = function(context, name, testImplementation) {
             return promise;
         };
 
-        testImplementation()
-            .then(function() {
-                test.done();
-            }, function(err) {
-                test.ok(false, err);
-                test.done();
-            });
+        var result = testImplementation();
+
+        if ( !result || typeof result.then !== 'function') {
+            test.fail("qtest expects a function that returns a promise.");
+            test.done();
+        }
+        else {
+            result
+                .then(function() {
+                    test.done();
+                }, function(err) {
+                    test.ok(false, err);
+                    test.done();
+                });
+        }
     };
 };
 
