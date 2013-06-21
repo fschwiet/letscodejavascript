@@ -103,6 +103,7 @@ exports.usingPhantom = function(callback) {
     };
 };
 
+
 exports.clearPhantomCache = function() {
 
     var cached = cachedPhantom;
@@ -115,6 +116,44 @@ exports.clearPhantomCache = function() {
     }
 };
 
+exports.usingPhantomPage = function(outer) {
+    var inner = {};
+    outer["using phantom page"] = inner;
+
+    var phantomRef;
+
+    inner.setUp = function(done) {
+
+        phantom.promise
+            .create()
+            .then(function(phantom) {
+
+                phantomRef = phantom;
+
+                return phantom.promise.createPage()
+                    .then(function(page) {
+                        this.page = page;
+                    });
+            })
+            .then(function() {
+                done();
+            }, function(err) {
+                done(err);
+            });
+    };
+
+    inner.tearDown = function(done) {
+
+        if (typeof phantomRef !== "undefined") {
+            phantomRef.exit();
+        }
+
+        done();
+    };
+
+    return inner;
+};
+
 
 var runServer = require("./runServer");
 
@@ -122,7 +161,7 @@ exports.whenRunningTheServer = function(outer) {
 
     var inner = {};
 
-    outer.whenRunningTheServer = inner;
+    outer["when running the server"] = inner;
 
     inner.setUp = runServer.startServerLikeIIS;
     inner.tearDown = runServer.stopServer;
@@ -134,7 +173,7 @@ exports.givenCleanDatabase = function(outer) {
 
     var inner = {};
 
-    outer.givenCleanDatabase = inner;
+    outer["given a clean database"] = inner;
 
     inner.setUp = require("../server/database.js").emptyDatabase;
 
@@ -162,7 +201,7 @@ exports.given3rdPartyRssServer = function(outer, opts) {
 
     var inner = {};
 
-    outer.given3rdPartyRssServer = inner;
+    outer["given a 3rd part RSS server"] = inner;
 
     inner.setUp = function(done) {
         var app = require('express')();
