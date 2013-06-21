@@ -63,7 +63,7 @@ phantom.promise = {
                     page.evaluate(function(s, allowAmbiguousSelector) {
                         var matches = null;
 
-                        if (s.indexOf('function') == 0) {
+                        if (s.indexOf('function') === 0) {
                             //matches = document.querySelectorAll("a.target");
                             matches = eval("(" + s + ")()");
                         } else {

@@ -40,7 +40,9 @@ task("lint", function() {
 
     var runner = require("./build/lint/lint_runner.js");
 
-    var a = runner.validateFileList(list);
+    var a = runner.validateFileList(list, { 
+        evil: true  // allowing eval, only used in test code so far
+    });
     assert.ok(a, "lint failed");
 });
 
