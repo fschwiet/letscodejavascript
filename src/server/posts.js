@@ -99,7 +99,6 @@ function loadFeedsThroughDatabase(rssUrl, userId) {
                 "LEFT JOIN feedPosts F ON F.rssUrlHash = N.rssUrlHash AND F.postUrlHash = N.postUrlHash " +
                 "WHERE F.id IS NULL",
                 [postRecord.feedName, postRecord.postName, postRecord.postUrl, postRecord.postDate, postRecord.rssUrl, postRecord.postUrlHash, postRecord.rssUrlHash])
-            .then(function() {}, function(err) { console.log("errr!", err);})
             .fin(function() {
                 connection.end();
             });
