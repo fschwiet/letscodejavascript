@@ -86,7 +86,10 @@ setup.qtest(testWithRssOnly, "loadFeedsThroughDatabase should be able to load RS
 
     return findOrCreateUserByGoogleIdentifier(uuid.v4(), setup.getGoogleProfile("user"))
     .then(function(user) {
-        return posts.loadFeedsThroughDatabase("http://127.0.0.76:8081/rss/" + uuid.v4(), user.id)
+        return Q()
+        .then(function(){
+            return posts.loadFeedsThroughDatabase("http://127.0.0.76:8081/rss/" + uuid.v4(), user.id);
+        }) 
         .then(assertMatchesExpectedPosts);
     });
 });
@@ -98,7 +101,10 @@ setup.qtest(testWithRssOnly, "loadFeedsThroughDatabase should not insert duplica
 
     return findOrCreateUserByGoogleIdentifier(uuid.v4(), setup.getGoogleProfile("user"))
     .then(function(user) {
-        return posts.loadFeedsThroughDatabase(rssUrl, user.id)
+        return Q()
+        .then(function(){
+            return posts.loadFeedsThroughDatabase(rssUrl, user.id);
+        }) 
         .then(function() {
             return posts.loadFeedsThroughDatabase(rssUrl, user.id);
         })
