@@ -11,12 +11,13 @@ var setup = require("../test/setup.js");
 var testWithRssOnly = setup.given3rdPartyRssServer(exports);
 var testBlock = setup.whenRunningTheServer(testWithRssOnly);
 
+var expectedPostUrl = "http://www.feedforall.com/restaurant.htm";
 
 function assertMatchesExpectedPosts(posts) {
     assert.equal(JSON.stringify(posts), JSON.stringify([{
                     feedName: "FeedForAll Sample Feed",
                     postName: "RSS Solutions for Restaurants",
-                    postUrl: "http://www.feedforall.com/restaurant.htm",
+                    postUrl: expectedPostUrl,
                     postDate: new Date("June 1, 2013")
                 }
             ]));    
@@ -57,6 +58,37 @@ setup.qtest(testBlock, "Should return empty result for invalid feeds", function(
             assert.equal(response.headers["content-type"], "application/json");
         });
 });
+
+setup.qtest(testBlock, "Should be able to mark feeds as finished", function() {
+
+
+    var url = config.urlFor("/posts", {
+            rssUrl: "http://127.0.0.76:8081/rss/foo"
+        });
+
+    return Q.nfcall(request, url)
+        .then(function(arr) {
+            var body = JSON.parse(arr[1]);
+            assert.equal(body.length, 1);
+        })
+        .then(function() {
+
+            var d = Q.defer();
+
+            request.post(config.urlFor("/posts/finished"), {
+                body: JSON.stringify({ rssUrl: expectedPostUrl})
+            }, function(error, response, body) {
+
+                assert.ifError(error);
+                assert.equal(200, response.statusCode);
+
+                d.resolve();
+            });
+
+            return d.promise;
+        });
+});
+
 
 setup.qtest(testWithRssOnly, "loadFeeds should be able to load RSS feeds", function() {
 

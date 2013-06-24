@@ -167,7 +167,7 @@
     }
 
     function errorHandler(err, req, res, next) {
-        res.render("error500", modelFor("Error", req));
+        res.status(400).render("error500", modelFor("Error", req));
     }
 
 })();

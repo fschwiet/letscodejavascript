@@ -31,6 +31,10 @@ module.exports = function(app) {
                 res.send(JSON.stringify([]));
             });
     });
+
+    app.post("/posts/finished", function(req,res,next) {
+        res.send();
+    });
 };
 
 function loadFeeds(rssUrl) {
