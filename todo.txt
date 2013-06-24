@@ -43,6 +43,10 @@ LATER:
     open an issue on iisnode because it was failing get requests with a content-type (node.js from the command-line was more graceful)
 
 HMMM
+    didn't catch bug with automated tests when request parameters used in client-side didn't match what was used in server-side tests
+      end-to-end test for this functionality was being painful to write
+
+
     can I write a jade preprocessor for karma?
       https://gist.github.com/ryanfitz/834768
       https://github.com/karma-runner/karma/issues/565    

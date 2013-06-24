@@ -139,7 +139,7 @@ define(["reader"], function(Reader) {
                     expect(request.url).to.be("/posts/finished");
                     expect(request.method).to.be("POST");
                     expect(request.requestBody).to.be(JSON.stringify({
-                                url: "http://someservera.com/firstPost"
+                                rssUrl: "http://someservera.com/firstPost"
                             }));
                 });
 
@@ -177,7 +177,7 @@ define(["reader"], function(Reader) {
                             expect(request.url).to.be("/posts/unfinished");
                             expect(request.method).to.be("POST");
                             expect(request.requestBody).to.be(JSON.stringify({
-                                url: "http://someservera.com/firstPost"
+                                rssUrl: "http://someservera.com/firstPost"
                             }));
                         });
 

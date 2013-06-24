@@ -5,7 +5,7 @@ define(function() {
                 type: "POST",
                 url: "/posts/finished",
                 data: JSON.stringify({
-                    url: postUrl
+                    rssUrl: postUrl
                 }),
                 contentType: "application/json; charset=utf-8",
                 success: success
@@ -17,7 +17,7 @@ define(function() {
                 type: "POST",
                 url: "/posts/unfinished",
                 data: JSON.stringify({
-                    url: postUrl
+                    rssUrl: postUrl
                 }),
                 contentType: "application/json; charset=utf-8",
                 success: success
