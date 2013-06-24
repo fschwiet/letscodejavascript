@@ -33,7 +33,7 @@ module.exports = function(app) {
 
         var rssUrl = req.query.rssUrl;
 
-        loadFeeds(rssUrl)
+        loadFeedsThroughDatabase(rssUrl, req.user.id)
             .then(function(results) {
                 res.setHeader("Content-Type", "application/json");
                 res.send(JSON.stringify(results));
@@ -45,11 +45,18 @@ module.exports = function(app) {
 
     app.post("/posts/finished", function(req,res,next) {
 
-        var rssUrl = req.query.rssUrl;
+        var rssUrl = req.param("rssUrl", null);
 
-        database.markPostAsRead(req.user.id, rssUrl);
+        if (rssUrl === null) {
+            res.status(400).send("Expected parameter rssUrl");
+        }
 
-        res.send();
+        database.markPostAsRead(req.user.id, rssUrl)
+        .then(function() {
+            res.status(200).send("ok");
+        }, function(err) {
+            next(err);
+        });
     });
 };
 

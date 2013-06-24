@@ -23,6 +23,26 @@ function assertMatchesExpectedPosts(posts) {
             ]));    
 }
 
+var expectedUserId = 123; // this.server.extraMiddleware
+
+var inner = {};
+testBlock["with user id"] = inner;
+
+inner.setUp = function(done) {
+
+    this.server.extraMiddleware = function(req,res,next) {
+        req.user = { 
+            id: expectedUserId
+        };
+        next();
+    };
+
+    done();
+};
+
+testBlock = inner;
+
+
 setup.qtest(testBlock, "Should be able to load RSS feeds", function() {
 
     var url = config.urlFor("/posts", {
@@ -74,8 +94,10 @@ setup.qtest(testBlock, "Should be able to mark feeds as finished", function() {
 
             var d = Q.defer();
 
-            request.post(config.urlFor("/posts/finished"), {
-                body: JSON.stringify({ rssUrl: expectedPostUrl})
+            request({
+                method: 'POST',
+                url: config.urlFor("/posts/finished"),
+                json: { rssUrl: expectedPostUrl}
             }, function(error, response, body) {
 
                 assert.ifError(error);

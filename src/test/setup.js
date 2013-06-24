@@ -103,8 +103,20 @@ exports.whenRunningTheServer = function(outer) {
 
     var server = require("../server/server.js");
 
+    var thisServerContext = {};
+    thisServerContext.extraMiddleware = function(req,res,next) {
+        next();
+    };
+
     inner.setUp = function(done) {
-        server.start(config.get("server_port"), done);
+
+        // test setup can modify this.server.extraMiddleware to do extra prep
+
+        this.server = thisServerContext;
+
+        server.start(config.get("server_port"), done, function(req, res, next) {
+            thisServerContext.extraMiddleware(req,res,next);
+        });
     };
 
     inner.tearDown = function(done) {

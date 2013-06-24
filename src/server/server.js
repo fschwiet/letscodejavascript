@@ -19,7 +19,7 @@
 
     var server;
 
-    exports.start = function(port, callback) {
+    exports.start = function(port, callback, extraMiddleware) {
 
         var app = express();
 
@@ -37,6 +37,10 @@
                 }));
 
         app.use(connectFlash());
+
+        if (typeof extraMiddleware == "function") {
+            app.use(extraMiddleware);
+        }
 
         require("./google-auth")(port, app);
         require("./posts")(app);
