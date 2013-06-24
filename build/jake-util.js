@@ -20,12 +20,17 @@ exports.extendTask = function(task, jake) {
 
         return result;
     };
-
     jake.addListener('complete', function() {
         console.log("Execution time summary");
         taskRuntimes.forEach(function(value) {
             console.log("  " + value.task + " (" + value.ms + "ms)");
         });
+
+
+        // BUGBUG:  needed this as jake was't exiting on its own.
+        //  It seems running the server in process and doing auth against it
+        //  is leaking something.
+        process.exit();
     });
 
     return tracedTask;
