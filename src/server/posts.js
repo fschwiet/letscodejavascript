@@ -20,20 +20,25 @@ var database = require("./database");
 module.exports = function(app) {
 
 
-    app.all("/posts/*", function(req, res, next){
+    app.all("/posts*", function(req, res, next){
 
         if (typeof req.user !== "object") {
             next(new Error("Unauthenticated request made to posts."));
-        } else { 
-            next();
+            return;
         }
+
+        req.rssUrl = req.param("rssUrl", null);
+        if (req.rssUrl === null) {
+            res.status(400).send("Expected parameter rssUrl");
+            return;
+        }
+
+        next();
     });
 
     app.get("/posts", function(req, res, next) {
 
-        var rssUrl = req.query.rssUrl;
-
-        loadFeedsThroughDatabase(rssUrl, req.user.id)
+        loadFeedsThroughDatabase(req.rssUrl, req.user.id)
             .then(function(results) {
                 res.setHeader("Content-Type", "application/json");
                 res.send(JSON.stringify(results));
@@ -45,13 +50,17 @@ module.exports = function(app) {
 
     app.post("/posts/finished", function(req,res,next) {
 
-        var rssUrl = req.param("rssUrl", null);
+        database.markPostAsRead(req.user.id, req.rssUrl)
+        .then(function() {
+            res.status(200).send("ok");
+        }, function(err) {
+            next(err);
+        });
+    });
 
-        if (rssUrl === null) {
-            res.status(400).send("Expected parameter rssUrl");
-        }
+    app.post("/posts/unfinished", function(req,res,next) {
 
-        database.markPostAsRead(req.user.id, rssUrl)
+        database.markPostAsUnread(req.user.id, req.rssUrl)
         .then(function() {
             res.status(200).send("ok");
         }, function(err) {

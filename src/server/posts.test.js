@@ -114,6 +114,31 @@ setup.qtest(testBlock, "Should be able to mark feeds as finished", function() {
         .then(function(arr) {
             var body = JSON.parse(arr[1]);
             assert.equal(body.length, 0);
+        })
+        .then(function() {
+
+            var d = Q.defer();
+
+            request({
+                method: 'POST',
+                url: config.urlFor("/posts/unfinished"),
+                json: { rssUrl: expectedPostUrl}
+            }, function(error, response, body) {
+
+                assert.ifError(error);
+                assert.equal(200, response.statusCode);
+
+                d.resolve();
+            });
+
+            return d.promise;
+        })
+        .then(function() {
+            return Q.nfcall(request, url);
+        })
+        .then(function(arr) {
+            var body = JSON.parse(arr[1]);
+            assert.equal(body.length, 1);
         });
 });
 
