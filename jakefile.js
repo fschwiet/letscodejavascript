@@ -96,7 +96,7 @@ function runTestsWithNodeunit(testList) {
     });
 }
 
-task("commonTestPrequisites", ["prepareTempDirectory", "prepareTestDatabase", "buildClientBundle"], function() {});
+task("commonTestPrequisites", ["lint", "prepareTempDirectory", "prepareTestDatabase", "buildClientBundle"], function() {});
 
 task("testSlow", ["commonTestPrequisites"], function() {
 
