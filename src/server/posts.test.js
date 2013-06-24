@@ -84,11 +84,13 @@ var findOrCreateUserByGoogleIdentifier = Q.nbind(database.findOrCreateUserByGoog
 
 setup.qtest(testWithRssOnly, "loadFeedsThroughDatabase should be able to load RSS feeds", function() {
 
+    var rssUrl = "http://127.0.0.76:8081/rss/" + uuid.v4();
+
     return findOrCreateUserByGoogleIdentifier(uuid.v4(), setup.getGoogleProfile("user"))
     .then(function(user) {
         return Q()
         .then(function(){
-            return posts.loadFeedsThroughDatabase("http://127.0.0.76:8081/rss/" + uuid.v4(), user.id);
+            return posts.loadFeedsThroughDatabase(rssUrl, user.id);
         }) 
         .then(assertMatchesExpectedPosts);
     });
@@ -105,9 +107,9 @@ setup.qtest(testWithRssOnly, "loadFeedsThroughDatabase should not insert duplica
         .then(function(){
             return posts.loadFeedsThroughDatabase(rssUrl, user.id);
         }) 
-        .then(function() {
+        .then(function(){
             return posts.loadFeedsThroughDatabase(rssUrl, user.id);
-        })
+        }) 
         .then(assertMatchesExpectedPosts);
     });
 });
@@ -115,18 +117,21 @@ setup.qtest(testWithRssOnly, "loadFeedsThroughDatabase should not insert duplica
 
 setup.qtest(testWithRssOnly, "loadFeedsThroughDatabase should not return feeds that have been marked as read by the user", function() {
 
-    var feedUrl = "http://127.0.0.76:8081/rss/" + uuid.v4();
+    var rssUrl = "http://127.0.0.76:8081/rss/" + uuid.v4();
     var postUrl = "http://www.feedforall.com/restaurant.htm";
 
     return findOrCreateUserByGoogleIdentifier(uuid.v4(), setup.getGoogleProfile("user"))
     .then(function(user) {
-        return posts.loadFeedsThroughDatabase(feedUrl, user.id)
+        return Q()
+        .then(function(){
+            return posts.loadFeedsThroughDatabase(rssUrl, user.id);
+        }) 
         .then(assertMatchesExpectedPosts)
         .then(function() {
             return database.markPostAsRead(user.id, postUrl);
         })
         .then(function() {
-            return posts.loadFeedsThroughDatabase(feedUrl, user.id);
+            return posts.loadFeedsThroughDatabase(rssUrl, user.id);
         })
         .then(function(results) {
             assert.deepEqual(results, []);
@@ -135,7 +140,7 @@ setup.qtest(testWithRssOnly, "loadFeedsThroughDatabase should not return feeds t
             return database.markPostAsUnread(user.id, postUrl);
         })
         .then(function() {
-            return posts.loadFeedsThroughDatabase(feedUrl, user.id);
+            return posts.loadFeedsThroughDatabase(rssUrl, user.id);
         })
         .then(assertMatchesExpectedPosts);
     });
