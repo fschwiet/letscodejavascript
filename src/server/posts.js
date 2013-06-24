@@ -18,6 +18,17 @@ var database = require("./database");
 
 
 module.exports = function(app) {
+
+
+    app.all("/posts/*", function(req, res, next){
+
+        if (typeof req.user !== "object") {
+            next(new Error("Unauthenticated request made to posts."));
+        } else { 
+            next();
+        }
+    });
+
     app.get("/posts", function(req, res, next) {
 
         var rssUrl = req.query.rssUrl;
@@ -33,6 +44,11 @@ module.exports = function(app) {
     });
 
     app.post("/posts/finished", function(req,res,next) {
+
+        var rssUrl = req.query.rssUrl;
+
+        database.markPostAsRead(req.user.id, rssUrl);
+
         res.send();
     });
 };

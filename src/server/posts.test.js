@@ -61,7 +61,6 @@ setup.qtest(testBlock, "Should return empty result for invalid feeds", function(
 
 setup.qtest(testBlock, "Should be able to mark feeds as finished", function() {
 
-
     var url = config.urlFor("/posts", {
             rssUrl: "http://127.0.0.76:8081/rss/foo"
         });
@@ -86,6 +85,13 @@ setup.qtest(testBlock, "Should be able to mark feeds as finished", function() {
             });
 
             return d.promise;
+        })
+        .then(function() {
+            return Q.nfcall(request, url);
+        })
+        .then(function(arr) {
+            var body = JSON.parse(arr[1]);
+            assert.equal(body.length, 0);
         });
 });
 
