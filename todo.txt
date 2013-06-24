@@ -1,18 +1,22 @@
 
-have tests run server in-process, so user access can be intercepted
-  -> server isn't shutting down cleanly when the login setup code is run ... maybe passport, passport-google are leaking a resource?
-
 
 GOAL:
+
+  should be able to mark anything older than a week as read
+
+  should show database available feeds on page load
+
+  should skip loading feeds client-side if the server side version is recent
+
+  layout shouldn't be terrible
+
+
+
     -> add jake task that verifies that hostname resolves to local machine (127.0.0.1)
       in error message, recommend the hosts file be modified.
       
 
   should have error logging when login fails using http://192.168.1.248 (hostname doesn't match configuration hostname)
-
-  should track what feeds have already been read
-
-  layout shouldn't be terrible
 
   should have better error output when migrations fail (when database not found)
 
