@@ -406,7 +406,7 @@ task("runServer", function() {
     console.log("running the server on", port);
     var server = require("./src/server/server.js");
     server.start(port);
-});
+}, { async:true});
 
 var clientBundle = path.resolve(__dirname + "/temp/main-built.js");
 
