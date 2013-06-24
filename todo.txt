@@ -1,7 +1,6 @@
-usingPhantomPage setup needs to be on the outer... why?  is this.page stomped?  is there a port conflict?
 
 have tests run server in-process, so user access can be intercepted
-
+  -> server isn't shutting down cleanly when the login setup code is run ... maybe passport, passport-google are leaking a resource?
 
 
 GOAL:
