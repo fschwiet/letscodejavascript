@@ -94,6 +94,8 @@
         if (server) {
             server.close(callback);
             server = null;
+        } else {
+            callback();
         }
     };
 

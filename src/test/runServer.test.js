@@ -1,15 +1,21 @@
 (function() {
     "use strict";
 
-    var setup = require("./setup");
     var config = require("../server/config");
     var request = require("request");
+    var runServer = require("./runServer.js");
 
-    var testBlock = setup.whenRunningTheServer(exports);
+    exports.setUp = function(done) {
+        runServer.startServerLikeIIS(done);
+    };
 
-    var url = config.urlFor("/");
+    exports.tearDown = function(done) {
+        runServer.stopServer(done);
+    };
+    
+    exports.test_canRunServer = function(test) {
 
-    testBlock.test_canRunServer = function(test) {
+        var url = config.urlFor("/");
 
         request(url, function(err, response, responseBody) {
             test.ifError(err);

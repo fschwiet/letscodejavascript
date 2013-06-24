@@ -10,15 +10,18 @@
 
 
     exports.test_earlyStopCallsAreOk = function(test) {
-        server.stop();
-        test.done();
+        server.stop(function() {
+            test.done();
+        });
     };
 
     exports.test_extraStopCallsAreOk = function(test) {
-        server.stop();
-        server.stop();
-        server.stop();
-        test.done();
+        server.stop(function() {});
+        server.stop(function() {});
+        server.stop(function() {});
+        server.stop(function() {
+            test.done();
+        });
     };
 
     exports.test_servesFileForHomepage = function(test) {
@@ -33,8 +36,9 @@
                 test.equal(response.statusCode, 200, "Expected 200 response code for url " + url);
                 test.notEqual(-1, body.indexOf("<title>homepage</title>"));
 
-                server.stop();
-                test.done();
+                server.stop(function() {
+                    test.done();
+                });
             });
         });
     };
@@ -49,8 +53,10 @@
                 test.ok(err === null, "Error: " + err);
 
                 test.equal(response.statusCode, 404, "Expected 404 response code for url " + url);
-                server.stop();
-                test.done();
+
+                server.stop(function() {
+                    test.done();
+                });
             });
         });
     };
@@ -66,8 +72,9 @@
 
                 test.equal(response.statusCode, 200, "Expected 200 response code for url " + url);
 
-                server.stop();
-                test.done();
+                server.stop(function() {
+                    test.done();
+                });
             });
         });
     };
@@ -82,8 +89,9 @@
 
                 test.equal(response.statusCode, 200, "Expected 200 response code for url " + url);
 
-                server.stop();
-                test.done();
+                server.stop(function() {
+                    test.done();
+                });
             });
         });
     };

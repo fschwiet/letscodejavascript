@@ -163,16 +163,23 @@ exports.usingPhantomPage = function(outer) {
 };
 
 
-var runServer = require("./runServer");
-
 exports.whenRunningTheServer = function(outer) {
+
+    var server = require("../server/server.js");
 
     var inner = {};
 
     outer["when running the server"] = inner;
 
-    inner.setUp = runServer.startServerLikeIIS;
-    inner.tearDown = runServer.stopServer;
+    inner.setUp = function(done) {
+        console.log("starting server");
+        server.start(config.get("server_port"), done);
+    };
+
+    inner.tearDown = function(done) {
+        console.log("stopping server");
+        server.stop(done);
+    };
 
     return inner;
 };
