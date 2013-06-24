@@ -12,7 +12,8 @@ var expectedPostUrl = "http://expectedPostUrl.com/readme";
 var secondPostName = "secondPostName";
 var secondPostUrl = "http://secondPostUrl.com/readme";
 
-var testBlock = setup.given3rdPartyRssServer(setup.whenRunningTheServer(setup.givenCleanDatabase(setup.usingPhantomPage(exports))), {
+
+var testBlock = setup.usingPhantomPage(setup.given3rdPartyRssServer(setup.whenRunningTheServer(setup.givenCleanDatabase(exports)), {
         feedName: expectedFeedName,
         posts: [{
             postName: expectedPostName,
@@ -21,7 +22,7 @@ var testBlock = setup.given3rdPartyRssServer(setup.whenRunningTheServer(setup.gi
             postName: secondPostName,
             postUrl: secondPostUrl
         }]
-    });
+    }));
 
 setup.qtest(testBlock, "New user is guided to import feeds and read them.", function() {
 

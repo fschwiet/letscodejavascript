@@ -56,75 +56,8 @@ exports.shouldFail = function(promiseFactory, expectedText) {
 //  Callback is passed 1 parameter, the phantom.js instance
 //
 
-var cachedPhantom = null;
-var cachedPage = null;
-
-exports.usingPhantom = function(callback) {
-
-    return function() {
-
-        if (cachedPage !== null) {
-            return callback(cachedPage);
-        }
-
-        return phantom.promise
-            .create()
-            .then(function(phantom) {
-                return phantom.promise.createPage()
-                    .then(function(page) {
-
-                        /*
-                if (cachedPage === null) {
-                    console.log("caching page");
-                    cachedPhantom = phantom;
-                    cachedPage = page;
-                    return callback(cachedPage);
-                } else {
-                    */
-                        return callback(page)
-                            .fail(function(err) {
-                                return page.promise
-                                    .evaluate(function() {
-                                        return {
-                                            title: document.title,
-                                            url: window.location.toString()
-                                        };
-                                    })
-                                    .then(function(evaluation) {
-                                        console.log("page info", JSON.stringify(evaluation, null, "  "));
-                                    })
-                                    .then(function() {
-                                        var screenshot = path.resolve("./temp/phantom.png");
-                                        console.log("saving phantom screenshot to", screenshot);
-                                        return page.promise.render(screenshot);
-                                    })
-                                    .fin(function() {
-                                        throw err;
-                                    });
-                            })
-                            .fin(function() {
-                                phantom.exit();
-                            });
-                        //}
-                    });
-            });
-    };
-};
-
-
-exports.clearPhantomCache = function() {
-
-    var cached = cachedPhantom;
-    cachedPage = null;
-    cachedPhantom = null;
-
-    if (cached !== null) {
-        console.log("ph.exit called");
-        cached.exit();
-    }
-};
-
 exports.usingPhantomPage = function(outer) {
+
     var inner = {};
     outer["using phantom page"] = inner;
 
@@ -165,20 +98,20 @@ exports.usingPhantomPage = function(outer) {
 
 exports.whenRunningTheServer = function(outer) {
 
-    var server = require("../server/server.js");
-
     var inner = {};
-
     outer["when running the server"] = inner;
 
+    var server = require("../server/server.js");
+
     inner.setUp = function(done) {
-        console.log("starting server");
         server.start(config.get("server_port"), done);
     };
 
     inner.tearDown = function(done) {
-        console.log("stopping server");
-        server.stop(done);
+        server.stop(function()
+            {
+                done();
+            });
     };
 
     return inner;
@@ -187,7 +120,6 @@ exports.whenRunningTheServer = function(outer) {
 exports.givenCleanDatabase = function(outer) {
 
     var inner = {};
-
     outer["given a clean database"] = inner;
 
     inner.setUp = require("../server/database.js").emptyDatabase;
@@ -197,8 +129,6 @@ exports.givenCleanDatabase = function(outer) {
 
 
 exports.given3rdPartyRssServer = function(outer, opts) {
-
-    console.log("opts", opts);
 
     opts = setDefault(opts).to({
             host: "127.0.0.76",
@@ -215,7 +145,6 @@ exports.given3rdPartyRssServer = function(outer, opts) {
     var server;
 
     var inner = {};
-
     outer["given a 3rd part RSS server"] = inner;
 
     inner.setUp = function(done) {

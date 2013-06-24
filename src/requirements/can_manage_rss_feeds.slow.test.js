@@ -6,7 +6,7 @@ var config = require("../server/config.js");
 var waitUntil = require("../test/waitUntil");
 var login = require("../test/login.js");
 
-var testBlock = setup.whenRunningTheServer(setup.givenCleanDatabase(setup.usingPhantomPage(exports)));
+var testBlock = setup.givenCleanDatabase(setup.usingPhantomPage(setup.whenRunningTheServer(exports)));
 
 setup.qtest(testBlock, "can upload rss", function() {
 

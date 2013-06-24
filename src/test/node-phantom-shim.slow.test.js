@@ -34,26 +34,29 @@
         });
 
         server = http.createServer(app);
-        server.listen(port, callback);
+        server.listen(port, function() {
+            callback();
+        });
     };
 
     exports.tearDown = function(callback) {
-        console.log("running tearDown");
         if (server) {
             server.close(callback);
             server = null;
+        } else {
+            throw new Error("server was not started");
         }
     };
 
-    var testBlock = setup.usingPhantomPage({});
+    var testBlock = setup.usingPhantomPage(exports);
 
     var clickElement = testBlock.clickElement = {};
 
     setup.qtest(testBlock, "should pass arguments to evaluate correctly", function() {
 
         return this.page.promise.evaluate(function(a, b, c) {
-            return a + b + c;
-        }, 1, 2, 3)
+                return a + b + c;
+            }, 1, 2, 3)
             .then(function(result) {
                 assert.equal(result, 6);
             });
@@ -117,7 +120,6 @@
                 var start = new Date();
                 return waitUntil("browser is redirected to /empty", function() {
                     return page.promise.get("url").then(function(url) {
-                        console.log("url was", url);
                         return url == config.urlFor("/empty");
                     });
                 }, 1000);
