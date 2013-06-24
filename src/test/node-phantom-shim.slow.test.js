@@ -1,7 +1,6 @@
 (function() {
     "use strict";
 
-    var setup = require("../test/setup");
     var assert = require("assert");
     var express = require("express");
     var http = require('http');
@@ -10,12 +9,14 @@
     var waitUntil = require("./waitUntil.js");
     var assertPage = require("./assertPage.js");
 
-    var app = express();
+    var setup = require("../test/setup");
     var server;
 
     var port = config.get("server_port");
 
     exports.setUp = function(callback) {
+
+        var app = express();
 
         app.get("/empty", function(req, res) {
             res.send("<html><head><title>lol hmm</title></head><body>This page has no links.</body></html>");
@@ -54,7 +55,9 @@
 
     setup.qtest(testBlock, "should pass arguments to evaluate correctly", function() {
 
-        return this.page.promise.evaluate(function(a, b, c) {
+        var page = this.page;
+
+        return page.promise.evaluate(function(a, b, c) {
                 return a + b + c;
             }, 1, 2, 3)
             .then(function(result) {
@@ -77,7 +80,7 @@
 
     setup.qtest(clickElement, "should give useful error when not found", function() {
 
-        var page;
+        var page = this.page;
 
         return setup.shouldFail(function() {
             return page.promise.open(config.urlFor("/empty"))
