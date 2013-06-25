@@ -9,6 +9,10 @@ define(["views/post.jade", "endpoints", "less!reader"], function(postView, endpo
         var that = this;
         var feed = this.feeds.shift();
 
+        if (typeof feed == "undefined") {
+            return;
+        }
+
         $.ajax({
                 type: "GET",
                 url: "/posts",

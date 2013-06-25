@@ -15,15 +15,23 @@ define(["reader"], function(Reader) {
 
             reader = new Reader();
 
-            reader.startReader(this.fixture, [{
+            reader.startReader(this.fixture, [
+                    {
                         rssUrl: "http://servera.com/rss"
-                    }, {
+                    }, 
+                    {
                         rssUrl: "http://serverb.com/rss"
+                    },
+                    {
+                        rssUrl: "http://serverc.com/rss"
+                    },
+                    {
+                        rssUrl: "http://serverd.com/rss"
                     }
                 ]);
         });
 
-        it("requests entries for all feeds", function() {
+        it("requests entries for first two feeds", function() {
             expect(this.fakeServer.requests.length).to.be(2);
 
             assertRequestIsGetFor(this.fakeServer.requests[0], "/posts?" + $.param({
@@ -31,6 +39,27 @@ define(["reader"], function(Reader) {
                     }));
             assertRequestIsGetFor(this.fakeServer.requests[1], "/posts?" + $.param({
                         rssUrl: "http://serverb.com/rss"
+                    }));
+
+            expect(this.fakeServer.requests.length).to.be(2);
+        });
+
+        it("requests more feeds as previous requests are completed", function() {
+
+            this.fakeServer.requests[0].respond(200, {
+                    "Content-Type": "application/json"
+                }, JSON.stringify([]));
+
+            expect(this.fakeServer.requests.length).to.be(3);
+            assertRequestIsGetFor(this.fakeServer.requests[2], "/posts?" + $.param({
+                        rssUrl: "http://serverc.com/rss"
+                    }));
+
+            this.fakeServer.requests[1].respond(400);
+
+            expect(this.fakeServer.requests.length).to.be(4);
+            assertRequestIsGetFor(this.fakeServer.requests[3], "/posts?" + $.param({
+                        rssUrl: "http://serverd.com/rss"
                     }));
         });
 
