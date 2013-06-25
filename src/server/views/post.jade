@@ -1,7 +1,10 @@
 
 div.js-post(data-postDate=postDate)
-    span.js-feedName #{feedName} 
-    span.js-postName #{postName} 
+    div.js-postName #{postName} 
     a.js-postLink(href=postUrl,target="_blank") read 
+    | | 
     a.js-finishedButton(href='#') mark finished 
     a.js-unfinishedButton(href='#',style='display:none') mark unfinished 
+    | | 
+    span.small from 
+    span.js-feedName #{feedName} 

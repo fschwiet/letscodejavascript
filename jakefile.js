@@ -401,7 +401,7 @@ task("verifyNodeVersion", function() {
 });
 
 desc("Run the server locally");
-task("runServer", function() {
+task("runServer", ["compileJadeViews"], function() {
     var port = nconf.get("server_port");
     console.log("running the server on", port);
     var server = require("./src/server/server.js");
