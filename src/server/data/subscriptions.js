@@ -1,6 +1,5 @@
 
 var Q = require("q");
-
 var database = require("../database.js");
 
 exports.loadSubscriptions = function(userId) {
