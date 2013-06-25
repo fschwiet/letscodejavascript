@@ -7,7 +7,7 @@ define(["views/post.jade", "endpoints", "less!reader"], function(postView, endpo
     Reader.prototype.loadNextFeed = function() {
 
         var that = this;
-        var feed = this.feeds.shift();
+        var feed = this.feedsToLoad.shift();
 
         if (typeof feed == "undefined") {
             return;
@@ -38,6 +38,14 @@ define(["views/post.jade", "endpoints", "less!reader"], function(postView, endpo
 
         this.container = domContainer;
         this.feeds = feeds;
+        var feedsToLoad = [];
+        this.feedsToLoad = feedsToLoad;
+
+        this.feeds.forEach(function(feed) {
+            if (feed.couldRefresh !== false) {
+                feedsToLoad.push(feed);
+            }
+        });
             
         //  We'll load 2 feeds at a time until done
         this.loadNextFeed();

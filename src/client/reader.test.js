@@ -17,16 +17,24 @@ define(["reader"], function(Reader) {
 
             reader.startReader(this.fixture, [
                     {
-                        rssUrl: "http://servera.com/rss"
+                        rssUrl: "http://servera.com/rss",
+                        couldRefresh: true
                     }, 
                     {
-                        rssUrl: "http://serverb.com/rss"
+                        rssUrl: "http://serverb.com/rss",
+                        couldRefresh: true
                     },
                     {
-                        rssUrl: "http://serverc.com/rss"
+                        rssUrl: "http://server.skipped.com/rss",
+                        couldRefresh: false
                     },
                     {
-                        rssUrl: "http://serverd.com/rss"
+                        rssUrl: "http://serverc.com/rss",
+                        couldRefresh: true
+                    },
+                    {
+                        rssUrl: "http://serverd.com/rss",
+                        couldRefresh: true
                     }
                 ]);
         });

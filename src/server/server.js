@@ -107,7 +107,7 @@
 
         if (model.isAuthenticated) {
 
-            dataSubscriptions.loadSubscriptions(request.user.id)
+            dataSubscriptions.loadSubscriptions(request.user.id, new Date())
                 .then(function(subscriptions) {
 
                     model.feeds = subscriptions;
@@ -115,8 +115,6 @@
                     if (subscriptions.length > 0) {
                         return dataJoin.loadPostsForUser(request.user.id)
                         .then(function(posts) {
-
-                            console.log("posts", posts);
 
                             posts = _.sortBy(posts, function(v) {
                                 if (v.postDate !== null) {

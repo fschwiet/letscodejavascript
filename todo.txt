@@ -1,5 +1,3 @@
-client should skip loading feeds that have recent data
-
 
 should be able to mark anything older than a week as read
 
