@@ -11,6 +11,8 @@ GOAL:
   layout shouldn't be terrible
 
 
+  should have a way to kill karma server+client processes, use it for deployToIIS
+
 
     -> add jake task that verifies that hostname resolves to local machine (127.0.0.1)
       in error message, recommend the hosts file be modified.

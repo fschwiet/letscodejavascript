@@ -11,11 +11,7 @@ files = [
     MOCHA,
     MOCHA_ADAPTER,
     REQUIRE,
-    REQUIRE_ADAPTER, 
-    {
-        pattern: 'lib/**/*.js',
-        included: false
-    },
+    REQUIRE_ADAPTER,
     'node_modules/expect.js/expect.js',
     'src/client/main-test.js', 
     {
@@ -27,19 +23,19 @@ files = [
         included: false
     }, 
     {
-        pattern: 'src/client/*.js',
+        pattern: 'src/client/**/*.js',
         included: false
     }, 
     {
-        pattern: 'src/client/*.less',
+        pattern: 'src/client/**/*.less',
         included: false
     }, 
     {
-        pattern: 'src/client/*.css',
+        pattern: 'src/client/**/*.css',
         included: false
     }, 
     {
-        pattern: 'src/server/views/*.jade',
+        pattern: 'src/server/views/**/*.jade',
         included: false
     }
 ];

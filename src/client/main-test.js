@@ -24,12 +24,12 @@ requirejs.config({
         packages: [
           {
             name: 'css',
-            location: '../../lib/require-css',
+            location: './clientLib/require-css',
             main: 'css'
           },
           {
             name: 'less',
-            location: '../../lib/require-less',
+            location: './clientLib/require-less',
             main: 'less'
           }
         ],        
