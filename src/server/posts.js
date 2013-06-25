@@ -114,42 +114,50 @@ module.exports.loadFeeds = loadFeeds;
 
 function loadFeedsThroughDatabase(rssUrl, userId) {
 
-    var rssUrlHash = sha1(rssUrl);
-
     return loadFeeds(rssUrl)
     .then(function(posts){
-
-        var inserts = posts.map(function(post) {
-
-            var postRecord = JSON.parse(JSON.stringify(post));
-            
-            postRecord.rssUrl = rssUrl;
-            postRecord.postUrlHash = sha1(postRecord.postUrl);
-            postRecord.rssUrlHash = rssUrlHash;
-
-            return function() {
-
-                var connection = database.getConnection();
-
-
-                return Q.ninvoke(connection, "query", 
-                    "INSERT INTO feedPosts (feedName, postName, postUrl, postDate, rssUrl, postUrlHash, rssUrlHash) " + 
-                    "SELECT N.* FROM (SELECT ? as feedName, ? as postName, ? as postUrl, ? as postDate, ? as rssUrl, ? as postUrlHash, ? as rssUrlHash) AS N " +
-                    "LEFT JOIN feedPosts F ON F.rssUrlHash = N.rssUrlHash AND F.postUrlHash = N.postUrlHash " +
-                    "WHERE F.id IS NULL",
-                    [postRecord.feedName, postRecord.postName, postRecord.postUrl, postRecord.postDate, postRecord.rssUrl, postRecord.postUrlHash, postRecord.rssUrlHash])
-                .fin(function() {
-                    connection.end();
-                });
-            };
-        });
-
-        return inserts.reduce(function(soFar, f) {
-                return soFar.then(f);
-            }, Q());
+        return writePostsToDatabase(rssUrl, posts);
+    }, function(err) {
+        return writeRssUrlStatus(rssUrl, err.toString());
     })
     .then(function() {
         return loadFeedsFromDatabase(rssUrl, userId);
+    });
+}
+
+function writePostsToDatabase(rssUrl, posts) {
+
+    var rssUrlHash = sha1(rssUrl);
+
+    var inserts = posts.map(function(post) {
+
+        var postRecord = JSON.parse(JSON.stringify(post));
+        
+        postRecord.rssUrl = rssUrl;
+        postRecord.postUrlHash = sha1(postRecord.postUrl);
+        postRecord.rssUrlHash = rssUrlHash;
+
+        return function() {
+
+            var connection = database.getConnection();
+
+            return Q.ninvoke(connection, "query", 
+                "INSERT INTO feedPosts (feedName, postName, postUrl, postDate, rssUrl, postUrlHash, rssUrlHash) " + 
+                "SELECT N.* FROM (SELECT ? as feedName, ? as postName, ? as postUrl, ? as postDate, ? as rssUrl, ? as postUrlHash, ? as rssUrlHash) AS N " +
+                "LEFT JOIN feedPosts F ON F.rssUrlHash = N.rssUrlHash AND F.postUrlHash = N.postUrlHash " +
+                "WHERE F.id IS NULL",
+                [postRecord.feedName, postRecord.postName, postRecord.postUrl, postRecord.postDate, postRecord.rssUrl, postRecord.postUrlHash, postRecord.rssUrlHash])
+            .fin(function() {
+                connection.end();
+            });
+        };
+    });
+
+    return inserts.reduce(function(soFar, f) {
+            return soFar.then(f);
+        }, Q())
+    .then(function() {
+        return writeRssUrlStatus(rssUrl, "ok");
     });
 }
 
@@ -177,6 +185,28 @@ function loadFeedsFromDatabase (rssUrl, userId) {
     .fin(function() {
         connection.end();
     });
+}
+
+function writeRssUrlStatus(rssUrl, status) {
+
+    var connection = database.getConnection();
+
+    var newRow = {
+            rssUrlHash: sha1(rssUrl),
+            status: status,
+            rssUrl: rssUrl
+        };
+
+    var updateRow = {
+            status: status,
+            rssUrl: rssUrl
+        };
+
+    return Q.ninvoke(connection, "query",
+        "INSERT INTO rssUrlStatus SET ? ON DUPLICATE KEY UPDATE ?", [newRow, updateRow])
+        .fin(function() {
+            connection.end();
+        });
 }
 
 

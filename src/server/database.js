@@ -94,9 +94,23 @@ exports.getStatus = function(callback) {
     });
 };
 
-function getConnection() {
+/*
+
+    option configUpdater, might use:
+
+        function(config) {
+            config.debug = true;
+        }
+
+*/
+
+function getConnection(configUpdater) {
 
     var config = getConnectionInfo(true);
+
+    if (typeof configUpdater == "function") {
+        configUpdater(config);
+    }
 
     var connection = mysql.createConnection(config);
 

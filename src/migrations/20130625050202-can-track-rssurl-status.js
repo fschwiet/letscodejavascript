@@ -18,9 +18,6 @@ exports.up = function(db, callback) {
             rssUrl: { type: 'text' }
         })
     .then(function() {
-        return Q.ninvoke(db, "addIndex", "rssUrlStatus", "IDX_rssUrlStatus_rssUrlHash", ["rssUrlHash"]);
-    })
-    .then(function() {
         return runSql(utils.addDateModified("rssUrlStatus"));
     })
     .then(function() {
@@ -39,9 +36,6 @@ exports.down = function(db, callback) {
     .then(function()
     {
         return runSql(utils.dropColumn("rssUrlStatus", "dateModified"));
-    })
-    .then(function() {
-        return Q.ninvoke(db, "removeIndex", "rssUrlStatus", "IDX_rssUrlStatus_rssUrlHash");
     })
     .then(function() {
         return Q.ninvoke(db, "dropTable", "rssUrlStatus");

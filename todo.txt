@@ -1,12 +1,16 @@
 
 
+should skip loading feeds client-side if the server side version is recent
+  - add migration for the table used to track rssUrl status
+  - database tests 
+  - get failing test 
+
+
 GOAL:
 
   should be able to mark anything older than a week as read
 
   should show database available feeds on page load
-
-  should skip loading feeds client-side if the server side version is recent
 
 
   should have a way to kill karma server+client processes, use it for deployToIIS

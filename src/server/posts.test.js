@@ -218,12 +218,15 @@ setup.qtest(testWithRssOnly, "loadFeedsThroughDatabase should use database value
         .then(function(){
             return posts.loadFeedsThroughDatabase(rssUrl, user.id, originTime);
         }) 
-        .then(function(){
-            return posts.loadFeedsThroughDatabase(rssUrl, user.id, originTime);
-        }) 
         .then(function() {
             assert.equal(that.rssServerRequestCount, 1);
         })
+        .then(function(){
+            return posts.loadFeedsThroughDatabase(rssUrl, user.id, laterTime);
+        }) 
+        .then(function(){
+            return posts.loadFeedsThroughDatabase(rssUrl, user.id, laterTime);
+        }) 
         .then(function(){
             return posts.loadFeedsThroughDatabase(rssUrl, user.id, laterTime);
         }) 
