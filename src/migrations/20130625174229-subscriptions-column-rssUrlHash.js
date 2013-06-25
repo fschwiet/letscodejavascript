@@ -10,6 +10,9 @@ exports.up = function(db, callback) {
 
     return runSql("ALTER TABLE subscriptions ADD COLUMN rssUrlHash varchar(40)")
     .then(function() {
+        return Q.ninvoke(db, "addIndex", "subscriptions", "IDX_subscriptions_rssUrlHash", ["rssUrlHash"]);
+    })
+    .then(function() {
         return runSql(
             "CREATE TRIGGER trig_subscriptions_update_rssUrlHash BEFORE UPDATE " +
             "ON subscriptions " +
@@ -32,6 +35,9 @@ exports.down = function(db, callback) {
     return Q()
     .then(function() {
         return runSql("DROP TRIGGER trig_subscriptions_update_rssUrlHash");
+    })
+    .then(function() {
+        return Q.ninvoke(db, "removeIndex", "subscriptions", "IDX_subscriptions_rssUrlHash");
     })
     .then(function() {
         return runSql("ALTER TABLE subscriptions DROP COLUMN rssUrlHash");
