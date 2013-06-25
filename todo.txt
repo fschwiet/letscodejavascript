@@ -1,13 +1,17 @@
+client should skip loading feeds that have recent data
+
+
+should be able to mark anything older than a week as read
+
+
+should have a loading indicator
+
+
+should have an about page
+  - link to github
 
 
 GOAL:
-
-  should show database available feeds on page load
-     -> and skip loading feeds that have recent enough content
-
-
-  should be able to mark anything older than a week as read
-
 
   should have a way to kill karma server+client processes, use it for deployToIIS
 
