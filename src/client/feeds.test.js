@@ -34,7 +34,7 @@ define(["feeds", "jquery", "views/feeds.jade", "sinon"], function(feeds, $, feed
 
                 this.fakeServer = this.sinon.useFakeXMLHttpRequest();
 
-                secondRow = $("tr:eq(2)", this.fixture);
+                secondRow = $(".js-subscription:eq(1)", this.fixture);
                 secondRowRssUrl = secondRow.data("rssurl");
 
                 expect(secondRow.length).to.be(1);

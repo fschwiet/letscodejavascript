@@ -1,9 +1,9 @@
 
 - if (rows.length > 0)
-    div(class='container')
+    div.container
         legend(style='width:auto') Your RSS subscriptions
         each row in rows
-            div
+            div.js-subscription(data-rssurl=row.rssUrl)
                 | #{row.name} | 
                 a(href=row.htmlUrl) go there 
                 | | 
