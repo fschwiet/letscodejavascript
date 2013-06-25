@@ -5,6 +5,7 @@ var uuid = require('node-uuid');
 
 var config = require("../server/config.js");
 var database = require("../server/database.js");
+var dataUserPostsRead = require("../server/data/userPostsRead.js");
 var posts = require("../server/posts.js");
 var setup = require("../test/setup.js");
 
@@ -253,7 +254,7 @@ setup.qtest(testWithRssOnly, "loadFeedsThroughDatabase should not return feeds t
         }) 
         .then(assertMatchesExpectedPosts)
         .then(function() {
-            return database.markPostAsRead(user.id, postUrl);
+            return dataUserPostsRead.markPostAsRead(user.id, postUrl);
         })
         .then(function() {
             return posts.loadFeedsThroughDatabase(rssUrl, user.id, time);
@@ -262,7 +263,7 @@ setup.qtest(testWithRssOnly, "loadFeedsThroughDatabase should not return feeds t
             assert.deepEqual(results, []);
         })
         .then(function() {
-            return database.markPostAsUnread(user.id, postUrl);
+            return dataUserPostsRead.markPostAsUnread(user.id, postUrl);
         })
         .then(function() {
             return posts.loadFeedsThroughDatabase(rssUrl, user.id, time);

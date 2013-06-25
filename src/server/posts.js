@@ -13,7 +13,7 @@ var request = require("request");
 var feedparser = require("feedparser");
 var endpoint = require("endpoint");
 
-var database = require("./database.js");
+var dataUserPostsRead = require("./data/userPostsRead.js");
 var dataRssUrlStatus = require("./data/rssUrlStatus.js");
 var dataFeedPosts = require("./data/feedPosts.js");
 
@@ -50,7 +50,7 @@ module.exports = function(app) {
 
     app.post("/posts/finished", function(req,res,next) {
 
-        database.markPostAsRead(req.user.id, req.rssUrl)
+        dataUserPostsRead.markPostAsRead(req.user.id, req.rssUrl)
         .then(function() {
             res.status(200).send("ok");
         }, function(err) {
@@ -60,7 +60,7 @@ module.exports = function(app) {
 
     app.post("/posts/unfinished", function(req,res,next) {
 
-        database.markPostAsUnread(req.user.id, req.rssUrl)
+        dataUserPostsRead.markPostAsUnread(req.user.id, req.rssUrl)
         .then(function() {
             res.status(200).send("ok");
         }, function(err) {

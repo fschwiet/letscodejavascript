@@ -40,28 +40,3 @@ setup.qtest(exports, "findOrCreateUserByGoogleIdentifier can save and load users
                 });
         });
 });
-
-setup.qtest(exports, "markPostAsRead shouldn't insert duplicates", function() {
-
-    return findOrCreateUserByGoogleIdentifier(uuid.v4(), setup.getGoogleProfile("Other"))
-        .then(function(user) {
-            return database.markPostAsRead(user.id, "http://someurl.com/")
-            .then(function() {
-                return database.markPostAsRead(user.id, "http://someurl.com/");
-            })
-            .then(function() {
-
-                var connection = database.getConnection();
-
-                return Q.ninvoke(connection, "query", "SELECT COUNT(*) AS count FROM userPostsRead WHERE userId = ?", [user.id])
-                .then(function(results) {
-
-                    assert.deepEqual(results[0], [{count:1}]);
-                })
-                .fin(function() {
-
-                    connection.end();
-                });                
-            });
-        });
-});
