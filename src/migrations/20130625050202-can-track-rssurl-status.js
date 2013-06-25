@@ -23,7 +23,6 @@ exports.up = function(db, callback) {
     }, function(err) {
         callback(err);
     });
-
 };
 
 exports.down = function(db, callback) {
