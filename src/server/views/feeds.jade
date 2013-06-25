@@ -4,7 +4,8 @@
         legend(style='width:auto') Your RSS subscriptions
         each row in rows
             div.js-subscription(data-rssurl=row.rssUrl)
-                | #{row.name} | 
+                span.js-title #{row.name} 
+                | | 
                 a(href=row.htmlUrl) go there 
                 | | 
                 a.js-unsubscribe unsubscribe 

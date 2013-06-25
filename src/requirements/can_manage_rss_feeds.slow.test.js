@@ -21,7 +21,7 @@ setup.qtest(testBlock, "can upload rss", function() {
         });
     }
 
-    var unsubscribeButton = "tr[data-rssurl='http://blog.stackoverflow.com/'] a.js-unsubscribe[href='#']";
+    var unsubscribeButton = "*[data-rssurl='http://blog.stackoverflow.com/'] a.js-unsubscribe[href='#']";
 
     function getSubscriptionsFromUI() {
         return page.promise.evaluate(function() {
@@ -30,7 +30,7 @@ setup.qtest(testBlock, "can upload rss", function() {
             for (var i = 0; i < rows.length; i++) {
                 var row = rows[i];
                 result[row.getAttribute("data-rssurl")] = {
-                    title: row.querySelector('td').innerHTML
+                    title: row.querySelector('.js-title').innerHTML.trim()
                 };
             }
             return result;
@@ -40,7 +40,6 @@ setup.qtest(testBlock, "can upload rss", function() {
     return page.promise.open(config.urlFor("/feeds"))
         .then(getPageStatus)
         .then(function(status) {
-            console.log("status", status);
             assert.equal(status.fileUploadCount, 0);
             assert.equal(status.loginButtonCount, 2);
         })
@@ -83,6 +82,7 @@ setup.qtest(testBlock, "can upload rss", function() {
         })
         .then(getSubscriptionsFromUI)
         .then(function(results) {
+
             expect(results["http://blog.stackoverflow.com/"]).to.be(undefined);
         });
 });
