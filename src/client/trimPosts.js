@@ -1,9 +1,19 @@
 define(["jquery", "views/formTrimPosts.jade"], function($, jadeTrimPosts) {
 
-    function TrimPosts(urlSource) {
-        this.content = null;
+    function TrimPosts(defaultLimit, urlSource) {
+
+        this.defaultLimit = defaultLimit;
         this.urlSource = urlSource;
+
+        this.content = null;
     }
+
+    TrimPosts.selectors = {
+        formSelector: "form",
+        hiddenInputSelector: "input[name='urlList']",
+        countSelector: "input[name='countToKeep']",
+        warnText: ".js-warn"
+    };
 
     TrimPosts.prototype.show = function(target) {
 
@@ -12,20 +22,22 @@ define(["jquery", "views/formTrimPosts.jade"], function($, jadeTrimPosts) {
         if (this.content === null) {
             this.content = $(jadeTrimPosts({}).trim());
 
+            $(TrimPosts.selectors.countSelector, that.content).val(that.defaultLimit);
+
             this.content.submit(function(event) {
 
-                var inputValue = $("input[name=trimPostsAfter]", that.content).val();
+                var inputValue = $(TrimPosts.selectors.countSelector, that.content).val();
                 var limit = parseFloat(inputValue);
 
                 if (isNaN(limit)) {
-                    $(".js-warn", that.content).text("A number is expected.");
+                    $(TrimPosts.selectors.warnText, that.content).text("A number is expected.");
                     event.preventDefault();
                     return;
                 }
 
                 var trimmed = that.urlSource().slice(limit);
 
-                $("input[name='urlList']").val(JSON.stringify(trimmed));
+                $(TrimPosts.selectors.hiddenInputSelector).val(JSON.stringify(trimmed));
             });
 
             target.append(this.content);

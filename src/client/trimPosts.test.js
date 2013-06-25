@@ -5,11 +5,14 @@ define(["jquery", "trimPosts"], function($, TrimPosts) {
 
     describe("trimPosts", function() {
 
+        var selectors = TrimPosts.selectors;
+        
         var trimPosts = null;
+        var defaultLimit = 123654;
 
         beforeEach(function() {
 
-            trimPosts = new TrimPosts(function() {
+            trimPosts = new TrimPosts(defaultLimit, function() {
                 return ['postUrlA', 'postUrlB', 'postUrlC', 'postUrlD'];
             });
 
@@ -18,19 +21,15 @@ define(["jquery", "trimPosts"], function($, TrimPosts) {
             expectFormCountToBe(1);
 
             //  Prevent the submit action from redirecting the browser
-            $(formSelector).attr("action", "javascript:void(0)");
+            $(selectors.formSelector).attr("action", "javascript:void(0)");
         });
 
-        var formSelector = "form";
-        var hiddenInputSelector = "input[name='urlList']";
-        var countSelector = "input[name='trimPostsAfter']";
-
         function getWarning() {
-            return $(".js-warn", $(formSelector));
+            return $(selectors.warnText, $(selectors.formSelector));
         }
 
         function expectFormCountToBe(value) {
-            expect($(formSelector).length).to.be(value);
+            expect($(selectors.formSelector).length).to.be(value);
         }
 
         it("shows a form", function() {
@@ -40,15 +39,19 @@ define(["jquery", "trimPosts"], function($, TrimPosts) {
             expectFormCountToBe(1);
         });
 
+        it("sets the default value", function() {
+            expect($(selectors.countSelector).val()).to.be(defaultLimit.toString());
+        });
+
         describe("when the form is submited", function() {
 
             beforeEach(function() {
-                $(formSelector).find(countSelector).val("2");
-                $(formSelector).submit();
+                $(selectors.formSelector).find(selectors.countSelector).val("2");
+                $(selectors.formSelector).submit();
             });
 
             it("sets an input value with a list of all postUrls after the index", function() {
-                expect($(formSelector).find(hiddenInputSelector).val())
+                expect($(selectors.formSelector).find(selectors.hiddenInputSelector).val())
                     .to.be(JSON.stringify(['postUrlC', 'postUrlD']));
             });
         });
@@ -61,11 +64,11 @@ define(["jquery", "trimPosts"], function($, TrimPosts) {
 
                 expect(getWarning().text().length).to.be(0);
 
-                $(formSelector).find(countSelector).val("");
+                $(selectors.formSelector).find(selectors.countSelector).val("");
 
                 submitEvent = $.Event('submit');
 
-                $(formSelector).trigger(submitEvent);
+                $(selectors.formSelector).trigger(submitEvent);
             });
 
             it("shows an user message", function() {
