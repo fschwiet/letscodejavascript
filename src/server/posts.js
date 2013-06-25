@@ -14,9 +14,8 @@ var feedparser = require("feedparser");
 var endpoint = require("endpoint");
 var sha1 = require("sha1");
 
-var database = require("./database");
-
-var timeoutBetweenRssUrlUpdatesInMillseconds = 2 * 60 * 60 * 1000;  //  2 hours
+var database = require("./database.js");
+var dataRssUrlStatus = require("./data/rssUrlStatus.js");
 
 module.exports = function(app) {
 
@@ -117,7 +116,7 @@ function loadFeedsThroughDatabase(rssUrl, userId, readTime) {
 
     return Q()
     .then(function() {
-        return checkIfUrlNeedsUpdate(rssUrl, readTime)
+        return dataRssUrlStatus.checkIfUrlNeedsUpdate(rssUrl, readTime)
         .then(function(result) {
             
             if (result) {
@@ -126,39 +125,19 @@ function loadFeedsThroughDatabase(rssUrl, userId, readTime) {
                 .then(function(posts){
                     return writePostsToDatabase(rssUrl, posts)
                     .then(function() {
-                        return writeRssUrlStatus(rssUrl, "ok", readTime);
+                        return dataRssUrlStatus.writeRssUrlStatus(rssUrl, "ok", readTime);
                     });
                 }, function(err) {
-                    return writeRssUrlStatus(rssUrl, err.toString(), readTime);
+                    return dataRssUrlStatus.writeRssUrlStatus(rssUrl, err.toString(), readTime);
                 });
             }
         });
     })
     .then(function() {
-        return loadFeedsFromDatabase(rssUrl, userId);
+        return loadPostsFromDatabase(rssUrl, userId);
     });
 }
 
-function checkIfUrlNeedsUpdate(rssUrl, readTime) {
-
-    var urlHash = sha1(rssUrl);
-    var boundaryTime = new Date(readTime.getTime() - timeoutBetweenRssUrlUpdatesInMillseconds);
-
-    var connection = database.getConnection();
-
-    return Q.ninvoke(connection, "query", "SELECT * FROM rssUrlStatus WHERE rssUrlHash = ? AND lastModified > ?", [urlHash, boundaryTime])
-    .then(function(result) {
-
-        if (result[0].length > 0) {
-            return false;
-        } else {
-            return true;
-        }
-    })
-    .fin(function() {
-        connection.end();
-    });
-}
 
 function writePostsToDatabase(rssUrl, posts) {
 
@@ -193,7 +172,7 @@ function writePostsToDatabase(rssUrl, posts) {
         }, Q());
 }
 
-function loadFeedsFromDatabase (rssUrl, userId) {
+function loadPostsFromDatabase (rssUrl, userId) {
 
     var rssUrlHash = sha1(rssUrl);
 
@@ -218,31 +197,6 @@ function loadFeedsFromDatabase (rssUrl, userId) {
         connection.end();
     });
 }
-
-function writeRssUrlStatus(rssUrl, status, time) {
-
-    var connection = database.getConnection();
-
-    var newRow = {
-            rssUrlHash: sha1(rssUrl),
-            status: status,
-            rssUrl: rssUrl,
-            lastModified: time
-        };
-
-    var updateRow = {
-            status: status,
-            rssUrl: rssUrl,
-            lastModified: time
-        };
-
-    return Q.ninvoke(connection, "query",
-        "INSERT INTO rssUrlStatus SET ? ON DUPLICATE KEY UPDATE ?", [newRow, updateRow])
-        .fin(function() {
-            connection.end();
-        });
-}
-
 
 module.exports.loadFeedsThroughDatabase = loadFeedsThroughDatabase;
 
