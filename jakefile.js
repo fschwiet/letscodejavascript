@@ -34,7 +34,7 @@ task("verifyClientCode", ["lint", "testClient"], function() {});
 desc("lint");
 task("lint", function() {
 
-    var list = getFileListWithTypicalExcludes();
+    var list = listNonImportedFiles();
     list.include("**/*.js");
     list.exclude("jadeRuntime.js");
 
@@ -49,7 +49,7 @@ task("lint", function() {
 desc("Formats javascript files.");
 task("beautify", ["verifyEmptyGitStatus"], function() {
 
-    var list = getFileListWithTypicalExcludes();
+    var list = listNonImportedFiles();
     list.include("**/*.js");
 
     var readFile = Q.nbind(fs.readFile);
@@ -100,7 +100,7 @@ task("commonTestPrequisites", ["lint", "prepareTempDirectory", "prepareTestDatab
 
 task("testSlow", ["commonTestPrequisites"], function() {
 
-    var testList = getFileListWithTypicalExcludes();
+    var testList = listNonImportedFiles();
 
     testList.include(slowTests);
     testList.exclude(clientCode);
@@ -114,7 +114,7 @@ task("testSmokeAsRegularTest", ["commonTestPrequisites", "startSmokeServer", "te
 
 task("testSmoke", function() {
 
-    var testList = getFileListWithTypicalExcludes();
+    var testList = listNonImportedFiles();
 
     testList.include(smokeTests);
     testList.exclude(clientCode);
@@ -140,7 +140,7 @@ task("stopSmokeServer", function() {
 
 task("testRemaining", ["commonTestPrequisites"], function() {
 
-    var testList = getFileListWithTypicalExcludes();
+    var testList = listNonImportedFiles();
 
     testList.include(allTests);
 
@@ -499,11 +499,12 @@ function runMigrations(parameters) {
         });
 }
 
-function getFileListWithTypicalExcludes() {
+function listNonImportedFiles() {
     var list = new jake.FileList();
     list.exclude("node_modules");
     list.exclude("temp");
     list.exclude("lib");
+    list.exclude("clientLib");
     return list;
 }
 
