@@ -5,9 +5,11 @@
     var fs = require('fs-extra');
     var path = require('path');
     var Q = require("q");
+    var _ = require("underscore");
 
     var database = require("./database.js");
     var dataSubscriptions = require("./data/subscriptions.js");
+    var dataJoin = require("./data/join.js");
 
     var express = require('express');
     var connectFlash = require("connect-flash");
@@ -111,11 +113,24 @@
                     model.feeds = subscriptions;
 
                     if (subscriptions.length > 0) {
-                        response.render('index', model);
+                        return dataJoin.loadPostsForUser(request.user.id)
+                        .then(function(posts) {
+
+                            posts = _.sortBy(posts, function(v) {
+                                return -v.postDate.getTime();
+                            });
+
+                            model.posts = posts;
+
+                            response.render('index', model);
+                        });
+
                     } else {
+
                         response.redirect("/feeds");
                     }
-                }, function(err) {
+                })
+                .fail(function(err) {
                     next(err);
                 });
 

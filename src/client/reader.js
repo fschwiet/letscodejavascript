@@ -71,7 +71,7 @@ define(["views/post.jade", "endpoints", "less!reader"], function(postView, endpo
 
     Reader.prototype.insertPost = function(post) {
         var postDate = post.postDate;
-        var view = postView(post);
+        var view = postView({post:post});
 
         var target = null;
 
