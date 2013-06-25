@@ -8,11 +8,11 @@ should skip loading feeds client-side if the server side version is recent
 
 GOAL:
 
-  review usage of new Date()... should it be UTC?
+  should show database available feeds on page load
+     -> and skip loading feeds that have recent enough content
+
 
   should be able to mark anything older than a week as read
-
-  should show database available feeds on page load
 
 
   should have a way to kill karma server+client processes, use it for deployToIIS

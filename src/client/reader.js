@@ -4,27 +4,40 @@ define(["views/post.jade", "endpoints", "less!reader"], function(postView, endpo
         this.container = null;
     }
 
+    Reader.prototype.loadNextFeed = function() {
+
+        var that = this;
+        var feed = this.feeds.shift();
+
+        $.ajax({
+                type: "GET",
+                url: "/posts",
+                data: {
+                    rssUrl: feed.rssUrl
+                },
+                success: function(posts) {
+
+                    posts.forEach(function(post) {
+                        that.insertPost(post);
+                    });
+                    
+                    that.loadNextFeed();
+                },
+                error: function() {
+
+                    that.loadNextFeed();
+                }
+            });
+    };
+
     Reader.prototype.startReader = function(domContainer, feeds) {
 
         this.container = domContainer;
-        var that = this;
-
-        feeds.forEach(function(feed) {
-
-            $.ajax({
-                    type: "GET",
-                    url: "/posts",
-                    data: {
-                        rssUrl: feed.rssUrl
-                    },
-                    success: function(posts) {
-
-                        posts.forEach(function(post) {
-                            that.insertPost(post);
-                        });
-                    }
-                });
-        });
+        this.feeds = feeds;
+            
+        //  We'll load 2 feeds at a time until done
+        this.loadNextFeed();
+        this.loadNextFeed();
 
         this.container.on("click", "a.js-finishedButton", function() {
 
