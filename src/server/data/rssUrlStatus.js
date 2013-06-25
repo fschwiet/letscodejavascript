@@ -1,6 +1,7 @@
 
 var Q = require("q");
 var sha1 = require("sha1");
+var util = require("util");
 
 var database = require("../database.js");
 
@@ -14,7 +15,12 @@ exports.checkIfUrlNeedsUpdate = function(rssUrl, readTime) {
 
     var connection = database.getConnection();
 
-    return Q.ninvoke(connection, "query", "SELECT * FROM rssUrlStatus WHERE rssUrlHash = ? AND lastModified > ?", [urlHash, boundaryTime])
+    var escapedQuery = util.format("SELECT * FROM rssUrlStatus WHERE rssUrlHash = %s AND lastModified > %s",
+        connection.escape(urlHash), connection.escape(boundaryTime));
+
+    console.log("escapedQuery", escapedQuery);
+
+    return Q.ninvoke(connection, "query", escapedQuery)
     .then(function(result) {
 
         if (result[0].length > 0) {
