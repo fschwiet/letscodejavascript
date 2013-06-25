@@ -1,5 +1,4 @@
 
-
 Prerequisites:
 
 * install node v0.10.6
@@ -37,7 +36,7 @@ One common deployment problem is that an an existing IIS site collides with the 
 
 The PhantomJS process leaked for client tests may be holding onto host->ip mappings, and thereby requiring a reset if hosts file is changed.  
 Phantom or sometimes keep a file open in the temp directory, preventing the test run from clearing it.
-So at some point you may need to: get-process node | stop-process; get-process *phant* | stop-process
+So at some point you may need to: get-process node | stop-process; get-process **phant** | stop-process
 
 An iisreset may be needed before calling releaseToIIS.  I suspect adding a iisreset to NodeOnIIS boxstarter fixed this but have not verified.
 
