@@ -1,18 +1,18 @@
 
 /* jshint scripturl: true */
 
-define(["jquery", "trimPosts"], function($, TrimPosts) {
+define(["jquery", "trimPosts"], function($, trimPostsExp) {
 
     describe("trimPosts", function() {
 
-        var selectors = TrimPosts.selectors;
+        var selectors = trimPostsExp.selectors;
         
         var trimPosts = null;
         var defaultLimit = 123654;
 
         beforeEach(function() {
 
-            trimPosts = new TrimPosts(defaultLimit, function() {
+            trimPosts = trimPostsExp.create(defaultLimit, function() {
                 return ['postUrlA', 'postUrlB', 'postUrlC', 'postUrlD'];
             });
 

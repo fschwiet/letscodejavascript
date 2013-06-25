@@ -1,5 +1,12 @@
 
+
 should be able to mark anything older than a week as read
+
+form submits a list of post urls to mark as read
+
+server handles post then redirects to homepage
+
+client determines date from the nth post
 
 
 should have a loading indicator
