@@ -7,6 +7,7 @@
     var Q = require("q");
 
     var database = require("./database.js");
+    var dataSubscriptions = require("./data/subscriptions.js");
 
     var express = require('express');
     var connectFlash = require("connect-flash");
@@ -104,7 +105,7 @@
 
         if (model.isAuthenticated) {
 
-            database.loadSubscriptions(request.user.id)
+            dataSubscriptions.loadSubscriptions(request.user.id)
                 .then(function(subscriptions) {
 
                     model.feeds = subscriptions;

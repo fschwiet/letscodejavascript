@@ -3,7 +3,7 @@ var xml2js = require("xml2js");
 var Q = require("q");
 
 var modelFor = require("./modelFor");
-var database = require("./database");
+var dataSubscriptions = require("./data/subscriptions.js");
 
 module.exports = function(app) {
     app.get("/feeds", handleUploadFromGoogleRequest);
@@ -16,7 +16,7 @@ function handleUploadFromGoogleRequest(request, response) {
     var model = modelFor("Manage your RSS feed subscriptions", request);
 
     if (typeof request.user == "object") {
-        database.loadSubscriptions(request.user.id)
+        dataSubscriptions.loadSubscriptions(request.user.id)
             .then(function(subscriptions) {
 
                 model.rows = subscriptions;
@@ -36,7 +36,7 @@ function handleUploadFromGooglePostRequest(request, response, next) {
     loadSubscriptionsFromGoogleXml(subscriptionsPath)
         .then(function(rows) {
 
-            database.saveSubscriptions(request.user.id, rows)
+            dataSubscriptions.saveSubscriptions(request.user.id, rows)
                 .then(function() {
                     request.flash("info", "Upload complete.  Now just go to the <a href='/'>homepage</a> when you want to read them.");
                     response.redirect("/feeds");
@@ -87,7 +87,7 @@ function loadSubscriptionsFromGoogleXml(filepath) {
 
 function handleUnsubscribe(request, response, next) {
 
-    database.unsubscribe(request.user.id, request.body.rssUrl)
+    dataSubscriptions.unsubscribe(request.user.id, request.body.rssUrl)
         .then(function() {
             response.send();
         }, function(err) {
