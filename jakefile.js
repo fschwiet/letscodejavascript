@@ -503,6 +503,7 @@ function getFileListWithTypicalExcludes() {
     var list = new jake.FileList();
     list.exclude("node_modules");
     list.exclude("temp");
+    list.exclude("lib");
     return list;
 }
 

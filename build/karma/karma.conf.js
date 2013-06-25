@@ -11,18 +11,34 @@ files = [
     MOCHA,
     MOCHA_ADAPTER,
     REQUIRE,
-    REQUIRE_ADAPTER,
+    REQUIRE_ADAPTER, 
+    {
+        pattern: 'lib/**/*.js',
+        included: false
+    },
     'node_modules/expect.js/expect.js',
-    'src/client/main-test.js', {
+    'src/client/main-test.js', 
+    {
         pattern: 'build/karma/init.js',
         included: false
-    }, {
+    }, 
+    {
         pattern: 'node_modules/sinon/pkg/**/*.js',
         included: false
-    }, {
+    }, 
+    {
         pattern: 'src/client/*.js',
         included: false
-    }, {
+    }, 
+    {
+        pattern: 'src/client/*.less',
+        included: false
+    }, 
+    {
+        pattern: 'src/client/*.css',
+        included: false
+    }, 
+    {
         pattern: 'src/server/views/*.jade',
         included: false
     }

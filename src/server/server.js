@@ -67,6 +67,7 @@
 
         app.use("/client", express.static(__dirname + './../client/'));
         app.use("/client/views", express.static(__dirname + './../../temp/views'));
+        app.use("/lib", express.static(__dirname + './../../lib'));
 
         var errorLoggingFile = path.resolve(nconf.tempPathForLogs(), "errors.json");
 

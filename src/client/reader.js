@@ -1,4 +1,4 @@
-define(["views/post.jade", "endpoints"], function(postView, endpoints) {
+define(["views/post.jade", "endpoints", "less!reader"], function(postView, endpoints) {
 
     function Reader() {
         this.container = null;

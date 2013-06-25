@@ -5,5 +5,17 @@
         views: "../../temp/views"
     },
     name: "main",
+    packages: [
+      {
+        name: 'css',
+        location: '../../lib/require-css',
+        main: 'css'
+      },
+      {
+        name: 'less',
+        location: '../../lib/require-less',
+        main: 'less'
+      }
+    ],
     out: "../../temp/main-built.js"
 })
