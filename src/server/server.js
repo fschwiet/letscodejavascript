@@ -44,15 +44,10 @@
 
         require("./google-auth")(port, app);
         require("./posts")(app);
+        require("./feeds")(app);
 
         app.get("/", handleHomepageRequest);
         app.get("/status", handleStatusRequest);
-
-        require("./feeds")(app);
-
-        app.get("/crash", function() {
-            throw new Error("Ooops!");
-        });
 
         app.get("/client/main-built.js", function(req, res) {
             var mainBuilt = path.resolve(__dirname + '../../../temp/main-built.js');
