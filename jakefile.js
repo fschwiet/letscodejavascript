@@ -451,7 +451,7 @@ task("removeClientBundle", function() {
 }, {async:true});
 */
 desc("Run database migrations");
-task("runMigrations", function() {
+task("runMigrations", ["lint"], function() {
 
     var extraParams = ["up"];
 
