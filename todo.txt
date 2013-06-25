@@ -1,11 +1,5 @@
 
 
-should skip loading feeds client-side if the server side version is recent
-  - add migration for the table used to track rssUrl status
-  - database tests 
-  - get failing test 
-
-
 GOAL:
 
   should show database available feeds on page load
