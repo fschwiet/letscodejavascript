@@ -116,8 +116,15 @@
                         return dataJoin.loadPostsForUser(request.user.id)
                         .then(function(posts) {
 
+                            console.log("posts", posts);
+
                             posts = _.sortBy(posts, function(v) {
-                                return -v.postDate.getTime();
+                                if (v.postDate !== null) {
+                                    return -v.postDate.getTime();
+                                }
+                                else {
+                                    return -(new Date(1980,1,1).getTime());
+                                }
                             });
 
                             model.posts = posts;

@@ -11,6 +11,9 @@ should have an about page
   - link to github
 
 
+info notification on /feeds should have better layout
+
+
 GOAL:
 
   should have a way to kill karma server+client processes, use it for deployToIIS
