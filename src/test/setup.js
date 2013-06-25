@@ -21,7 +21,7 @@ exports.qtest = function(context, name, testImplementation) {
             return promise;
         };
 
-        var result = testImplementation();
+        var result = testImplementation.call(this);
 
         if ( !result || typeof result.then !== 'function') {
             test.fail("qtest expects a function that returns a promise.");
@@ -65,6 +65,8 @@ exports.usingPhantomPage = function(outer) {
 
     inner.setUp = function(done) {
 
+        var that = this;
+
         phantom.promise
             .create()
             .then(function(phantom) {
@@ -73,7 +75,7 @@ exports.usingPhantomPage = function(outer) {
 
                 return phantom.promise.createPage()
                     .then(function(page) {
-                        this.page = page;
+                        that.page = page;
                     });
             })
             .then(function() {
@@ -160,6 +162,10 @@ exports.given3rdPartyRssServer = function(outer, opts) {
     outer["given a 3rd part RSS server"] = inner;
 
     inner.setUp = function(done) {
+
+        var that = this;
+        that.rssServerRequestCount = 0;
+
         var app = require('express')();
         app.get("/rss/*", function(req, res) {
 
@@ -177,6 +183,8 @@ exports.given3rdPartyRssServer = function(outer, opts) {
             });
 
             res.send(feed.xml());
+
+            that.rssServerRequestCount++;
         });
 
         app.get("/status", function(req, res) {

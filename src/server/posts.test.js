@@ -186,16 +186,50 @@ setup.qtest(testWithRssOnly, "loadFeedsThroughDatabase should not insert duplica
 
     var rssUrl = "http://127.0.0.76:8081/rss/" + uuid.v4();
 
+    var originTime = new Date(2012,1,1);
+    var laterTime = new Date(2012,1,2);
+
     return findOrCreateUserByGoogleIdentifier(uuid.v4(), setup.getGoogleProfile("user"))
     .then(function(user) {
         return Q()
         .then(function(){
-            return posts.loadFeedsThroughDatabase(rssUrl, user.id);
+            return posts.loadFeedsThroughDatabase(rssUrl, user.id, originTime);
         }) 
         .then(function(){
-            return posts.loadFeedsThroughDatabase(rssUrl, user.id);
+            return posts.loadFeedsThroughDatabase(rssUrl, user.id, laterTime);
         }) 
         .then(assertMatchesExpectedPosts);
+    });
+});
+
+
+setup.qtest(testWithRssOnly, "loadFeedsThroughDatabase should use database values, if fresh", function() {
+
+    var that = this;
+
+    var rssUrl = "http://127.0.0.76:8081/rss/" + uuid.v4();
+
+    var originTime = new Date(2012,1,1);
+    var laterTime = new Date(2012,1,2);
+
+    return findOrCreateUserByGoogleIdentifier(uuid.v4(), setup.getGoogleProfile("user"))
+    .then(function(user) {
+        return Q()
+        .then(function(){
+            return posts.loadFeedsThroughDatabase(rssUrl, user.id, originTime);
+        }) 
+        .then(function(){
+            return posts.loadFeedsThroughDatabase(rssUrl, user.id, originTime);
+        }) 
+        .then(function() {
+            assert.equal(that.rssServerRequestCount, 1);
+        })
+        .then(function(){
+            return posts.loadFeedsThroughDatabase(rssUrl, user.id, laterTime);
+        }) 
+        .then(function() {
+            assert.equal(that.rssServerRequestCount, 2);
+        });
     });
 });
 
