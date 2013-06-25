@@ -7,15 +7,24 @@ var database = require("../database.js");
 
 var timeoutBetweenRssUrlUpdatesInMillseconds = 2 * 60 * 60 * 1000;  //  2 hours
 
+
+function getSubqueryWhetherRssUrlRequiresUpdateFunky(connection, escapedRssUrlHash, time) {
+
+    var boundaryTime = new Date(time.getTime() - timeoutBetweenRssUrlUpdatesInMillseconds);
+
+    return util.format("SELECT COUNT(*) = 0 as needUpdate FROM rssUrlStatus RUS WHERE RUS.rssUrlHash = %s AND RUS.lastModified > %s",
+        escapedRssUrlHash, connection.escape(boundaryTime));
+}
+
+
 function getSubqueryWhetherRssUrlRequiresUpdate(connection, rssUrl, time) {
 
     var urlHash = sha1(rssUrl);
 
-    var boundaryTime = new Date(time.getTime() - timeoutBetweenRssUrlUpdatesInMillseconds);
-
-    return util.format("SELECT COUNT(*) = 0 as needUpdate FROM rssUrlStatus WHERE rssUrlHash = %s AND lastModified > %s",
-        connection.escape(urlHash), connection.escape(boundaryTime));
+    return getSubqueryWhetherRssUrlRequiresUpdateFunky(connection, connection.escape(urlHash), time);
 }
+
+exports.getSubqueryWhetherRssUrlRequiresUpdateFunky = getSubqueryWhetherRssUrlRequiresUpdateFunky;
 
 exports.checkIfUrlNeedsUpdate = function(rssUrl, time) {
 

@@ -28,6 +28,8 @@ TODO:
   
 
   - MySQL connection pooling?
+    https://github.com/felixge/node-mysql
+    node-mysql supports it natively
       https://npmjs.org/package/mysql-simple
       - stale by 2 years
       https://npmjs.org/package/easy-mysql

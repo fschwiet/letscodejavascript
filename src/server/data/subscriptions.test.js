@@ -9,8 +9,61 @@ var setup = require("../../test/setup.js");
 
 var database = require("../database.js");
 var dataSubscriptions = require("./subscriptions.js");
+var dataRssUrlStatus = require("./rssUrlStatus.js");
 
 var findOrCreateUserByGoogleIdentifier = Q.nbind(database.findOrCreateUserByGoogleIdentifier);
+
+
+setup.qtest(exports, "loadSubscriptions includes whether the feed status needs updating", function() {
+
+    var originTime = new Date();
+    var earlierTime = new Date(originTime.getTime() - 3 * 60 * 60 * 1000);
+
+    return findOrCreateUserByGoogleIdentifier(uuid.v4(), setup.getGoogleProfile("Duper"))
+    .then(function(user) {
+
+        var userId = user.id;
+
+        return dataSubscriptions.saveSubscriptions(userId, [
+            {
+                name: "nameA",
+                rssUrl: "rssA",
+                htmlUrl: "htmlA"
+            }, 
+            {
+                name: "nameB",
+                rssUrl: "rssB",
+                htmlUrl: "htmlB"
+            }, 
+            {
+                name: "nameC",
+                rssUrl: "rssC",
+                htmlUrl: "htmlC"
+            }
+        ])
+        .then(function() {
+            return dataRssUrlStatus.writeRssUrlStatus("rssA", "good!", originTime);
+        })
+        .then(function() {
+            return dataRssUrlStatus.writeRssUrlStatus("rssB", "hrmph", earlierTime);
+        })
+        .then(function() {
+            return dataSubscriptions.loadSubscriptions(userId, originTime);
+        })
+        .then(function(results) {
+
+            var resultsByUrl = {};
+
+            results.forEach(function(result) {
+                resultsByUrl[result.rssUrl] = result;
+            });
+
+            assert.equal(resultsByUrl.rssA.couldRefresh, false, "expected rssA to not need a refresh");
+            assert.equal(resultsByUrl.rssB.couldRefresh, true, "expected rssB to need a refresh");
+            assert.equal(resultsByUrl.rssC.couldRefresh, true, "expected rssC to need a refresh");
+        });
+    });
+});
 
 setup.qtest(exports, "saveSubscriptions treats duplicates as updates", function() {
 

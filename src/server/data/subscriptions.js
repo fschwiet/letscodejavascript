@@ -1,13 +1,29 @@
 
 var Q = require("q");
 var database = require("../database.js");
+var dataRssUrlStatus = require("./rssUrlStatus.js");
 
-exports.loadSubscriptions = function(userId) {
+exports.loadSubscriptions = function(userId, time) {
 
     var connection = database.getConnection();
 
-    return Q.ninvoke(connection, "query", "SELECT * FROM subscriptions WHERE userId = ?", userId)
+    var extraColumns = "";
+
+    var showCouldRefreshColumn = typeof time !== "undefined";
+
+    if (showCouldRefreshColumn) {
+        extraColumns = ", (" + dataRssUrlStatus.getSubqueryWhetherRssUrlRequiresUpdateFunky(connection,"S.rssUrlHash", time) + ") as couldRefresh ";
+    }
+
+    return Q.ninvoke(connection, "query", "SELECT *" + extraColumns + " FROM subscriptions S WHERE S.userId = ?", userId)
         .then(function(results) {
+
+            if (showCouldRefreshColumn) {
+                results[0].forEach(function(result) {
+                    result.couldRefresh = result.couldRefresh > 0;
+                });
+            }
+
             return results[0];
         })
         .fin(function() {
