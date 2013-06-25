@@ -8,8 +8,6 @@ GOAL:
 
   should skip loading feeds client-side if the server side version is recent
 
-  layout shouldn't be terrible
-
 
   should have a way to kill karma server+client processes, use it for deployToIIS
 

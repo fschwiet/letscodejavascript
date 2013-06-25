@@ -36,10 +36,12 @@ define(["reader"], function(Reader) {
 
         describe("when the entries are returned for a feed", function() {
 
+            var firstPostUrl = "http://someservera.com/firstPost";
+
             var feedsReturnedByFirstServer = [{
                     feedName: "first feed",
                     postName: "first post",
-                    postUrl: "http://someservera.com/firstPost",
+                    postUrl: firstPostUrl,
                     postDate: new Date("June 2, 2013")
                 }
             ];
@@ -104,6 +106,34 @@ define(["reader"], function(Reader) {
                             "later post",
                             "first post",
                             "earlier post"
+                        ]));
+                });
+            });
+
+            describe("when later post is added with the same url", function() {
+
+                var feedsReturnedBySecondServer = [
+                    {
+                        feedName: "duplicate feed",
+                        postName: "duplicate post",
+                        postUrl: firstPostUrl,
+                        postDate: new Date("June 2, 2013")
+                    }
+                ];
+
+                beforeEach(function() {
+
+                    this.fakeServer.requests[1].respond(200, {
+                            "Content-Type": "application/json"
+                        }, JSON.stringify(feedsReturnedBySecondServer));
+                });
+
+                it("does not add the feed", function() {
+
+                    var titles = extractPostsFromPage(this.fixture).map(function(val) { return val.postName; });
+
+                    expect(JSON.stringify(titles)).to.be(JSON.stringify([
+                            "first post",
                         ]));
                 });
             });

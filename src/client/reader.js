@@ -58,7 +58,24 @@ define(["views/post.jade", "endpoints", "less!reader"], function(postView, endpo
 
         var target = null;
 
-        this.container.find(".js-post").each(function() {
+        var otherPosts = this.container.find(".js-post");
+
+        var matchingPosts = otherPosts.filter(function() {
+
+            var otherPostUrl = $(this).find(".js-postLink").attr("href");
+
+            if (post.postUrl == otherPostUrl) {
+                return true;
+            }
+
+            return false;
+        });
+
+        if (matchingPosts.length > 0) {
+            return;
+        }
+
+        otherPosts.each(function() {
             var next = $(this);
             var nextDate = next.data("postdate");
 
