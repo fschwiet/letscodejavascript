@@ -15,11 +15,9 @@ exports.up = function(db, callback) {
                 length:40 
             },
             status: { type: 'text'},
-            rssUrl: { type: 'text' }
+            rssUrl: { type: 'text'},
+            lastModified: { type: 'datetime'}
         })
-    .then(function() {
-        return runSql(utils.addDateModified("rssUrlStatus"));
-    })
     .then(function() {
         callback();
     }, function(err) {
@@ -33,10 +31,6 @@ exports.down = function(db, callback) {
     var runSql = Q.nbind(db.runSql, db);
 
     Q()
-    .then(function()
-    {
-        return runSql(utils.dropColumn("rssUrlStatus", "dateModified"));
-    })
     .then(function() {
         return Q.ninvoke(db, "dropTable", "rssUrlStatus");
     })

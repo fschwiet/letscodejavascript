@@ -16,6 +16,7 @@ var sha1 = require("sha1");
 
 var database = require("./database");
 
+var timeoutBetweenRssUrlUpdatesInMillseconds = 2 * 60 * 60 * 1000;  //  2 hours
 
 module.exports = function(app) {
 
@@ -38,7 +39,7 @@ module.exports = function(app) {
 
     app.get("/posts", function(req, res, next) {
 
-        loadFeedsThroughDatabase(req.rssUrl, req.user.id)
+        loadFeedsThroughDatabase(req.rssUrl, req.user.id, new Date())
             .then(function(results) {
                 res.setHeader("Content-Type", "application/json");
                 res.send(JSON.stringify(results));
@@ -112,16 +113,50 @@ function loadFeeds(rssUrl) {
 
 module.exports.loadFeeds = loadFeeds;
 
-function loadFeedsThroughDatabase(rssUrl, userId) {
+function loadFeedsThroughDatabase(rssUrl, userId, readTime) {
 
-    return loadFeeds(rssUrl)
-    .then(function(posts){
-        return writePostsToDatabase(rssUrl, posts);
-    }, function(err) {
-        return writeRssUrlStatus(rssUrl, err.toString());
+    return Q()
+    .then(function() {
+        return checkIfUrlNeedsUpdate(rssUrl, readTime)
+        .then(function(result) {
+            
+            if (result) {
+                
+                return loadFeeds(rssUrl)
+                .then(function(posts){
+                    return writePostsToDatabase(rssUrl, posts)
+                    .then(function() {
+                        return writeRssUrlStatus(rssUrl, "ok", readTime);
+                    });
+                }, function(err) {
+                    return writeRssUrlStatus(rssUrl, err.toString(), readTime);
+                });
+            }
+        });
     })
     .then(function() {
         return loadFeedsFromDatabase(rssUrl, userId);
+    });
+}
+
+function checkIfUrlNeedsUpdate(rssUrl, readTime) {
+
+    var urlHash = sha1(rssUrl);
+    var boundaryTime = new Date(readTime.getTime() - timeoutBetweenRssUrlUpdatesInMillseconds);
+
+    var connection = database.getConnection();
+
+    return Q.ninvoke(connection, "query", "SELECT * FROM rssUrlStatus WHERE rssUrlHash = ? AND lastModified > ?", [urlHash, boundaryTime])
+    .then(function(result) {
+
+        if (result[0].length > 0) {
+            return false;
+        } else {
+            return true;
+        }
+    })
+    .fin(function() {
+        connection.end();
     });
 }
 
@@ -155,10 +190,7 @@ function writePostsToDatabase(rssUrl, posts) {
 
     return inserts.reduce(function(soFar, f) {
             return soFar.then(f);
-        }, Q())
-    .then(function() {
-        return writeRssUrlStatus(rssUrl, "ok");
-    });
+        }, Q());
 }
 
 function loadFeedsFromDatabase (rssUrl, userId) {
@@ -187,19 +219,21 @@ function loadFeedsFromDatabase (rssUrl, userId) {
     });
 }
 
-function writeRssUrlStatus(rssUrl, status) {
+function writeRssUrlStatus(rssUrl, status, time) {
 
     var connection = database.getConnection();
 
     var newRow = {
             rssUrlHash: sha1(rssUrl),
             status: status,
-            rssUrl: rssUrl
+            rssUrl: rssUrl,
+            lastModified: time
         };
 
     var updateRow = {
             status: status,
-            rssUrl: rssUrl
+            rssUrl: rssUrl,
+            lastModified: time
         };
 
     return Q.ninvoke(connection, "query",

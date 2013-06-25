@@ -117,7 +117,6 @@ setup.qtest(clickElement, "should click element when found", function() {
             return page.promise.clickElement("a.target");
         })
         .then(function() {
-            var start = new Date();
             return waitUntil("browser is redirected to /empty", function() {
                 return page.promise.get("url").then(function(url) {
                     return url == config.urlFor("/empty");
@@ -140,7 +139,6 @@ setup.qtest(clickElement, "should be able to click element found by evaluation",
             });
         })
         .then(function() {
-            var start = new Date();
             return waitUntil("browser is redirected to /empty", function() {
                 return page.promise.get("url").then(function(url) {
                     console.log("url was", url);
@@ -162,7 +160,6 @@ setup.qtest(clickElement, "should allow less-strict clicking where uniqueness is
             return page.promise.clickElement("a.target", true);
         })
         .then(function() {
-            var start = new Date();
             return waitUntil("browser is redirected to /empty", function() {
                 return page.promise.get("url").then(function(url) {
                     console.log("url was", url);

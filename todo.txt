@@ -8,6 +8,8 @@ should skip loading feeds client-side if the server side version is recent
 
 GOAL:
 
+  review usage of new Date()... should it be UTC?
+
   should be able to mark anything older than a week as read
 
   should show database available feeds on page load
