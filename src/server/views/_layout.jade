@@ -5,12 +5,19 @@ html
         script(src='//requirejs.org/docs/release/2.1.6/minified/require.js',data-main="client/app")
         script(src='/client/inlineReady.js')
     body
-        div(style='overflow:hidden;position:absolute;top:0px;right:0px;padding:10px')
+        // div(style='overflow:hidden;position:absolute;top:0px;right:0px;padding:10px;background-color:white')
+        div(style='overflow:hidden;float:right;padding:10px;background-color:white')
             div(style='float:right')
-                - if (isAuthenticated)
-                    a(href="/logout") Logout
-                - else
-                    include loginButton
+                div
+                    a(href='/') Home 
+                    | | 
+                    a(href='/feeds') Manage 
+
+                div
+                    - if (isAuthenticated)
+                        a(href="/logout") Logout
+                    - else
+                        include loginButton
 
         - if (typeof flash !== "undefined")
             -if (flash.info)

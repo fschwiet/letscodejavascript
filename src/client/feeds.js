@@ -1,4 +1,4 @@
-define([], function() {
+define(["less!feeds"], function() {
 
     return {
         initialize: function(region) {
