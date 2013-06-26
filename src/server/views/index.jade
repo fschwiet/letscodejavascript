@@ -2,13 +2,15 @@ extends _layout
 
 block content
     - if (!isAuthenticated)
-        span It's easy to read your rss feeds without Google Reader.
-        ol 
-            li 
-                include loginButton
-                |  with your google account.
-            li Import your feeds.
-            li And you are done!
+        fieldset
+            legend
+                span Read your google RSS feeds at asimplereader.com
+            ol 
+                li 
+                    include loginButton
+                    |  with your google account.
+                li Import your feeds.
+                li And you are done!
     - if (typeof feeds !== "undefined")
         
         fieldset 
