@@ -18,7 +18,7 @@
 
     var modelFor = require("./modelFor");
 
-    var nconf = require('./config.js');
+    var config = require('./config.js');
 
     var server;
 
@@ -29,14 +29,14 @@
         app.use(express.limit('4mb'));
         app.use(express.bodyParser({
                     keepExtensions: true,
-                    uploadDir: nconf.tempPathForUploads()
+                    uploadDir: config.tempPathForUploads()
                 }));
         app.use(express.cookieParser());
         app.set('views', __dirname + '/views');
         app.set('view engine', 'jade');
 
         app.use(express.cookieSession({
-                    secret: nconf.get("server_sessionKey")
+                    secret: config.get("server_sessionKey")
                 }));
 
         app.use(connectFlash());
@@ -52,6 +52,7 @@
 
         app.get("/", handleHomepageRequest);
         app.get("/status", handleStatusRequest);
+        app.get("/about", handleAboutRequest);
 
         app.get("/client/main-built.js", function(req, res) {
             var mainBuilt = path.resolve(__dirname + '../../../temp/main-built.js');
@@ -67,7 +68,7 @@
         app.use("/client", express.static(__dirname + './../client/'));
         app.use("/client/views", express.static(__dirname + './../../temp/views'));
 
-        var errorLoggingFile = path.resolve(nconf.tempPathForLogs(), "errors.json");
+        var errorLoggingFile = path.resolve(config.tempPathForLogs(), "errors.json");
 
         var transports = [];
         transports.push(new winston.transports.File({
@@ -77,7 +78,7 @@
                     json: true
                 }));
 
-        if (!nconf.isProduction) {
+        if (!config.isProduction) {
             transports.push(new winston.transports.Console({
                         json: true
                     }));
@@ -171,7 +172,7 @@
         database.getStatus(function(statusString) {
             model.databaseStatus = statusString;
 
-            fs.stat(nconf.tempPathForUploads(), function(err, stat) {
+            fs.stat(config.tempPathForUploads(), function(err, stat) {
 
                 if (err) {
                     model.uploadPathStatus = err.toString();
@@ -189,6 +190,10 @@
 
     function errorHandler(err, req, res, next) {
         res.status(400).render("error500", modelFor("Error", req));
+    }
+
+    function handleAboutRequest(request, response) {
+        response.render('about', modelFor("About " + config.get("server_friendlyName"), request));
     }
 
 })();

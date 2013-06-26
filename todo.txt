@@ -1,10 +1,6 @@
 
 TODO
 
-should have an about page
-  - link to github
-
-
 
 - MySQL connection pooling?
   https://github.com/felixge/node-mysql
