@@ -1,4 +1,4 @@
-define(["reader", "trimPostsMonitor", "views/post.jade", "testModel"], function(Reader, trimPostsMonitor, postView, testModel) {
+define(["reader", "trimPostsMonitor", "testModel"], function(Reader, trimPostsMonitor, testModel) {
 
     var postsContainer;
 

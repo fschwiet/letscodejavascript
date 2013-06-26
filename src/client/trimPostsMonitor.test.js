@@ -1,4 +1,4 @@
-define(["trimPostsMonitor", "trimPostsForm", "views/post.jade", "testModel"], function(trimPostsMonitor, trimPostForms, postView, testModel) {
+define(["trimPostsMonitor", "trimPostsForm", "testModel"], function(trimPostsMonitor, trimPostForms, testModel) {
 
     var topContainer, postsContainer;
 
