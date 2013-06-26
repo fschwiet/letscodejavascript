@@ -2,24 +2,13 @@
 TODO
 
 
-- MySQL connection pooling?
-  https://github.com/felixge/node-mysql
-  node-mysql supports it natively
-    https://npmjs.org/package/mysql-simple
-    - stale by 2 years
-    https://npmjs.org/package/easy-mysql
-    - stale by 6 months
-    https://npmjs.org/package/mysql-connection-pool
-    - stale by 6 months
-    https://npmjs.org/package/node-mysql-pooled
-    - stale by 8 months
+  info notification on /feeds should have better layout
 
+  should have a loading indicator
 
+  should be able to subscribe to individual feeds
 
-info notification on /feeds should have better layout
-
-
-should have a loading indicator
+  should have post preview
 
 
 

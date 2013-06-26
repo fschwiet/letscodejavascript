@@ -3,6 +3,13 @@ var Q = require("q");
 
 var nconf = require('./config.js');
 
+var poolConfig = getConnectionInfo(true);
+poolConfig.connectionLimit = 100;
+
+var pool = mysql.createPool(poolConfig);
+
+exports.getPooledConnection = Q.nbind(pool.getConnection, pool);
+
 function getConnectionInfo(includeDatabasename) {
 
     var connectionInfo = {

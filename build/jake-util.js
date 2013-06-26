@@ -30,6 +30,8 @@ exports.extendTask = function(task, jake) {
         // BUGBUG:  needed this as jake was't exiting on its own.
         //  It seems running the server in process and doing auth against it
         //  is leaking something.
+        //
+        //  MySQl connection pooling is probably keeping the process too.
         process.exit();
     });
 
