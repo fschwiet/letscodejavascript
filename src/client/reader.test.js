@@ -1,4 +1,4 @@
-define(["reader", "trimPostsMonitor", "views/post.jade"], function(Reader, trimPostsMonitor, postView) {
+define(["reader", "trimPostsMonitor", "views/post.jade", "testModel"], function(Reader, trimPostsMonitor, postView, testModel) {
 
     var postsContainer;
 
@@ -22,29 +22,15 @@ define(["reader", "trimPostsMonitor", "views/post.jade"], function(Reader, trimP
         });
     });
 
-
-    // TODO: remove duplication
-    function getPostWithUrl(url) {
-        return postView({
-            post: {
-                feedName: "feed for " + url,
-                postName: "post for "+ url,
-                postUrl : url,
-                postDate: new Date(2012,1,1)
-            }
-        });
-    }
-
-
     describe("trimPostsMonitor integration", function(){
 
         it("calls trimPostsMonitor.check() each time a post is inserted", function() {
         
             reader.startReader(postsContainer, []);
-            
+
             expect(checkCallsCounted).to.be(0);
 
-            reader.insertPost(getPostWithUrl("a", "any url.com"));
+            reader.insertPost(testModel.getPostWithUrl("a", "any url.com"));
 
             expect(checkCallsCounted).to.be(1);
         });

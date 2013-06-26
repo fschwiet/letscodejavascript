@@ -1,5 +1,4 @@
-
-define(["trimPostsMonitor", "trimPostsForm", "views/post.jade"], function(trimPostsMonitor, trimPostForms, postView) {
+define(["trimPostsMonitor", "trimPostsForm", "views/post.jade", "testModel"], function(trimPostsMonitor, trimPostForms, postView, testModel) {
 
     var topContainer, postsContainer;
 
@@ -11,17 +10,6 @@ define(["trimPostsMonitor", "trimPostsForm", "views/post.jade"], function(trimPo
         postsContainer = $("<div>");
         this.fixture.append(postsContainer);
     });
-
-    function getPostWithUrl(url) {
-        return postView({
-            post: {
-                feedName: "feed for " + url,
-                postName: "post for "+ url,
-                postUrl : url,
-                postDate: new Date(2012,1,1)
-            }
-        });
-    }
 
     it("creates a trimPostsMonitor", function() {
 
@@ -46,8 +34,8 @@ define(["trimPostsMonitor", "trimPostsForm", "views/post.jade"], function(trimPo
         var firstUrl = "http://url/a";
         var secondUrl = "http://url/b";
 
-        postsContainer.append(getPostWithUrl(firstUrl));
-        postsContainer.append(getPostWithUrl(secondUrl));
+        postsContainer.append(testModel.getPostWithUrl(firstUrl));
+        postsContainer.append(testModel.getPostWithUrl(secondUrl));
 
         expect(postUrlExtractor().length).to.be(2);
     });
@@ -73,8 +61,8 @@ define(["trimPostsMonitor", "trimPostsForm", "views/post.jade"], function(trimPo
 
             it("when created with just a few posts, don't call show", function() {
 
-                postsContainer.append(getPostWithUrl("some url"));
-                postsContainer.append(getPostWithUrl("some other"));
+                postsContainer.append(testModel.getPostWithUrl("some url"));
+                postsContainer.append(testModel.getPostWithUrl("some other"));
 
                 trimPostsMonitor.start(topContainer, postsContainer, 3);
 
@@ -83,9 +71,9 @@ define(["trimPostsMonitor", "trimPostsForm", "views/post.jade"], function(trimPo
 
             it("when created with enough posts, call show", function() {
 
-                postsContainer.append(getPostWithUrl("some url"));
-                postsContainer.append(getPostWithUrl("some other"));
-                postsContainer.append(getPostWithUrl("some other baz"));
+                postsContainer.append(testModel.getPostWithUrl("some url"));
+                postsContainer.append(testModel.getPostWithUrl("some other"));
+                postsContainer.append(testModel.getPostWithUrl("some other baz"));
 
                 trimPostsMonitor.start(topContainer, postsContainer, 3);
 
@@ -97,13 +85,13 @@ define(["trimPostsMonitor", "trimPostsForm", "views/post.jade"], function(trimPo
 
             var monitor = trimPostsMonitor.start(topContainer, postsContainer, 3);
 
-            postsContainer.append(getPostWithUrl("some url"));
-            postsContainer.append(getPostWithUrl("some other"));
+            postsContainer.append(testModel.getPostWithUrl("some url"));
+            postsContainer.append(testModel.getPostWithUrl("some other"));
 
             monitor.check();
             expect(showCount).to.be(0);
 
-            postsContainer.append(getPostWithUrl("some other baz"));
+            postsContainer.append(testModel.getPostWithUrl("some other baz"));
 
             monitor.check();
             expect(showCount).to.be(1);
