@@ -12,6 +12,17 @@ define(["trimPostsMonitor", "trimPostsForm", "views/post.jade"], function(trimPo
         this.fixture.append(postsContainer);
     });
 
+    function getPostWithUrl(name, url) {
+        return postView({
+            post: {
+                feedName: "feed for " + url,
+                postName: "post for "+ url,
+                postUrl : url,
+                postDate: new Date(2012,1,1)
+            }
+        });
+    }
+
     it("creates a trimPostsMonitor", function() {
 
         this.sinon.spy(trimPostForms, "create");
@@ -35,29 +46,46 @@ define(["trimPostsMonitor", "trimPostsForm", "views/post.jade"], function(trimPo
         var firstUrl = "http://url/a";
         var secondUrl = "http://url/b";
 
-        postsContainer.append(postView({
-            post: {
-                feedName: "a",
-                postName: "a",
-                postUrl : firstUrl,
-                postDate: new Date(2012,1,1)
-            }
-        }));
-
-        postsContainer.append(postView({
-            post: {
-                feedName: "b",
-                postName: "b",
-                postUrl : secondUrl,
-                postDate: new Date(2012,1,2)
-            }
-        }));
+        postsContainer.append(getPostWithUrl(firstUrl));
+        postsContainer.append(getPostWithUrl(secondUrl));
 
         expect(postUrlExtractor().length).to.be(2);
     });
 
-    it("calls show() immediately if the page starts with enough posts", function() {
+    describe("calls show() immediately if the page starts with enough posts", function() {
 
+        var showCount = 0;
+
+        beforeEach(function() {
+            this.sinon.stub(trimPostForms, "create", function() {
+                return {
+                    show : function() {
+                        showCount++;
+                    }
+                };
+            });
+        });
+
+        it("when created with just a few posts, don't call show", function() {
+
+            postsContainer.append(getPostWithUrl("some url"));
+            postsContainer.append(getPostWithUrl("some other"));
+
+            trimPostsMonitor.start(topContainer, postsContainer, 3);
+
+            expect(showCount).to.be(0);
+        });
+
+        it("when created with enough posts, call show", function() {
+
+            postsContainer.append(getPostWithUrl("some url"));
+            postsContainer.append(getPostWithUrl("some other"));
+            postsContainer.append(getPostWithUrl("some other baz"));
+
+            trimPostsMonitor.start(topContainer, postsContainer, 3);
+
+            expect(showCount).to.be(1);
+        });
     });
 
     it("check() calls show() once if there are enough posts", function() {
