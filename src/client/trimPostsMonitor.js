@@ -9,9 +9,24 @@ define(["trimPostsForm"], function(trimPostsForm) {
                 });
             }, topContainer);
 
-            if (postsContainer.find(".js-post").length >= defaultLimit) {
-                form.show();
+            var needShow = true;
+
+            function tryShow() {
+                if (needShow) {
+                    if (postsContainer.find(".js-post").length >= defaultLimit) {
+                        form.show();
+                        needShow = false;
+                    }
+                }
             }
-        }
+
+            tryShow();
+
+            return {
+                check: function() {
+                    tryShow();
+                }
+            };
+        },
     };
 });
