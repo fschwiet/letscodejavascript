@@ -1,19 +1,48 @@
-define(["reader"], function(Reader) {
+define(["reader", "trimPosts"], function(Reader, trimPosts) {
 
     var reader;
+    var sandbox;
 
-    function assertRequestIsGetFor(request, path) {
+    beforeEach(function() {
 
-        expect(request.method).to.be("GET");
-        expect(request.url).to.be(path);
-    }
+        this.fakeServer = this.sinon.useFakeXMLHttpRequest();
+
+        reader = new Reader();
+    });
+
+    describe("trimPosts integration", function() {
+
+        var injectedTrimPosts;
+        var expectedFirstPostUrl = "http://somefakename.com/rss/post1";
+
+        beforeEach(function() {
+
+            this.sinon.spy(trimPosts, "create");
+
+            reader.startReader(this.fixture, []);
+
+            reader.insertPost({
+                feedName: "first feed",
+                postName: "first post",
+                postDate: new Date(),
+                postUrl: expectedFirstPostUrl
+            });
+        });
+
+        it("starts a trimPosts instance", function() {
+            expect(trimPosts.create.callCount).to.be(1);
+            expect(trimPosts.create.getCall(0).args[0]).to.be(12);
+
+            var urlLister = trimPosts.create.getCall(0).args[1];
+
+            expect(JSON.stringify(urlLister())).to.be(JSON.stringify([expectedFirstPostUrl]));
+        });
+    });
+
 
     describe("when visiting the reader page", function() {
 
         beforeEach(function() {
-            this.fakeServer = this.sinon.useFakeXMLHttpRequest();
-
-            reader = new Reader();
 
             reader.startReader(this.fixture, [
                     {
@@ -272,4 +301,10 @@ define(["reader"], function(Reader) {
             });
         });
     });
+
+    function assertRequestIsGetFor(request, path) {
+
+        expect(request.method).to.be("GET");
+        expect(request.url).to.be(path);
+    }
 });

@@ -1,4 +1,6 @@
-define(["views/post.jade", "endpoints", "less!reader"], function(postView, endpoints) {
+define(["views/post.jade", "endpoints", "trimPosts", "jquery", "less!reader"], function(postView, endpoints, trimPosts, $) {
+
+    var defaultCountToAllowTrimPosts = 12;
 
     function Reader() {
         this.container = null;
@@ -45,6 +47,16 @@ define(["views/post.jade", "endpoints", "less!reader"], function(postView, endpo
             if (feed.couldRefresh !== false) {
                 feedsToLoad.push(feed);
             }
+        });
+
+        var that = this;
+
+        this.trimPosts = trimPosts.create(defaultCountToAllowTrimPosts, function() {
+            var allPosts = Array.prototype.slice.call(that.container[0].querySelectorAll(".js-post"));
+            
+            return allPosts.map(function(element) {
+                return $(element).find(".js-postLink").attr("href");
+            });
         });
             
         //  We'll load 2 feeds at a time until done
