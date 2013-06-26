@@ -5,17 +5,18 @@ var dataRssUrlStatus = require("./rssUrlStatus.js");
 
 exports.loadSubscriptions = function(userId, time) {
 
-    var connection = database.getConnection();
-
     var extraColumns = "";
 
     var showCouldRefreshColumn = typeof time !== "undefined";
 
-    if (showCouldRefreshColumn) {
-        extraColumns = ", (" + dataRssUrlStatus.getSubqueryWhetherRssUrlRequiresUpdateFunky(connection,"S.rssUrlHash", time) + ") as couldRefresh ";
-    }
+    return database.getPooledConnection()
+    .then(function(connection) {
 
-    return Q.ninvoke(connection, "query", "SELECT *" + extraColumns + " FROM subscriptions S WHERE S.userId = ?", userId)
+        if (showCouldRefreshColumn) {
+            extraColumns = ", (" + dataRssUrlStatus.getSubqueryWhetherRssUrlRequiresUpdateFunky(connection,"S.rssUrlHash", time) + ") as couldRefresh ";
+        }
+        
+        return Q.ninvoke(connection, "query", "SELECT *" + extraColumns + " FROM subscriptions S WHERE S.userId = ?", userId)
         .then(function(results) {
 
             if (showCouldRefreshColumn) {
@@ -29,16 +30,18 @@ exports.loadSubscriptions = function(userId, time) {
         .fin(function() {
             connection.end();
         });
+    });
 };
 
 exports.saveSubscriptions = function(userId, subscriptions) {
 
-    var connection = database.getConnection();
-
-    return saveSubscriptionsInternal(connection, userId, subscriptions)
+    return database.getPooledConnection()
+    .then(function(connection){
+        return saveSubscriptionsInternal(connection, userId, subscriptions)
         .fin(function() {
             connection.end();
         });
+    });
 };
 
 function saveSubscriptionsInternal(connection, userId, subscriptions) {
@@ -75,11 +78,12 @@ function saveSubscriptionsInternal(connection, userId, subscriptions) {
 
 exports.unsubscribe = function(userId, rssUrl) {
 
-    var connection = database.getConnection();
-
-    return Q.npost(connection, "query", ["DELETE FROM subscriptions WHERE rssUrl = ? AND userId = ?", [rssUrl, userId]])
-        .fin(function() {
-            connection.end();
-        });
+    return database.getPooledConnection()
+    .then(function(connection){
+        return Q.npost(connection, "query", ["DELETE FROM subscriptions WHERE rssUrl = ? AND userId = ?", [rssUrl, userId]])
+            .fin(function() {
+                connection.end();
+            });
+    });
 };
 

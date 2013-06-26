@@ -28,23 +28,22 @@ exports.getSubqueryWhetherRssUrlRequiresUpdateFunky = getSubqueryWhetherRssUrlRe
 
 exports.checkIfUrlNeedsUpdate = function(rssUrl, time) {
 
-    var connection = database.getConnection();
+    return database.getPooledConnection()
+    .then(function(connection){
+        var escapedQuery = getSubqueryWhetherRssUrlRequiresUpdate(connection, rssUrl, time);
 
-    var escapedQuery = getSubqueryWhetherRssUrlRequiresUpdate(connection, rssUrl, time);
+        return Q.ninvoke(connection, "query", escapedQuery)
+        .then(function(result) {
 
-    return Q.ninvoke(connection, "query", escapedQuery)
-    .then(function(result) {
-
-        return result[0][0].needUpdate > 0;
-    })
-    .fin(function() {
-        connection.end();
+            return result[0][0].needUpdate > 0;
+        })
+        .fin(function() {
+            connection.end();
+        });
     });
 };
 
 exports.writeRssUrlStatus = function(rssUrl, status, time) {
-
-    var connection = database.getConnection();
 
     var newRow = {
             rssUrlHash: sha1(rssUrl),
@@ -59,11 +58,14 @@ exports.writeRssUrlStatus = function(rssUrl, status, time) {
             lastModified: time
         };
 
-    return Q.ninvoke(connection, "query",
-        "INSERT INTO rssUrlStatus SET ? ON DUPLICATE KEY UPDATE ?", [newRow, updateRow])
-        .fin(function() {
-            connection.end();
-        });
+    return database.getPooledConnection()
+    .then(function(connection) {
+        return Q.ninvoke(connection, "query",
+            "INSERT INTO rssUrlStatus SET ? ON DUPLICATE KEY UPDATE ?", [newRow, updateRow])
+            .fin(function() {
+                connection.end();
+            });
+    });
 };
 
 

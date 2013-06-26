@@ -4,7 +4,7 @@ var Q = require("q");
 var nconf = require('./config.js');
 
 var poolConfig = getConnectionInfo(true);
-poolConfig.connectionLimit = 100;
+poolConfig.connectionLimit = 70; // 100 is the default connection limit for MySQL.  Using <100 since not everyone uses the pool.
 
 var pool = mysql.createPool(poolConfig);
 
