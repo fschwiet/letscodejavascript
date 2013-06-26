@@ -1,6 +1,4 @@
-define(["views/post.jade", "endpoints", "trimPosts", "jquery", "less!reader"], function(postView, endpoints, trimPosts, $) {
-
-    var defaultCountToAllowTrimPosts = 12;
+define(["views/post.jade", "endpoints", "jquery", "less!reader"], function(postView, endpoints, $) {
 
     function Reader() {
         this.postsContainer = null;
@@ -36,9 +34,8 @@ define(["views/post.jade", "endpoints", "trimPosts", "jquery", "less!reader"], f
             });
     };
 
-    Reader.prototype.startReader = function(topContainer, postsContainer, feeds) {
+    Reader.prototype.startReader = function(postsContainer, feeds) {
 
-        this.topContainer = topContainer;
         this.postsContainer = postsContainer;
 
         this.feeds = feeds;
@@ -53,14 +50,6 @@ define(["views/post.jade", "endpoints", "trimPosts", "jquery", "less!reader"], f
 
         var that = this;
 
-        this.trimPosts = trimPosts.create(defaultCountToAllowTrimPosts, function() {
-            var allPosts = Array.prototype.slice.call(that.postsContainer[0].querySelectorAll(".js-post"));
-            
-            return allPosts.map(function(element) {
-                return $(element).find(".js-postLink").attr("href");
-            });
-        });
-            
         //  We'll load 2 feeds at a time until done
         this.loadNextFeed();
         this.loadNextFeed();
@@ -89,7 +78,6 @@ define(["views/post.jade", "endpoints", "trimPosts", "jquery", "less!reader"], f
             $(this).hide();
         });
     };
-
 
     Reader.prototype.insertPost = function(post) {
         var postDate = post.postDate;
@@ -129,11 +117,8 @@ define(["views/post.jade", "endpoints", "trimPosts", "jquery", "less!reader"], f
         } else {
             this.postsContainer.append(view);
         }
-
-        if (this.postsContainer.find(".js-post").length >= defaultCountToAllowTrimPosts) {
-            this.trimPosts.show(this.topContainer);
-        }
     };
+
 
     return Reader;
 });

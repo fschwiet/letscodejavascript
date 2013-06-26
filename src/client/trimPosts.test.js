@@ -14,10 +14,10 @@ define(["jquery", "trimPosts"], function($, trimPostsExp) {
 
             trimPosts = trimPostsExp.create(defaultLimit, function() {
                 return ['postUrlA', 'postUrlB', 'postUrlC', 'postUrlD'];
-            });
+            }, this.fixture);
 
             expectFormCountToBe(0);
-            trimPosts.show(this.fixture);
+            trimPosts.show();
             expectFormCountToBe(1);
 
             //  Prevent the submit action from redirecting the browser
@@ -34,8 +34,8 @@ define(["jquery", "trimPosts"], function($, trimPostsExp) {
 
         it("shows a form", function() {
 
-            trimPosts.show(this.fixture);
-            trimPosts.show(this.fixture);
+            trimPosts.show();
+            trimPosts.show();
             expectFormCountToBe(1);
         });
 

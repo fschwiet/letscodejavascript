@@ -1,9 +1,10 @@
 define(["jquery", "views/formTrimPosts.jade"], function($, jadeTrimPosts) {
 
-    function TrimPosts(defaultLimit, urlSource) {
+    function TrimPosts(defaultLimit, urlSource, container) {
 
         this.defaultLimit = defaultLimit;
         this.urlSource = urlSource;
+        this.container = container;
 
         this.content = null;
     }
@@ -15,7 +16,7 @@ define(["jquery", "views/formTrimPosts.jade"], function($, jadeTrimPosts) {
         warnText: ".js-warn"
     };
 
-    TrimPosts.prototype.show = function(target) {
+    TrimPosts.prototype.show = function() {
 
         var that = this;
 
@@ -40,14 +41,14 @@ define(["jquery", "views/formTrimPosts.jade"], function($, jadeTrimPosts) {
                 $(selectors.hiddenInputSelector).val(JSON.stringify(trimmed));
             });
 
-            target.append(this.content);
+            this.container.append(this.content);
         }
     };
 
     return {
         selectors: selectors,
-        create : function(defaultLimit, urlSource) {
-            return new TrimPosts(defaultLimit, urlSource);
+        create : function(defaultLimit, urlSource, container) {
+            return new TrimPosts(defaultLimit, urlSource, container);
         }
     };
 });
