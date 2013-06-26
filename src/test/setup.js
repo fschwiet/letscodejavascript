@@ -141,10 +141,17 @@ exports.givenCleanDatabase = function(outer) {
 
 exports.given3rdPartyRssServer = function(outer, opts) {
 
-    var thisRssServerContext = {};
+    var hostname = "127.0.0.76";
+    var port = config.get("server_port");
+
+    var thisRssServerContext = {
+        urlFor : function(path) {
+            return "http://" + hostname + ":" + port.toString() + path;
+        }
+    };
 
     opts = setDefault(opts).to({
-            host: "127.0.0.76",
+            host: hostname,
             port: config.get("server_port"),
             feedName: "FeedForAll Sample Feed",
             posts: [ {

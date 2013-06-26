@@ -47,7 +47,7 @@ testBlock = inner;
 setup.qtest(testBlock, "Should be able to load RSS feeds", function() {
 
     var url = config.urlFor("/posts", {
-            rssUrl: "http://127.0.0.76:8081/rss/foo"
+            rssUrl: this.rssServer.urlFor("/rss/foo")
         });
 
     return Q.nfcall(request, url)
@@ -66,7 +66,7 @@ setup.qtest(testBlock, "Should be able to load RSS feeds", function() {
 setup.qtest(testBlock, "Should return empty result for invalid feeds", function() {
 
     var url = config.urlFor("/posts", {
-            rssUrl: "http://127.0.0.76:8081/notexistingPath"
+            rssUrl: this.rssServer.urlFor("/notexistingPath")
         });
 
     return Q.nfcall(request, url)
@@ -84,7 +84,7 @@ setup.qtest(testBlock, "Should return empty result for invalid feeds", function(
 setup.qtest(testBlock, "Should be able to mark feeds as finished", function() {
 
     var url = config.urlFor("/posts", {
-            rssUrl: "http://127.0.0.76:8081/rss/foo"
+            rssUrl: this.rssServer.urlFor("/rss/foo")
         });
 
     return Q.nfcall(request, url)
@@ -147,7 +147,7 @@ setup.qtest(testBlock, "Should be able to mark feeds as finished", function() {
 
 setup.qtest(testWithRssOnly, "loadFeeds should be able to load RSS feeds", function() {
 
-    return posts.loadFeeds("http://127.0.0.76:8081/rss/foo")
+    return posts.loadFeeds(this.rssServer.urlFor("/rss/foo"))
     .then(assertMatchesExpectedPosts);
 });
 
@@ -162,8 +162,10 @@ setup.qtest(testWithRssOnly, "loadFeeds should give error if the http request fa
 
 setup.qtest(testWithRssOnly, "loadFeeds should give error if the http request fails #2", function() {
 
+    var that = this;
+
     return setup.shouldFail(function() {
-        return posts.loadFeeds("http://127.0.0.76:8081/notexistingPath");
+        return posts.loadFeeds(that.rssServer.urlFor("/notexistingPath"));
     }, "Not a feed");
 });
 
@@ -173,7 +175,7 @@ var findOrCreateUserByGoogleIdentifier = Q.nbind(database.findOrCreateUserByGoog
 
 setup.qtest(testWithRssOnly, "loadFeedsThroughDatabase should be able to load RSS feeds", function() {
 
-    var rssUrl = "http://127.0.0.76:8081/rss/" + uuid.v4();
+    var rssUrl = this.rssServer.urlFor("/rss/" + uuid.v4());
 
     return findOrCreateUserByGoogleIdentifier(uuid.v4(), setup.getGoogleProfile("user"))
     .then(function(user) {
@@ -188,7 +190,7 @@ setup.qtest(testWithRssOnly, "loadFeedsThroughDatabase should be able to load RS
 
 setup.qtest(testWithRssOnly, "loadFeedsThroughDatabase should not insert duplicates", function() {
 
-    var rssUrl = "http://127.0.0.76:8081/rss/" + uuid.v4();
+    var rssUrl = this.rssServer.urlFor("/rss/" + uuid.v4());
 
     var originTime = new Date();
     var laterTime = new Date(originTime.getTime() + 24 * 60 * 60 * 1000);
@@ -211,7 +213,7 @@ setup.qtest(testWithRssOnly, "loadFeedsThroughDatabase should use database value
 
     var that = this;
 
-    var rssUrl = "http://127.0.0.76:8081/rss/" + uuid.v4();
+    var rssUrl = this.rssServer.urlFor("/rss/" + uuid.v4());
 
     var originTime = new Date();
     var laterTime = new Date(originTime.getTime() + 5 * 24 * 60 * 60 * 1000);
@@ -243,7 +245,7 @@ setup.qtest(testWithRssOnly, "loadFeedsThroughDatabase should use database value
 
 setup.qtest(testWithRssOnly, "loadFeedsThroughDatabase should not return feeds that have been marked as read by the user", function() {
 
-    var rssUrl = "http://127.0.0.76:8081/rss/" + uuid.v4();
+    var rssUrl = this.rssServer.urlFor("/rss/" + uuid.v4());
     var postUrl = "http://www.feedforall.com/restaurant.htm";
 
     var time = new Date();
