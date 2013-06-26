@@ -53,16 +53,26 @@ setup.qtest(testBlock, "can upload rss", function() {
             return page.promise.open(config.urlFor("/"));
         })
         .then(function() {
-            console.log("waiting");
             return waitUntil("the trim posts form appear", function() {
                 return page.promise.evaluate(function() {
                     return document.querySelector("form[name='trimPosts']") !== null;
                 });
             });
         })
-        .fail(function() {
+        .then(function() {
+            return page.promise.clickElement("input[name='submitTrimPosts']");
+        })
+        .then(function() {
+            return waitUntil("the page loads with the trimmed posts", function() {
+                return page.promise.evaluate(function() {
+                    return $(".js-post").length == 12;
+                });
+            });
+        })
+        .fail(function(err) {
             var path = config.tempPathFor("screenshot.png");
             console.log("saving screenshot to " + path);
             page.render(path);
+            throw err;
         });
 });
