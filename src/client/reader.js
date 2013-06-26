@@ -3,7 +3,7 @@ define(["views/post.jade", "endpoints", "trimPosts", "jquery", "less!reader"], f
     var defaultCountToAllowTrimPosts = 12;
 
     function Reader() {
-        this.container = null;
+        this.postsContainer = null;
     }
 
     Reader.prototype.loadNextFeed = function() {
@@ -36,13 +36,10 @@ define(["views/post.jade", "endpoints", "trimPosts", "jquery", "less!reader"], f
             });
     };
 
-    Reader.prototype.startReader = function(domContainer, feeds) {
+    Reader.prototype.startReader = function(topContainer, postsContainer, feeds) {
 
-        this.topContainer = $("<div>");
-        domContainer.append(this.topContainer);
-
-        this.container = $("<div>");
-        domContainer.append(this.container);
+        this.topContainer = topContainer;
+        this.postsContainer = postsContainer;
 
         this.feeds = feeds;
         var feedsToLoad = [];
@@ -57,7 +54,7 @@ define(["views/post.jade", "endpoints", "trimPosts", "jquery", "less!reader"], f
         var that = this;
 
         this.trimPosts = trimPosts.create(defaultCountToAllowTrimPosts, function() {
-            var allPosts = Array.prototype.slice.call(that.container[0].querySelectorAll(".js-post"));
+            var allPosts = Array.prototype.slice.call(that.postsContainer[0].querySelectorAll(".js-post"));
             
             return allPosts.map(function(element) {
                 return $(element).find(".js-postLink").attr("href");
@@ -68,7 +65,7 @@ define(["views/post.jade", "endpoints", "trimPosts", "jquery", "less!reader"], f
         this.loadNextFeed();
         this.loadNextFeed();
 
-        this.container.on("click", "a.js-finishedButton", function() {
+        this.postsContainer.on("click", "a.js-finishedButton", function() {
 
             var post = $(this).parents(".js-post");
             var postUrl = post.find(".js-postLink").attr("href").trim();
@@ -80,7 +77,7 @@ define(["views/post.jade", "endpoints", "trimPosts", "jquery", "less!reader"], f
             $(this).hide();
         });
 
-        this.container.on("click", "a.js-unfinishedButton", function() {
+        this.postsContainer.on("click", "a.js-unfinishedButton", function() {
 
             var post = $(this).parents(".js-post");
             var postUrl = post.find(".js-postLink").attr("href").trim();
@@ -100,7 +97,7 @@ define(["views/post.jade", "endpoints", "trimPosts", "jquery", "less!reader"], f
 
         var target = null;
 
-        var otherPosts = this.container.find(".js-post");
+        var otherPosts = this.postsContainer.find(".js-post");
 
         var matchingPosts = otherPosts.filter(function() {
 
@@ -130,10 +127,10 @@ define(["views/post.jade", "endpoints", "trimPosts", "jquery", "less!reader"], f
         if (target !== null) {
             target.before(view);
         } else {
-            this.container.append(view);
+            this.postsContainer.append(view);
         }
 
-        if (this.container.find(".js-post").length >= defaultCountToAllowTrimPosts) {
+        if (this.postsContainer.find(".js-post").length >= defaultCountToAllowTrimPosts) {
             this.trimPosts.show(this.topContainer);
         }
     };

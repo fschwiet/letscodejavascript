@@ -5,6 +5,6 @@ require(["feeds", "reader", "jquery", "css!clientLib/bootstrap/css/bootstrap"], 
 
     if (typeof window.subscribedFeeds !== "undefined") {
         window.feedReader = new Reader();
-        window.feedReader.startReader($("body"), window.subscribedFeeds);
+        window.feedReader.startReader($(".js-topContainer"), $(".js-postsContainer"), window.subscribedFeeds);
     }
 });

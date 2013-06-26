@@ -1,9 +1,17 @@
 define(["reader", "trimPosts"], function(Reader, trimPosts) {
 
+    var topContainer, postsContainer;
+
     var reader;
     var sandbox;
 
     beforeEach(function() {
+
+        topContainer = $("div");
+        this.fixture.append(topContainer);
+
+        postsContainer = $("div");
+        this.fixture.append(postsContainer);
 
         this.fakeServer = this.sinon.useFakeXMLHttpRequest();
 
@@ -19,7 +27,7 @@ define(["reader", "trimPosts"], function(Reader, trimPosts) {
 
             this.sinon.spy(trimPosts, "create");
 
-            reader.startReader(this.fixture, []);
+            reader.startReader(topContainer, postsContainer, []);
 
             reader.insertPost({
                 feedName: "first feed",
@@ -79,7 +87,7 @@ define(["reader", "trimPosts"], function(Reader, trimPosts) {
 
         beforeEach(function() {
 
-            reader.startReader(this.fixture, [
+            reader.startReader(topContainer, postsContainer, [
                     {
                         rssUrl: "http://servera.com/rss",
                         couldRefresh: true

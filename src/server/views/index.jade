@@ -10,7 +10,9 @@ block content
             li Import your feeds.
             li And you are done!
     - if (typeof feeds !== "undefined")
-        each post in posts
-            include post
+        div.js-topContainer
+        div.js-postsContainer
+            each post in posts
+                include post
         - var pageState = "<script> window.subscribedFeeds = " + JSON.stringify(feeds) + "; </script>"
         | !{pageState}
