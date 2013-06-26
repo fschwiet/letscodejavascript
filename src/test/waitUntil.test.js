@@ -86,5 +86,14 @@
             }, 500, 1);
         }, "foo async fiddly pham");
     });
+
+    setup.qtest(exports, "should give helpful error when unexpected parameters", function() {
+
+        return setup.shouldFail(function(){
+
+            return waitUntil(function() {
+            });
+        }, "waitUntil expects a name string as first parameter");
+    });
     // should pass on errors, on first or later attempts
 })();

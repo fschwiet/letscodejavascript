@@ -11,6 +11,13 @@ module.exports = function(name, toBeEvaluated, msTimeout, msInterval) {
     }
 
     var defer = Q.defer();
+
+    if (typeof(name) !== 'string') {
+        defer.reject("waitUntil expects a name string as first parameter");
+        return defer.promise;
+    }
+
+
     var endTime = new Date();
     endTime.setMilliseconds(msTimeout + endTime.getMilliseconds());
 
