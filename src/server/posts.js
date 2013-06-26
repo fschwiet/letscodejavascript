@@ -19,7 +19,6 @@ var dataFeedPosts = require("./data/feedPosts.js");
 
 module.exports = function(app) {
 
-
     app.all("/posts*", function(req, res, next){
 
         if (typeof req.user !== "object") {

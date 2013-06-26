@@ -52,9 +52,6 @@ exports.shouldFail = function(promiseFactory, expectedText) {
         });
 };
 
-//
-//  Callback is passed 1 parameter, the phantom.js instance
-//
 
 exports.usingPhantomPage = function(outer) {
 
@@ -144,6 +141,8 @@ exports.givenCleanDatabase = function(outer) {
 
 exports.given3rdPartyRssServer = function(outer, opts) {
 
+    var thisRssServerContext = {};
+
     opts = setDefault(opts).to({
             host: "127.0.0.76",
             port: config.get("server_port"),
@@ -164,7 +163,9 @@ exports.given3rdPartyRssServer = function(outer, opts) {
     inner.setUp = function(done) {
 
         var that = this;
-        that.rssServerRequestCount = 0;
+
+        that.rssServer = thisRssServerContext;
+        that.rssServer.requestCount = 0;
 
         var app = require('express')();
         app.get("/rss/*", function(req, res) {
@@ -184,7 +185,7 @@ exports.given3rdPartyRssServer = function(outer, opts) {
 
             res.send(feed.xml());
 
-            that.rssServerRequestCount++;
+            that.rssServer.requestCount++;
         });
 
         app.get("/status", function(req, res) {

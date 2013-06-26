@@ -132,7 +132,7 @@ setup.qtest(exports, "saveSubscriptions treats duplicates as updates", function(
         });
 });
 
-setup.qtest(exports, "deleteSubscription should remove subscriptions", function() {
+setup.qtest(exports, "unsubscribe should remove subscriptions", function() {
 
     return findOrCreateUserByGoogleIdentifier(uuid.v4(), setup.getGoogleProfile("Duper"))
         .then(function(user) {
@@ -182,7 +182,7 @@ setup.qtest(exports, "deleteSubscription should remove subscriptions", function(
         });
 });
 
-setup.qtest(exports, "deleteSubscription shouldn't remove other people's subscriptions", function() {
+setup.qtest(exports, "unsubscribe shouldn't remove other people's subscriptions", function() {
 
     var otherUserId;
 

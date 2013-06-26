@@ -151,12 +151,14 @@ setup.qtest(testWithRssOnly, "loadFeeds should be able to load RSS feeds", funct
     .then(assertMatchesExpectedPosts);
 });
 
+
 setup.qtest(testWithRssOnly, "loadFeeds should give error if the http request fails", function() {
 
     return setup.shouldFail(function() {
         return posts.loadFeeds("http://nonexistsantserver.coommmm/rss/foo");
     }, "getaddrinfo ENOTFOUND");
 });
+
 
 setup.qtest(testWithRssOnly, "loadFeeds should give error if the http request fails #2", function() {
 
@@ -221,7 +223,7 @@ setup.qtest(testWithRssOnly, "loadFeedsThroughDatabase should use database value
             return posts.loadFeedsThroughDatabase(rssUrl, user.id, originTime);
         }) 
         .then(function() {
-            assert.equal(that.rssServerRequestCount, 1);
+            assert.equal(that.rssServer.requestCount, 1);
         })
         .then(function(){
             return posts.loadFeedsThroughDatabase(rssUrl, user.id, laterTime);
@@ -233,7 +235,7 @@ setup.qtest(testWithRssOnly, "loadFeedsThroughDatabase should use database value
             return posts.loadFeedsThroughDatabase(rssUrl, user.id, laterTime);
         }) 
         .then(function() {
-            assert.equal(that.rssServerRequestCount, 2);
+            assert.equal(that.rssServer.requestCount, 2);
         });
     });
 });
@@ -271,3 +273,4 @@ setup.qtest(testWithRssOnly, "loadFeedsThroughDatabase should not return feeds t
         .then(assertMatchesExpectedPosts);
     });
 });
+
