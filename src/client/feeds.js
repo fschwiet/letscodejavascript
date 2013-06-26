@@ -18,8 +18,6 @@ define(["less!feeds"], function() {
                         contentType: "application/json; charset=utf-8"
                     });
             });
-
-            $(unsubscribeLink, region).attr("href", "#");
         }
     };
 });
