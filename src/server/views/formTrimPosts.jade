@@ -1,14 +1,16 @@
 
 form(method='post',name='trimPosts',action='/posts/trimposts')
-    legend Remove older posts
+    legend Older Posts
     span.warn.js-warn
     input(type='hidden',name='urlList',value='[]')
     ol
         li
+            | You have a lot of unread posts.  Would you rather forget about the older ones?
+        li
             label(name='countToKeep') Choose how many posts to keep:
                 input(name='countToKeep',type='number',value='24')
         li
-            | Mark the other older posts as finished:
+            | Mark the remaining older posts as finished:
             input(name='submitTrimPosts',type='submit',value='Mark finished')  
 
 
