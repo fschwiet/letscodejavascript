@@ -1,22 +1,35 @@
 
+TODO
 
 should be able to mark anything older than a week as read
-
-form submits a list of post urls to mark as read
-
-server handles post then redirects to homepage
-
-client determines date from the nth post
-
-
-should have a loading indicator
+ - form submits a list of post urls to mark as read
+ - server handles post then redirects to homepage
 
 
 should have an about page
   - link to github
 
 
+
+- MySQL connection pooling?
+  https://github.com/felixge/node-mysql
+  node-mysql supports it natively
+    https://npmjs.org/package/mysql-simple
+    - stale by 2 years
+    https://npmjs.org/package/easy-mysql
+    - stale by 6 months
+    https://npmjs.org/package/mysql-connection-pool
+    - stale by 6 months
+    https://npmjs.org/package/node-mysql-pooled
+    - stale by 8 months
+
+
+
 info notification on /feeds should have better layout
+
+
+should have a loading indicator
+
 
 
 GOAL:
@@ -35,21 +48,6 @@ GOAL:
   should have automated rollback
 
 
-TODO:
-
-  
-
-  - MySQL connection pooling?
-    https://github.com/felixge/node-mysql
-    node-mysql supports it natively
-      https://npmjs.org/package/mysql-simple
-      - stale by 2 years
-      https://npmjs.org/package/easy-mysql
-      - stale by 6 months
-      https://npmjs.org/package/mysql-connection-pool
-      - stale by 6 months
-      https://npmjs.org/package/node-mysql-pooled
-      - stale by 8 months
 
   reduce personal information requested from google (only using email, displayName)
     
