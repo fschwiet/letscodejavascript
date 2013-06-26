@@ -20,7 +20,7 @@ setup.qtest(testBlock, "can upload rss", function() {
 
     that.rssServer.posts = [];
 
-    for(var i = 0; i < 15; i++) {
+    for(var i = 0; i < 30; i++) {
         that.rssServer.posts.push({
             postName: "post name " + i,
             postUrl: "http://trimtest.com/" + i,

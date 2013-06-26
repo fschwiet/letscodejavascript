@@ -61,9 +61,12 @@ define(["trimPostsMonitor", "trimPostsForm", "testModel"], function(trimPostsMon
 
             it("when created with just a few posts, don't call show", function() {
 
-                postsContainer.append(testModel.getPostWithUrl("some url"));
-                postsContainer.append(testModel.getPostWithUrl("some other"));
-                postsContainer.append(testModel.getPostWithUrl("some other one"));
+                postsContainer.append(testModel.getPostWithUrl("1"));
+                postsContainer.append(testModel.getPostWithUrl("2"));
+                postsContainer.append(testModel.getPostWithUrl("3"));
+                postsContainer.append(testModel.getPostWithUrl("4"));
+                postsContainer.append(testModel.getPostWithUrl("5"));
+                postsContainer.append(testModel.getPostWithUrl("6"));
 
                 trimPostsMonitor.start(topContainer, postsContainer, 3);
 
@@ -72,10 +75,13 @@ define(["trimPostsMonitor", "trimPostsForm", "testModel"], function(trimPostsMon
 
             it("when created with enough posts, call show", function() {
 
-                postsContainer.append(testModel.getPostWithUrl("some url"));
-                postsContainer.append(testModel.getPostWithUrl("some other"));
-                postsContainer.append(testModel.getPostWithUrl("some other baz"));
-                postsContainer.append(testModel.getPostWithUrl("some other baz foo"));
+                postsContainer.append(testModel.getPostWithUrl("1"));
+                postsContainer.append(testModel.getPostWithUrl("2"));
+                postsContainer.append(testModel.getPostWithUrl("3"));
+                postsContainer.append(testModel.getPostWithUrl("4"));
+                postsContainer.append(testModel.getPostWithUrl("5"));
+                postsContainer.append(testModel.getPostWithUrl("6"));
+                postsContainer.append(testModel.getPostWithUrl("7"));
 
                 trimPostsMonitor.start(topContainer, postsContainer, 3);
 
@@ -87,14 +93,17 @@ define(["trimPostsMonitor", "trimPostsForm", "testModel"], function(trimPostsMon
 
             var monitor = trimPostsMonitor.start(topContainer, postsContainer, 3);
 
-            postsContainer.append(testModel.getPostWithUrl("some url"));
-            postsContainer.append(testModel.getPostWithUrl("some other"));
-            postsContainer.append(testModel.getPostWithUrl("some other faz"));
+            postsContainer.append(testModel.getPostWithUrl("1"));
+            postsContainer.append(testModel.getPostWithUrl("2"));
+            postsContainer.append(testModel.getPostWithUrl("3"));
+            postsContainer.append(testModel.getPostWithUrl("4"));
+            postsContainer.append(testModel.getPostWithUrl("5"));
+            postsContainer.append(testModel.getPostWithUrl("6"));
 
             monitor.check();
             expect(showCount).to.be(0);
 
-            postsContainer.append(testModel.getPostWithUrl("some other baz"));
+            postsContainer.append(testModel.getPostWithUrl("7"));
 
             monitor.check();
             expect(showCount).to.be(1);
