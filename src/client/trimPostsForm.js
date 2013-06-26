@@ -1,6 +1,6 @@
 define(["jquery", "views/formTrimPosts.jade"], function($, jadeTrimPosts) {
 
-    function TrimPosts(defaultLimit, urlSource, container) {
+    function TrimPostsForm(defaultLimit, urlSource, container) {
 
         this.defaultLimit = defaultLimit;
         this.urlSource = urlSource;
@@ -16,7 +16,7 @@ define(["jquery", "views/formTrimPosts.jade"], function($, jadeTrimPosts) {
         warnText: ".js-warn"
     };
 
-    TrimPosts.prototype.show = function() {
+    TrimPostsForm.prototype.show = function() {
 
         var that = this;
 
@@ -48,7 +48,7 @@ define(["jquery", "views/formTrimPosts.jade"], function($, jadeTrimPosts) {
     return {
         selectors: selectors,
         create : function(defaultLimit, urlSource, container) {
-            return new TrimPosts(defaultLimit, urlSource, container);
+            return new TrimPostsForm(defaultLimit, urlSource, container);
         }
     };
 });
