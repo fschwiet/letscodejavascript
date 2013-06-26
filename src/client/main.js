@@ -5,9 +5,9 @@ require(["feeds", "reader", "trimPostsMonitor", "jquery", "css!clientLib/bootstr
 
     if (typeof window.subscribedFeeds !== "undefined") {
 
-        trimPostsMonitor.start($(".js-topContainer"), $(".js-postsContainer"), 12);
+        var monitor = trimPostsMonitor.start($(".js-topContainer"), $(".js-postsContainer"), 12);
 
-        window.feedReader = new Reader(trimPostsMonitor);
+        window.feedReader = new Reader(monitor);
         window.feedReader.startReader($(".js-postsContainer"), window.subscribedFeeds);
     }
 });
