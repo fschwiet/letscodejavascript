@@ -21,7 +21,17 @@ exports.qtest = function(context, name, testImplementation) {
             return promise;
         };
 
-        var result = testImplementation.call(this);
+        var result;
+
+        try
+        {
+            result = testImplementation.call(this);
+        }
+        catch(err) {
+            test.ifError(err);
+            return;
+        }
+         
 
         if ( !result || typeof result.then !== 'function') {
             test.fail("qtest expects a function that returns a promise.");
