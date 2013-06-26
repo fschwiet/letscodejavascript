@@ -1,11 +1,6 @@
 
 TODO
 
-should be able to mark anything older than a week as read
- - form submits a list of post urls to mark as read
- - server handles post then redirects to homepage
-
-
 should have an about page
   - link to github
 
@@ -43,11 +38,9 @@ GOAL:
 
   should have error logging when login fails using http://192.168.1.248 (hostname doesn't match configuration hostname)
 
-  should have better error output when migrations fail (when database not found)
+  should have better error output when migrations fail (happened when database not found)
 
   should have automated rollback
-
-
 
   reduce personal information requested from google (only using email, displayName)
     
@@ -58,21 +51,19 @@ LATER:
 
     open an issue on iisnode because it was failing get requests with a content-type (node.js from the command-line was more graceful)
 
+
+MUCH LATER:
+    should I publish the jade preprocessor for karma?
+
+    should I build runtime.js as part of the build in case jade is updated?
+
+
 HMMM
     didn't catch bug with automated tests when request parameters used in client-side didn't match what was used in server-side tests
       end-to-end test for this functionality was being painful to write
 
 
-    can I write a jade preprocessor for karma?
-      https://gist.github.com/ryanfitz/834768
-      https://github.com/karma-runner/karma/issues/565    
-      - canary build of karma may allow registering a preprocessor
-
-
-    should I build runtime.js as part of the build in case jade is updated?
-
-
-LESSONS LEARNED:
+SOME LESSONS LEARNED:
   
   Set SQL collation when you create a database.  The default probably isn't utf8.
 
