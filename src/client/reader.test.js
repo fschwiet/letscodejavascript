@@ -37,6 +37,41 @@ define(["reader", "trimPosts"], function(Reader, trimPosts) {
 
             expect(JSON.stringify(urlLister())).to.be(JSON.stringify([expectedFirstPostUrl]));
         });
+
+        it("after the 12th post, trimPosts.show is called", function() {
+
+            var trimPostsInstance = trimPosts.create.getCall(0).returnValue;
+
+            this.sinon.spy(trimPostsInstance, "show");
+
+            // one post has already been added, we add 10 more and check show was not called.
+
+            for(var i = 2; i <= 11; i++) {
+                reader.insertPost({
+                    feedName: "someName" + i,
+                    postName: "someName" +i,
+                    postDate: new Date(),
+                    postUrl: "http://someUrl.com/" + i
+                });
+            }
+
+            expect(trimPostsInstance.show.callCount).to.be(0);
+
+            reader.insertPost({
+                feedName: "someName" + 12,
+                postName: "someName" + 12,
+                postDate: new Date(),
+                postUrl: "http://someUrl.com/" + 12
+            });
+
+            expect(trimPostsInstance.show.callCount).to.be(1);
+
+            var showArgs = trimPostsInstance.show.getCall(0).args;
+
+            showArgs[0].append($("<div class='js-test-marker'>"));
+
+            expect($(".js-test-marker").length).to.be(1);
+        });
     });
 
 

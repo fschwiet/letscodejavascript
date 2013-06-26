@@ -38,7 +38,12 @@ define(["views/post.jade", "endpoints", "trimPosts", "jquery", "less!reader"], f
 
     Reader.prototype.startReader = function(domContainer, feeds) {
 
-        this.container = domContainer;
+        this.topContainer = $("<div>");
+        domContainer.append(this.topContainer);
+
+        this.container = $("<div>");
+        domContainer.append(this.container);
+
         this.feeds = feeds;
         var feedsToLoad = [];
         this.feedsToLoad = feedsToLoad;
@@ -126,6 +131,10 @@ define(["views/post.jade", "endpoints", "trimPosts", "jquery", "less!reader"], f
             target.before(view);
         } else {
             this.container.append(view);
+        }
+
+        if (this.container.find(".js-post").length >= defaultCountToAllowTrimPosts) {
+            this.trimPosts.show(this.topContainer);
         }
     };
 
