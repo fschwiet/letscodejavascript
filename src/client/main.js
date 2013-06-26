@@ -1,4 +1,4 @@
-require(["feeds", "reader", "trimPostsMonitor", "jquery", "css!clientLib/bootstrap/css/bootstrap"], function(feeds, Reader, trimPostsMonitor, $) {
+require(["feeds", "reader", "trimPostsMonitor", "jquery", "css!clientLib/bootstrap/css/bootstrap", "css!clientLib/bootstrap/css/bootstrap-responsive"], function(feeds, Reader, trimPostsMonitor, $) {
     feeds.initialize($("body"));
 
     window.mainInitialized = true;

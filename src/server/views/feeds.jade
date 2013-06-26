@@ -1,29 +1,30 @@
 
-div.container
+- if (rows.length > 0)
+    fieldset
+        legend(style='width:auto') Your RSS subscriptions
+    fieldset
+        each row in rows
+            div.js-subscription(data-rssurl=row.rssUrl)
+                span.js-title #{row.name} 
+                | | 
+                a(href=row.htmlUrl) go there 
+                | | 
+                a.js-unsubscribe unsubscribe 
 
-    - if (rows.length > 0)
-            legend(style='width:auto') Your RSS subscriptions
-            each row in rows
-                div.js-subscription(data-rssurl=row.rssUrl)
-                    span.js-title #{row.name} 
-                    | | 
-                    a(href=row.htmlUrl) go there 
-                    | | 
-                    a.js-unsubscribe unsubscribe 
         hr.soften
 
+fieldset
+    legend Importing Google RSS subscriptions
+fieldset
     form.uploadRss(method='post', enctype="multipart/form-data")
-        fieldset 
-            legend Importing Google RSS subscriptions
-            ol
-                li
-                    | Save your google RSS subscriptions 
-                    a(href="http://www.google.com/reader/subscriptions/export") from Google
-                    | .
-                li
-                    | Select that file here:
-                    input(type='file', name="subscriptionsXml")
-                li
-                    input.btn.btn-primary(type='submit',value='import')
-                        | import
-        hr.soften
+        ol
+            li
+                | Save your google RSS subscriptions 
+                a(href="http://www.google.com/reader/subscriptions/export") from Google
+                | .
+            li
+                | Select that file here:
+                input(type='file', name="subscriptionsXml")
+            li
+                input.btn.btn-primary(type='submit',value='import')
+                    | import

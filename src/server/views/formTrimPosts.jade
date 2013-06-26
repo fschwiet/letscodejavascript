@@ -1,7 +1,15 @@
 
 form(method='post',name='trimPosts',action='/posts/trimposts')
+    legend Remove older posts
     span.warn.js-warn
-    input(type='submit',value='Remove')  
-    | all posts after the first
-    input(type='number',name='countToKeep',value='24')
     input(type='hidden',name='urlList',value='[]')
+    ol
+        li
+            label(name='countToKeep') Choose how many posts to keep:
+                input(name='countToKeep',type='number',value='24')
+        li
+            | Mark the other older posts as finished:
+            input(name='submitTrimPosts',type='submit',value='Mark finished')  
+
+
+    

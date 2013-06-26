@@ -3,7 +3,7 @@ html
     head
         title= title
         script(src='//requirejs.org/docs/release/2.1.6/minified/require.js',data-main="client/app")
-    body
+    body.container
         // div(style='overflow:hidden;position:absolute;top:0px;right:0px;padding:10px;background-color:white')
         div(style='overflow:hidden;float:right;padding:10px;background-color:white')
             div(style='float:right')
@@ -19,8 +19,8 @@ html
                         include loginButton
 
         - if (typeof flash !== "undefined")
-            -if (flash.info)
-                span.info !{flash.info}
+            fieldset
+                -if (flash.info)
+                    span.info !{flash.info}
 
-        div(style='padding:10px')
-            block content
+        block content
