@@ -63,6 +63,7 @@ define(["trimPostsMonitor", "trimPostsForm", "testModel"], function(trimPostsMon
 
                 postsContainer.append(testModel.getPostWithUrl("some url"));
                 postsContainer.append(testModel.getPostWithUrl("some other"));
+                postsContainer.append(testModel.getPostWithUrl("some other one"));
 
                 trimPostsMonitor.start(topContainer, postsContainer, 3);
 
@@ -74,6 +75,7 @@ define(["trimPostsMonitor", "trimPostsForm", "testModel"], function(trimPostsMon
                 postsContainer.append(testModel.getPostWithUrl("some url"));
                 postsContainer.append(testModel.getPostWithUrl("some other"));
                 postsContainer.append(testModel.getPostWithUrl("some other baz"));
+                postsContainer.append(testModel.getPostWithUrl("some other baz foo"));
 
                 trimPostsMonitor.start(topContainer, postsContainer, 3);
 
@@ -87,6 +89,7 @@ define(["trimPostsMonitor", "trimPostsForm", "testModel"], function(trimPostsMon
 
             postsContainer.append(testModel.getPostWithUrl("some url"));
             postsContainer.append(testModel.getPostWithUrl("some other"));
+            postsContainer.append(testModel.getPostWithUrl("some other faz"));
 
             monitor.check();
             expect(showCount).to.be(0);

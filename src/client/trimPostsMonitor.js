@@ -13,7 +13,7 @@ define(["trimPostsForm"], function(trimPostsForm) {
 
             function tryShow() {
                 if (needShow) {
-                    if (postsContainer.find(".js-post").length >= defaultLimit) {
+                    if (postsContainer.find(".js-post").length > defaultLimit) {
                         form.show();
                         needShow = false;
                     }

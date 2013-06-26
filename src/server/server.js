@@ -45,9 +45,10 @@
             app.use(extraMiddleware);
         }
 
-        require("./google-auth")(port, app);
-        require("./posts")(app);
-        require("./feeds")(app);
+        require("./google-auth.js")(port, app);
+        require("./posts.js")(app);
+        require("./feeds.js")(app);
+        require("./trimPosts.js")(app);
 
         app.get("/", handleHomepageRequest);
         app.get("/status", handleStatusRequest);
