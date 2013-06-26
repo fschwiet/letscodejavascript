@@ -139,28 +139,23 @@ exports.givenCleanDatabase = function(outer) {
 };
 
 
-exports.given3rdPartyRssServer = function(outer, opts) {
+exports.given3rdPartyRssServer = function(outer) {
 
     var hostname = "127.0.0.76";
     var port = config.get("server_port");
 
     var thisRssServerContext = {
+        feedName: "FeedForAll Sample Feed",
+        posts: [ {
+                postName: "RSS Solutions for Restaurants",
+                postUrl: "http://www.feedforall.com/restaurant.htm",
+                postDate: "June 1, 2013"
+            }
+        ],
         urlFor : function(path) {
             return "http://" + hostname + ":" + port.toString() + path;
         }
     };
-
-    opts = setDefault(opts).to({
-            host: hostname,
-            port: config.get("server_port"),
-            feedName: "FeedForAll Sample Feed",
-            posts: [ {
-                    postName: "RSS Solutions for Restaurants",
-                    postUrl: "http://www.feedforall.com/restaurant.htm",
-                    postDate: "June 1, 2013"
-                }
-            ]
-        });
 
     var server;
 
@@ -178,10 +173,10 @@ exports.given3rdPartyRssServer = function(outer, opts) {
         app.get("/rss/*", function(req, res) {
 
             var feed = new RSS({
-                    title: opts.feedName
+                    title: that.rssServer.feedName
                 });
 
-            opts.posts.forEach(function(post) {
+            that.rssServer.posts.forEach(function(post) {
 
                 feed.item({
                         title: post.postName,
@@ -201,7 +196,7 @@ exports.given3rdPartyRssServer = function(outer, opts) {
 
         server = http.createServer(app);
 
-        server.listen(opts.port, opts.host, done);
+        server.listen(port, hostname, done);
 
     };
 

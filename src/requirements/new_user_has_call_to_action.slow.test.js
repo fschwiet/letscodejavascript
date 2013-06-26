@@ -13,21 +13,21 @@ var secondPostName = "secondPostName";
 var secondPostUrl = "http://secondPostUrl.com/readme";
 
 
-var testBlock = setup.usingPhantomPage(setup.given3rdPartyRssServer(setup.whenRunningTheServer(setup.givenCleanDatabase(exports)), {
-        feedName: expectedFeedName,
-        posts: [{
-            postName: expectedPostName,
-            postUrl: expectedPostUrl
-        }, {
-            postName: secondPostName,
-            postUrl: secondPostUrl
-        }]
-    }));
+var testBlock = setup.usingPhantomPage(setup.given3rdPartyRssServer(setup.whenRunningTheServer(setup.givenCleanDatabase(exports))));
 
 setup.qtest(testBlock, "New user is guided to import feeds and read them.", function() {
 
     var page = this.page;
     var that = this;
+
+    that.rssServer.feedName = expectedFeedName;
+    that.rssServer.posts = [{
+        postName: expectedPostName,
+        postUrl: expectedPostUrl
+    }, {
+        postName: secondPostName,
+        postUrl: secondPostUrl
+    }];
 
     var callToAction = "Import your feeds.";
 
