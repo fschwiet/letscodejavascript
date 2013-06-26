@@ -1,7 +1,8 @@
 define(["views/post.jade", "endpoints", "jquery", "less!reader"], function(postView, endpoints, $) {
 
-    function Reader() {
+    function Reader(trimPostsMonitor) {
         this.postsContainer = null;
+        this.trimPostsMonitor = trimPostsMonitor;
     }
 
     Reader.prototype.loadNextFeed = function() {
@@ -101,6 +102,8 @@ define(["views/post.jade", "endpoints", "jquery", "less!reader"], function(postV
         if (matchingPosts.length > 0) {
             return;
         }
+
+        this.trimPostsMonitor.check();
 
         otherPosts.each(function() {
             var next = $(this);

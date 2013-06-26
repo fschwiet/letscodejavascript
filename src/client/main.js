@@ -7,7 +7,7 @@ require(["feeds", "reader", "trimPostsMonitor", "jquery", "css!clientLib/bootstr
 
         trimPostsMonitor.start($(".js-topContainer"), $(".js-postsContainer"), 12);
 
-        window.feedReader = new Reader();
+        window.feedReader = new Reader(trimPostsMonitor);
         window.feedReader.startReader($(".js-postsContainer"), window.subscribedFeeds);
     }
 });

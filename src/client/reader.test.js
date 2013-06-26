@@ -1,17 +1,53 @@
-define(["reader"], function(Reader) {
+define(["reader", "trimPostsMonitor", "views/post.jade"], function(Reader, trimPostsMonitor, postView) {
 
     var postsContainer;
 
     var reader;
     var sandbox;
 
+    var checkCallsCounted;
+
     beforeEach(function() {
+
+        this.sinon.spy(trimPostsMonitor, "start");
 
         postsContainer = this.fixture;
 
         this.fakeServer = this.sinon.useFakeXMLHttpRequest();
 
-        reader = new Reader();
+        checkCallsCounted = 0;
+        
+        reader = new Reader({
+            check: function() { checkCallsCounted++; }
+        });
+    });
+
+
+    // TODO: remove duplication
+    function getPostWithUrl(url) {
+        return postView({
+            post: {
+                feedName: "feed for " + url,
+                postName: "post for "+ url,
+                postUrl : url,
+                postDate: new Date(2012,1,1)
+            }
+        });
+    }
+
+
+    describe("trimPostsMonitor integration", function(){
+
+        it("calls trimPostsMonitor.check() each time a post is inserted", function() {
+        
+            reader.startReader(postsContainer, []);
+            
+            expect(checkCallsCounted).to.be(0);
+
+            reader.insertPost(getPostWithUrl("a", "any url.com"));
+
+            expect(checkCallsCounted).to.be(1);
+        });
     });
 
     describe("when visiting the reader page", function() {

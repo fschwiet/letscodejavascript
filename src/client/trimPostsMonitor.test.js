@@ -12,7 +12,7 @@ define(["trimPostsMonitor", "trimPostsForm", "views/post.jade"], function(trimPo
         this.fixture.append(postsContainer);
     });
 
-    function getPostWithUrl(name, url) {
+    function getPostWithUrl(url) {
         return postView({
             post: {
                 feedName: "feed for " + url,
