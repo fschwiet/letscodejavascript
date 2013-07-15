@@ -168,3 +168,41 @@ setup.qtest(clickElement, "should allow less-strict clicking where uniqueness is
             }, 1000);
         });
 });
+
+
+setup.qtest(testBlock, "should be able to listen to console", function() {
+
+    var page = this.page;
+
+    var recordedConsole = null;
+
+    page.onConsoleMessage = function(message) {
+        recordedConsole = message;
+    };
+
+    return page.promise.evaluate(function() {
+            console.log('hi');
+        })
+        .then(function(result) {
+            assert.equal(recordedConsole, 'hi');
+        });
+});
+
+
+setup.qtest(testBlock, "should be able to listen to client errors", function() {
+
+    var page = this.page;
+
+    var recordedError = null;
+
+    page.onError = function(message) {
+        recordedError = message;
+    };
+
+    return page.promise.evaluate(function() {
+            throw new Error("error message");
+        })
+        .then(function(result) {
+            assert.ok(recordedError.toString().indexOf("error message") > -1);
+        });
+});
