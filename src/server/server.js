@@ -65,6 +65,9 @@
             });
         });
 
+        app.use("/client/runtime.js", function(req,res){
+            res.status(200).sendfile(path.resolve(__dirname, "../../node_modules/jade/runtime.js"));
+        });
         app.use("/client", express.static(__dirname + './../client/'));
         app.use("/client/views", express.static(__dirname + './../../temp/views'));
 

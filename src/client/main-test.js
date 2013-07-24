@@ -11,12 +11,17 @@ requirejs.config({
         paths: {
             "jquery": "//ajax.googleapis.com/ajax/libs/jquery/2.0.0/jquery.min",
             "sinon": "../../node_modules/sinon/pkg/sinon-1.7.2",
-            "jadeRuntime": '../../src/client/jadeRuntime',
             "views": "../../src/server/views",
-            "test-init": "../../build/karma/init"
+            "test-init": "../../build/karma/init",
+            "jadeRuntime": "../../node_modules/jade/runtime"
         },
 
-        shim: {},
+        shim: {
+            jadeRuntime: {
+                exports: 'jadeRuntime'
+            }
+        },
+
 
         // ask Require.js to load these files (all our tests)
         deps: dependencies,

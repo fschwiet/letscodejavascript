@@ -2,9 +2,16 @@
     baseUrl: ".",
     paths: {
         jquery: "//ajax.googleapis.com/ajax/libs/jquery/2.0.0/jquery.min",
-        views: "../../temp/views"
+        views: "../../temp/views",
+        "jadeRuntime": "../../node_modules/jade/runtime"
     },
     name: "main",
+    shim: {
+      jadeRuntime: {
+        exports: 'jadeRuntime'
+      }
+    },
+
     packages: [
       {
         name: 'css',

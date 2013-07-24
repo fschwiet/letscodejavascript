@@ -19,6 +19,10 @@ files = [
         included: false
     }, 
     {
+        pattern: 'node_modules/jade/runtime.js',
+        included: false
+    }, 
+    {
         pattern: 'node_modules/sinon/pkg/**/*.js',
         included: false
     }, 
