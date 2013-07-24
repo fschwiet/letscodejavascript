@@ -13,7 +13,7 @@ files = [
     REQUIRE,
     REQUIRE_ADAPTER,
     'node_modules/expect.js/expect.js',
-    'src/client/main-test.js', 
+    'src/client/app.kharma.js', 
     {
         pattern: 'build/karma/init.js',
         included: false

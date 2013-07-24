@@ -433,7 +433,7 @@ task("buildClientBundle", ["compileJadeViews"], function() {
 
     console.log("building " + clientBundle);
 
-    promiseJake(spawnProcess("node r.js", "node", ["./node_modules/requirejs/bin/r.js", "-o", "./src/client/build"]));
+    promiseJake(spawnProcess("node r.js", "node", ["./node_modules/requirejs/bin/r.js", "-o", "./src/client/app-build"]));
 }, {
     async: true
 });
@@ -446,10 +446,6 @@ task("removeClientBundle", function() {
     }
 });
 
-/*
-    promiseJake(spawnProcess("node jade-amd", "node", ["./node_modules/jade-amd/bin/jade-amd", "-o", "./src/client/build"]));
-}, {async:true});
-*/
 desc("Run database migrations");
 task("runMigrations", ["lint"], function() {
 
