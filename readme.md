@@ -39,3 +39,6 @@ So at some point you may need to: get-process node | stop-process; get-process \
 
 An iisreset may be needed before calling deployToIIS.  I suspect adding a iisreset to NodeOnIIS boxstarter fixed this but have not verified.
 
+To run the tests on mac, you need to enable other 127.0.0.n which are used.  Run:
+  sudo ifconfig lo0 add 127.0.0.76
+
