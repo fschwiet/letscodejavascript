@@ -4,6 +4,14 @@ var sha1 = require("sha1");
 
 var database = require("../database.js");
 
+function formatDateForMysql(date) {
+    return date.getUTCFullYear() + '-' +
+        ('00' + (date.getUTCMonth()+1)).slice(-2) + '-' +
+        ('00' + date.getUTCDate()).slice(-2) + ' ' + 
+        ('00' + date.getUTCHours()).slice(-2) + ':' + 
+        ('00' + date.getUTCMinutes()).slice(-2) + ':' + 
+        ('00' + date.getUTCSeconds()).slice(-2);
+}
 
 exports.writePostsToDatabase = function(rssUrl, posts) {
 
@@ -11,11 +19,15 @@ exports.writePostsToDatabase = function(rssUrl, posts) {
 
     var inserts = posts.map(function(post) {
 
-        var postRecord = JSON.parse(JSON.stringify(post));
-        
-        postRecord.rssUrl = rssUrl;
-        postRecord.postUrlHash = sha1(postRecord.postUrl);
-        postRecord.rssUrlHash = rssUrlHash;
+        var postRecord = {
+            feedName : post.feedName,
+            postName : post.postName,
+            postUrl : post.postUrl,
+            postDate : post.postDate,
+            rssUrl: rssUrl,
+            postUrlHash : sha1(post.postUrl),
+            rssUrlHash : rssUrlHash
+        };
 
         return function() {
 
@@ -30,7 +42,15 @@ exports.writePostsToDatabase = function(rssUrl, posts) {
                     "SELECT N.* FROM (SELECT ? as feedName, ? as postName, ? as postUrl, ? as postDate, ? as rssUrl, ? as postUrlHash, ? as rssUrlHash) AS N " +
                     "LEFT JOIN feedPosts F ON F.rssUrlHash = N.rssUrlHash AND F.postUrlHash = N.postUrlHash " +
                     "WHERE F.id IS NULL",
-                    [postRecord.feedName, postRecord.postName, postRecord.postUrl, postRecord.postDate, postRecord.rssUrl, postRecord.postUrlHash, postRecord.rssUrlHash])
+                    [
+                        postRecord.feedName, 
+                        postRecord.postName, 
+                        postRecord.postUrl, 
+                        formatDateForMysql(postRecord.postDate), 
+                        postRecord.rssUrl, 
+                        postRecord.postUrlHash, 
+                        postRecord.rssUrlHash
+                    ])
                 .fin(function() {
                     connection.end();
                 });
