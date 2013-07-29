@@ -177,9 +177,19 @@
 
             fs.stat(config.tempPathForUploads(), function(err, stat) {
 
+                var processUid = process.uid;
+
+                if (typeof processUid == 'undefined')
+                    processUid = process.getuid();                
+
+                var processGid = process.gid;
+
+                if (typeof processGid == 'undefined')
+                    processGid = process.getgid();
+
                 if (err) {
                     model.uploadPathStatus = err.toString();
-                } else if (canWrite(process.uid === stat.uid, process.gid === stat.gid, stat.mode)) {
+                } else if (canWrite(processUid === stat.uid, process.gid === stat.gid, stat.mode)) {
                     model.uploadPathStatus = "writeable";
                 } else {
                     model.uploadPathStatus = "insufficient permissions";
