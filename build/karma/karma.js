@@ -1,6 +1,5 @@
 var Q = require('q');
 var karma = require('./../../node_modules/karma/lib/runner.js');
-var spawnProcess = require("./../../src/test/spawn-process");
 var childProcess = require('child_process');
 
 var karmaScript = "./node_modules/karma/bin/karma";
