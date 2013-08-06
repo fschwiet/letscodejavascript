@@ -22,10 +22,11 @@ exports.qtest = function(context, name, testImplementation) {
         };
 
         var result;
+        var that = this;
 
         try
         {
-            result = testImplementation.call(this);
+            result = testImplementation.call(that);
         }
         catch(err) {
             test.ifError(err);
@@ -39,12 +40,30 @@ exports.qtest = function(context, name, testImplementation) {
         }
         else {
             result
-                .then(function() {
+            .then(function() {
+                test.done();
+            }, 
+            function(error) {
+                if (that.page) {
+                    var screenshotPath = path.resolve(__dirname, "../../test-screenshot.jpg");
+                    that.page.promise.render(screenshotPath)
+                    .then(function(){
+                        console.log("wrote screenshot to", screenshotPath);
+                    }, function(renderError) {
+                        console.log ("error writing screenshot:", renderError);
+                    })
+                    .fin(function() {
+                        test.ok(false, error);
+                        test.done();
+                    });
+                    return;
+                }
+                else
+                {
+                    test.ok(false, error);
                     test.done();
-                }, function(err) {
-                    test.ok(false, err);
-                    test.done();
-                });
+                }
+            });
         }
     };
 };
