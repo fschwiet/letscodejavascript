@@ -102,6 +102,14 @@ exports.usingPhantomPage = function(outer) {
                 return phantom.promise.createPage()
                     .then(function(page) {
                         that.page = page;
+
+                        page.onConsoleMessage = function(message) {
+                            console.log("phantomsjs console.log:", message);
+                        };
+
+                        page.onError = function(message) {
+                            console.log("phantomjs error:", message);
+                        };
                     });
             })
             .then(function() {
@@ -200,6 +208,8 @@ exports.given3rdPartyRssServer = function(outer) {
 
         var app = require('express')();
         app.get("/rss/*", function(req, res) {
+
+            console.log("rss feed loaded", that.rssServer.posts.length);
 
             var feed = new RSS({
                     title: that.rssServer.feedName
