@@ -38,7 +38,7 @@
             return waitUntil("hi", function() {
                 attempts++;
                 return false;
-            });
+            }, 200);
         }, "timed out");
     });
 
@@ -52,7 +52,7 @@
                 var deferred = Q.defer();
                 deferred.resolve(false);
                 return deferred.promise;
-            });
+            }, 200);
         }, "timed out");
     });
 
