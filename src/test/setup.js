@@ -30,6 +30,7 @@ exports.qtest = function(context, name, testImplementation) {
         }
         catch(err) {
             test.ifError(err);
+            test.done();
             return;
         }
          
