@@ -1,4 +1,11 @@
 
+fieldset
+    legend Subscribe to an RSS feed
+fieldset
+    form.input-append(method='post', action='/feeds/subscribe')
+        input(name='rssUrl',type='text')
+        input.btn.btn-primary(type='submit')
+
 - if (rows.length > 0)
     fieldset
         legend(style='width:auto') Your RSS subscriptions
