@@ -68,6 +68,34 @@ module.exports = function(app) {
     });
 };
 
+function loadMeta(rssUrl) {
+
+    var deferred = Q.defer();
+
+    request(rssUrl, function(error, response, body) {
+        if (error !== null) {
+            deferred.reject(error);
+        } else if (Math.floor(response.statusCode / 100) !== 2) {
+            deferred.reject("Expected 200 response code, was " + response.statusCode);
+        }
+    })
+    .on('error', function(err) { deferred.reject(err); })
+    .pipe(feedparser({
+            feedurl: rssUrl
+        }))
+    .on('error', function(err) { deferred.reject(err); })
+    .on('meta', function(meta) {
+        deferred.resolve({
+            feedName : meta.title,
+            feedLink : meta.link || rssUrl
+        });
+    });
+
+    return deferred.promise;
+}
+
+module.exports.loadMeta = loadMeta;
+
 function loadFeeds(rssUrl) {
 
     var deferred = Q.defer();

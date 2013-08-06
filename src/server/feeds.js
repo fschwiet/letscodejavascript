@@ -91,19 +91,14 @@ function handleSubscribeRequest(request, response, next) {
 
     var rssUrl = request.body.rssUrl;
 
-    console.log("rssUrl", rssUrl);
-
-    posts.loadFeeds(rssUrl)
-    .then(function(posts) {
-
-        if (posts.length === 0)
-            throw new Error("Tried to subscribe to empty feed (feedName not available)");
+    posts.loadMeta(rssUrl)
+    .then(function(meta) {
 
         return dataSubscriptions.saveSubscriptions(request.user.id, [
                 {
-                    name: posts[0].feedName,
+                    name: meta.feedName,
                     rssUrl: rssUrl,
-                    htmlUrl: rssUrl
+                    htmlUrl: meta.feedLink
                 }
             ]);
     })

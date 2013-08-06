@@ -54,7 +54,7 @@ setup.qtest(context, "Should be able to subscribe to an RSS feed", function() {
         return waitUntil("A subscription feed has been added", function() {
             return getFirstFeed(page)
             .then(function(subscriptionInfo) {
-                return typeof subscriptionInfo && subscriptionInfo.count == 1;
+                return subscriptionInfo && subscriptionInfo.count == 1;
             });
         });
     })

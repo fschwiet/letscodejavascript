@@ -144,6 +144,16 @@ setup.qtest(testBlock, "Should be able to mark feeds as finished", function() {
         });
 });
 
+setup.qtest(testWithRssOnly, "loadMeta should be able to load feedName", function() {
+
+    var that = this;
+    var rssUrl = this.rssServer.urlFor("/rss/foo");
+
+    return posts.loadMeta(rssUrl)
+    .then(function(meta) {
+        assert.equal(meta.feedName, that.rssServer.feedName);
+    });
+});
 
 setup.qtest(testWithRssOnly, "loadFeeds should be able to load RSS feeds", function() {
 
