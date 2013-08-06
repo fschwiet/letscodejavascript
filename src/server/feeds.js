@@ -8,6 +8,7 @@ var dataSubscriptions = require("./data/subscriptions.js");
 module.exports = function(app) {
     app.get("/feeds", handleUploadFromGoogleRequest);
     app.post("/feeds", handleUploadFromGooglePostRequest);
+    app.post("/feeds/subscribe", handleSubscribeRequest);
     app.post("/feeds/unsubscribe", handleUnsubscribe);
 };
 
@@ -83,6 +84,25 @@ function loadSubscriptionsFromGoogleXml(filepath) {
     });
 
     return deferred.promise;
+}
+
+function handleSubscribeRequest(request, response, next) {
+
+
+
+    dataSubscriptions.saveSubscriptions(request.user.id, [
+            {
+                name: "some name",
+                rssUrl: request.body.rssUrl,
+                htmlUrl: request.body.rssUrl
+            }
+        ])
+        .then(function() {
+            response.redirect("/feeds");
+        })
+        .fail(function(err) {
+            next(err);
+        });
 }
 
 function handleUnsubscribe(request, response, next) {
