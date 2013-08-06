@@ -11,11 +11,15 @@ var context = setup.usingPhantomPage(setup.whenRunningTheServer(setup.given3rdPa
 
 function getFirstFeed(page){
     return page.promise.evaluate(function() {
+
+        if (typeof $ == 'undefined')
+            return;
+
         var subscription = $("div[data-rssurl]");
         return {
             count: subscription.length,
             rssUrl: subscription.data("rssurl"),
-            title: subscription.find("span.js-title").text()
+            title: subscription.find("span.js-title").text().trim()
         };
     });    
 }
@@ -32,6 +36,13 @@ setup.qtest(context, "Should be able to subscribe to an RSS feed", function() {
         return login.doLogin(page);
     })
     .then(function() {
+        return waitUntil("page is loaded", function() {
+            return page.promise.evaluate(function() {
+                return typeof $ != 'undefined';
+            });
+        });
+    })
+    .then(function() {
         return page.promise.evaluate(function(rssUrl) {
             $("form.subscribeForm input[name=rssUrl]").val(rssUrl);
         }, subscribedUrl);
@@ -43,7 +54,7 @@ setup.qtest(context, "Should be able to subscribe to an RSS feed", function() {
         return waitUntil("A subscription feed has been added", function() {
             return getFirstFeed(page)
             .then(function(subscriptionInfo) {
-                return typeof subscriptionInfo == 'object' && subscriptionInfo.count == 1;
+                return typeof subscriptionInfo && subscriptionInfo.count == 1;
             });
         });
     })

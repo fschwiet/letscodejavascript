@@ -2,8 +2,9 @@ var fs = require("fs");
 var xml2js = require("xml2js");
 var Q = require("q");
 
-var modelFor = require("./modelFor");
+var modelFor = require("./modelFor.js");
 var dataSubscriptions = require("./data/subscriptions.js");
+var posts = require("./posts.js");
 
 module.exports = function(app) {
     app.get("/feeds", handleUploadFromGoogleRequest);
@@ -88,21 +89,30 @@ function loadSubscriptionsFromGoogleXml(filepath) {
 
 function handleSubscribeRequest(request, response, next) {
 
+    var rssUrl = request.body.rssUrl;
 
+    console.log("rssUrl", rssUrl);
 
-    dataSubscriptions.saveSubscriptions(request.user.id, [
-            {
-                name: "some name",
-                rssUrl: request.body.rssUrl,
-                htmlUrl: request.body.rssUrl
-            }
-        ])
-        .then(function() {
-            response.redirect("/feeds");
-        })
-        .fail(function(err) {
-            next(err);
-        });
+    posts.loadFeeds(rssUrl)
+    .then(function(posts) {
+
+        if (posts.length === 0)
+            throw new Error("Tried to subscribe to empty feed (feedName not available)");
+
+        return dataSubscriptions.saveSubscriptions(request.user.id, [
+                {
+                    name: posts[0].feedName,
+                    rssUrl: rssUrl,
+                    htmlUrl: rssUrl
+                }
+            ]);
+    })
+    .then(function() {
+        response.redirect("/feeds");
+    })
+    .fail(function(err) {
+        next(err);
+    });
 }
 
 function handleUnsubscribe(request, response, next) {

@@ -92,14 +92,17 @@ function loadFeeds(rssUrl) {
                 if (err !== null) {
                     deferred.reject(err);
                 } else {
-                    deferred.resolve(results.map(function(val) {
-                                return {
-                                    feedName: val.meta.title,
-                                    postName: val.title,
-                                    postUrl: val.link,
-                                    postDate: val.date
-                                };
-                            }));
+
+                    var mappedResults = results.map(function(val) {
+                        return {
+                            feedName: val.meta.title,
+                            postName: val.title,
+                            postUrl: val.link,
+                            postDate: val.date
+                        };
+                    });
+
+                    deferred.resolve(mappedResults);
                 }
             } catch (e) {
                 deferred.reject(e);
