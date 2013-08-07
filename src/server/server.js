@@ -177,14 +177,16 @@
 
             fs.stat(config.tempPathForUploads(), function(err, stat) {
 
+                // smelly code is smelly
+                //  
                 var processUid = process.uid;
 
-                if (typeof processUid == 'undefined')
+                if (typeof processUid == 'undefined' && typeof process.getuid == 'function')
                     processUid = process.getuid();                
 
                 var processGid = process.gid;
 
-                if (typeof processGid == 'undefined')
+                if (typeof processGid == 'undefined' && typeof process.getgid == 'function')
                     processGid = process.getgid();
 
                 if (err) {
