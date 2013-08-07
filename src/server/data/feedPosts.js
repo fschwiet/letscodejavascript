@@ -5,12 +5,14 @@ var sha1 = require("sha1");
 var database = require("../database.js");
 
 function formatDateForMysql(date) {
+
     return date.getUTCFullYear() + '-' +
         ('00' + (date.getUTCMonth()+1)).slice(-2) + '-' +
         ('00' + date.getUTCDate()).slice(-2) + ' ' + 
         ('00' + date.getUTCHours()).slice(-2) + ':' + 
         ('00' + date.getUTCMinutes()).slice(-2) + ':' + 
-        ('00' + date.getUTCSeconds()).slice(-2);
+        ('00' + date.getUTCSeconds()).slice(-2) + '.' +
+        ('000' + date.getUTCMilliseconds()).slice(-3);
 }
 
 exports.writePostsToDatabase = function(rssUrl, posts) {
@@ -28,6 +30,10 @@ exports.writePostsToDatabase = function(rssUrl, posts) {
             postUrlHash : sha1(post.postUrl),
             rssUrlHash : rssUrlHash
         };
+
+        if (postRecord.postDate === null) {
+            postRecord.postDate = new Date();
+        }
 
         return function() {
 

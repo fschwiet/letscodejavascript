@@ -157,7 +157,8 @@ function loadFeedsThroughDatabase(rssUrl, userId, readTime) {
                     .then(function() {
                         return dataRssUrlStatus.writeRssUrlStatus(rssUrl, "ok", readTime);
                     });
-                }, function(err) {
+                })
+                .fail(function(err) {
                     return dataRssUrlStatus.writeRssUrlStatus(rssUrl, err.toString(), readTime);
                 });
             }
