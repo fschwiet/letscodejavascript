@@ -1,30 +1,6 @@
 
 TODO
 
-  shouldn't be including querysting in url hashes
-    - subscriptions:
-      - start writing rssUrlHash
-      - ship
-      - remove triggers that were setting column
-    - add a new hashUrl method, replacing all calls to sha1.
-    - modify hashUrl to strip url of anchor, querystring before hashing
-    - recalculate existing columns
-      - add an endpoint that updates all row with calculated hashes
-
-    feedPosts
-        rssUrlHash
-        postUrlHash
-
-    rssUrlStatus
-        rssUrlHash
-
-    subscriptions
-        rssUrlHash
-        ** using triggers currently for this column
-
-    userPostsRead
-        urlHash
-
 
   info notification on /feeds should have better layout
 
