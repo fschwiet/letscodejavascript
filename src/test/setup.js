@@ -210,8 +210,6 @@ exports.given3rdPartyRssServer = function(outer) {
         var app = require('express')();
         app.get("/rss/*", function(req, res) {
 
-            console.log("rss feed loaded", that.rssServer.posts.length);
-
             var feed = new RSS({
                     title: that.rssServer.feedName
                 });

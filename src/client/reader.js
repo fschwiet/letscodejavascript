@@ -22,8 +22,6 @@ define(["views/post.jade", "endpoints", "jquery", "less!reader"], function(postV
                 },
                 success: function(posts) {
 
-                    console.log("client loaded feeds", posts.length);
-
                     posts.forEach(function(post) {
                         that.insertPost(post);
                     });
@@ -31,8 +29,6 @@ define(["views/post.jade", "endpoints", "jquery", "less!reader"], function(postV
                     that.loadNextFeed();
                 },
                 error: function(error) {
-
-                    console.log("client failed loading feeds", error);
 
                     that.loadNextFeed();
                 }
@@ -86,7 +82,6 @@ define(["views/post.jade", "endpoints", "jquery", "less!reader"], function(postV
 
     Reader.prototype.insertPost = function(post) {
 
-        console.log("insertPost starting");
         var postDate = post.postDate;
         var view = postView({post:post});
 
@@ -106,7 +101,6 @@ define(["views/post.jade", "endpoints", "jquery", "less!reader"], function(postV
         });
 
         if (matchingPosts.length > 0) {
-            console.log("insertPost finished early, had matchingPosts");
             return;
         }
 
@@ -121,8 +115,6 @@ define(["views/post.jade", "endpoints", "jquery", "less!reader"], function(postV
                 return false;
             }
         });
-
-        console.log("insertPost adding post");
 
         if (target !== null) {
             target.before(view);
