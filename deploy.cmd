@@ -102,6 +102,7 @@ IF EXIST "%DEPLOYMENT_TARGET%\package.json" (
 
 node --version
 jake.bat prepareTempDirectory
+jake.bat buildClientBundle
 
 
 ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
