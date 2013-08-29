@@ -100,8 +100,8 @@ IF EXIST "%DEPLOYMENT_TARGET%\package.json" (
 )
 
 node --version
-node node_modules\jake\bin\cli.js buildClientBundle
 node node_modules\jake\bin\cli.js prepareTempDirectory
+node node_modules\jake\bin\cli.js buildClientBundle
 
 
 ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
