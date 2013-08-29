@@ -101,9 +101,7 @@ IF EXIST "%DEPLOYMENT_TARGET%\package.json" (
 )
 
 node --version
-echo %NODE_EXE%
-call jake.bat prepareTempDirectory
-IF !ERRORLEVEL! NEQ 0 goto error
+jake.bat prepareTempDirectory
 
 
 ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
