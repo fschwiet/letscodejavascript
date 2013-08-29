@@ -102,7 +102,7 @@ IF EXIST "%DEPLOYMENT_TARGET%\package.json" (
 call !NODE_EXE! --version
 call !NODE_EXE! node_modules\jake\bin\cli.js prepareTempDirectory
 IF !ERRORLEVEL! NEQ 0 goto error
-call !NODE_EXE! node node_modules\jake\bin\cli.js buildClientBundle
+call !NODE_EXE! node_modules\jake\bin\cli.js buildClientBundle
 IF !ERRORLEVEL! NEQ 0 goto error
 
 
