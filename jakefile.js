@@ -435,7 +435,17 @@ task("buildClientBundle", ["compileJadeViews"], function() {
 
     console.log("building " + clientBundle);
 
-    promiseJake(spawnProcess("node r.js", "node", ["./node_modules/requirejs/bin/r.js", "-o", "./src/client/app-build"]));
+    var requirejs = require('requirejs');
+
+    var config = require("./src/client/app-build");
+
+    requirejs.optimize(config, function (buildResponse) {
+        console.log(buildResponse);
+        var contents = fs.readFileSync(config.out, 'utf8');
+        complete();
+    }, function(err) {
+        fail(err);
+    });    
 }, {
     async: true
 });

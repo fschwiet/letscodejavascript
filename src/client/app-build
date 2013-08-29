@@ -1,5 +1,5 @@
-({
-    baseUrl: ".",
+module.exports = {
+    baseUrl: "./src/client",
     paths: {
         jquery: "//ajax.googleapis.com/ajax/libs/jquery/2.0.0/jquery.min",
         views: "../../temp/views",
@@ -24,5 +24,5 @@
         main: 'less'
       }
     ],
-    out: "../../temp/main-built.js"
-})
+    out: "./temp/main-built.js"
+};
