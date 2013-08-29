@@ -100,8 +100,8 @@ IF EXIST "%DEPLOYMENT_TARGET%\package.json" (
 )
 
 node --version
-call jake.bat buildClientBundle
-call jake.bat prepareTempDirectory
+node node_modules\jake\bin\cli.js buildClientBundle
+node node_modules\jake\bin\cli.js prepareTempDirectory
 
 
 ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
