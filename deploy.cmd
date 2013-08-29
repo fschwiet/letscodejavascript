@@ -81,7 +81,6 @@ goto :EOF
 
 :Deployment
 echo Handling node.js deployment.
-echo hello, world
 
 :: 1. KuduSync
 IF /I "%IN_PLACE_DEPLOYMENT%" NEQ "1" (
@@ -101,8 +100,8 @@ IF EXIST "%DEPLOYMENT_TARGET%\package.json" (
 )
 
 node --version
-jake.bat prepareTempDirectory
-jake.bat buildClientBundle
+call jake.bat buildClientBundle
+call jake.bat prepareTempDirectory
 
 
 ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
