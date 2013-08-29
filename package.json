@@ -1,5 +1,6 @@
 {
     "name": "letscodejavascript",
+    "version": "0.1.0-pre",
     "engines":{"node": "0.8.2"},
     "scripts": {
         "start": "node ./src/iis/iis_server.js"
