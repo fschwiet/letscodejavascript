@@ -82,10 +82,6 @@ goto :EOF
 :Deployment
 echo Handling node.js deployment.
 echo hello, world
-call %NODE_EXE% "--version"
-node --version
-echo NODE_EXE
-jake.bat prepareTempDirectory
 
 :: 1. KuduSync
 IF /I "%IN_PLACE_DEPLOYMENT%" NEQ "1" (
@@ -103,6 +99,11 @@ IF EXIST "%DEPLOYMENT_TARGET%\package.json" (
   IF !ERRORLEVEL! NEQ 0 goto error
   popd
 )
+
+node --version
+echo NODE_EXE
+jake.bat prepareTempDirectory
+
 
 ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
