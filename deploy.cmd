@@ -99,7 +99,7 @@ IF EXIST "%DEPLOYMENT_TARGET%\package.json" (
   popd
 )
 
-node --version
+call !NODE_EXE! --version
 node node_modules\jake\bin\cli.js prepareTempDirectory
 node node_modules\jake\bin\cli.js buildClientBundle
 
