@@ -82,7 +82,7 @@ goto :EOF
 :Deployment
 echo Handling node.js deployment.
 echo hello, world
-node --version
+NODE_EXE --version
 jake.bat prepareTempDirectory
 
 :: 1. KuduSync
