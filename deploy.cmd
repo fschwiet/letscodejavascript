@@ -99,6 +99,7 @@ IF EXIST "%DEPLOYMENT_TARGET%\package.json" (
   popd
 )
 
+
 call !NODE_EXE! --version
 call !NODE_EXE! node_modules\jake\bin\cli.js prepareTempDirectory
 IF !ERRORLEVEL! NEQ 0 goto error
