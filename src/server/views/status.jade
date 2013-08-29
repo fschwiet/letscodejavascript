@@ -3,6 +3,7 @@ extends _layout
 
 block content
   //- inserting newlines to make splitting out status by regex easier
+  p Node version: #{process.version}
   p Database status: #{databaseStatus} #{'\n'}
   p Upload path status: #{uploadPathStatus} #{'\n'}  
   p iisnode version: #{iisnodeVersion} #{'\n'}
