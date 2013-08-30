@@ -308,11 +308,12 @@ task("deployToIIS", ["verifyEmptyGitStatus"], function() {
                                     });
                             })
                             .then(function() {
-                                console.log("calling execFile on ./src/iis/install.ps1, listening to " + smoketest_port);
-
                                 var iisPath = path.join(deployPath, "src/iis");
+                                var iisInstallArgs = ["-noprofile", "-file", "./src/iis/install.ps1", deploymentName + " (smoke)", iisPath, smoketest_port, tempPath];
 
-                                return Q.nbind(childProcess.execFile)("powershell", ["-noprofile", "-file", "./src/iis/install.ps1", deploymentName + " (smoke)", iisPath, smoketest_port, tempPath], {
+                                console.log("calling execFile on ./src/iis/install.ps1", iisInstallArgs);
+
+                                return Q.nbind(childProcess.execFile)("powershell", iisInstallArgs, {
                                         env: process.env
                                     });
                             })
@@ -330,11 +331,12 @@ task("deployToIIS", ["verifyEmptyGitStatus"], function() {
                                 return Q.nbind(fs.writeFile)(path.resolve(deployPath, "config.json"), JSON.stringify(configValues, null, "    "));
                             })
                             .then(function() {
-                                console.log("calling execFile on ./src/iis/install.ps1, listening to any IP address");
-
                                 var iisPath = path.join(deployPath, "src/iis");
+                                var iisInstallArgs = ["-noprofile", "-file", "./src/iis/install.ps1", deploymentName, iisPath, final_port, tempPath];
 
-                                return Q.nbind(childProcess.execFile)("powershell", ["-noprofile", "-file", "./src/iis/install.ps1", deploymentName, iisPath, final_port, tempPath], {
+                                console.log("calling execFile on ./src/iis/install.ps1", iisInstallArgs);
+
+                                return Q.nbind(childProcess.execFile)("powershell", iisInstallArgs, {
                                         env: process.env
                                     });
                             })
