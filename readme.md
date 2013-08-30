@@ -19,8 +19,9 @@ To deploy to IIS:
 
   *  Install NodeOnIIS boxstarter package at https://github.com/fschwiet/fschwiet-boxstarter (this installs node, git, phantomjs, carbon, iis, iisnode, urlrewrite, etc)
   *  Set the "deployment_" configuration values in "config.json".
-    * deployment_configFile will point to the configuration file like "config.json" the deployed environment will use (its "deployment_" values are not used).
-    * Verify the ports are available.
+    * deployment_configFile will point to the configuration file like "config.json" the deployed environment will use (its "deployment_" values are not used).  I use production.config.json.
+  * Verify the HTTP port are available in IIS.
+  * Verify the database has been created
   *  Modify the hosts file so your configured server_hostname maps to localhost (if the hostname doesn't resolve to localhost already)
   *  clone the repository
   *  run set-executionpolicy unrestricted on powershell, in both x64 and x86.
