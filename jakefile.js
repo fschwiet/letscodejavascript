@@ -154,9 +154,7 @@ task("testRemaining", ["commonTestPrequisites"], function() {
 });
 
 task("prepareTempDirectory", function() {
-    console.log("hi");
     var rmTarget = path.resolve("./temp");
-    console.log("hi2", rmTarget);
     console.log("using temp directory " + rmTarget);
     jake.rmRf(rmTarget);
 
