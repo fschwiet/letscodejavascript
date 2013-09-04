@@ -65,7 +65,7 @@ setup.qtest(testBlock, "can upload rss", function() {
         .then(function() {
             return waitUntil("the page loads with the trimmed posts", function() {
                 return page.promise.evaluate(function() {
-                    return $(".js-post").length == 12;
+                    return document.querySelectorAll(".js-post").length == 12;
                 });
             });
         })
