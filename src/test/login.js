@@ -7,8 +7,9 @@ waitUntil.defaultWait = 15000;
 
 var selectors = {
 
-    loginButtonSelector: "a[href='/auth/google']",
+    loginButtonSelector: "a[href='/login']",
     logoutButtonSelector: "a[href='/logout']",
+    loginWithGoogleButtonSelector: "a[href='/auth/google']",
 
     googleLoginEmail: "input[type=email][name=Email]",
     googleLoginPassword: "input[name=Passwd]",
@@ -22,21 +23,31 @@ var selectors = {
 exports.doLogin = function(page) {
 
     return page.promise.clickElement(selectors.loginButtonSelector, true)
-        .then(function() {
-            return handleGoogleAuth(page);
-        })
-        .then(function() {
-            return page.promise.evaluate(function(ibs, obs) {
-                return {
-                    loginButtonCount: document.querySelectorAll(ibs).length,
-                    logoutButtonCount: document.querySelectorAll(obs).length
-                };
-            }, selectors.loginButtonSelector, selectors.logoutButtonSelector);
-        })
-        .then(function(evaluation) {
-            assert.equal(evaluation.loginButtonCount, 0);
-            assert.equal(evaluation.logoutButtonCount, 1);
+    .then(function() {
+        return waitUntil("google auth button is visible", function() {
+            return page.promise.evaluate(function(selector) {
+                return $(selector).length > 0;
+            }, selectors.loginWithGoogleButtonSelector);
         });
+    })
+    .then(function() {
+        return page.promise.clickElement(selectors.loginWithGoogleButtonSelector, false);
+    })
+    .then(function() {
+        return handleGoogleAuth(page);
+    })
+    .then(function() {
+        return page.promise.evaluate(function(ibs, obs) {
+            return {
+                loginButtonCount: document.querySelectorAll(ibs).length,
+                logoutButtonCount: document.querySelectorAll(obs).length
+            };
+        }, selectors.loginButtonSelector, selectors.logoutButtonSelector);
+    })
+    .then(function(evaluation) {
+        assert.equal(evaluation.loginButtonCount, 0);
+        assert.equal(evaluation.logoutButtonCount, 1);
+    });
 };
 
 function handleGoogleAuth(page) {

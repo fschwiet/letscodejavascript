@@ -16,7 +16,7 @@ setup.qtest(testBlock, "can upload rss", function() {
         return page.promise.evaluate(function() {
             return {
                 fileUploadCount: document.querySelectorAll("form.uploadRss input[type=file]").length,
-                loginButtonCount: document.querySelectorAll("a[href='/auth/google']").length
+                loginButtonCount: document.querySelectorAll("a[href='/login']").length
             };
         });
     }

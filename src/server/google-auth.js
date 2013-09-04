@@ -3,6 +3,7 @@ var passport = require('passport');
 var config = require("./config");
 var Q = require("q");
 
+var auth = require("./auth.js");
 var database = require("./database");
 
 passport.serializeUser(function(user, done) {
@@ -23,18 +24,12 @@ module.exports = function(port, app) {
     app.use(passport.initialize());
     app.use(passport.session());
 
-    app.get('/auth/google', function(req, res, next) {
-        var referer = req.header("referer");
-
-        if (referer !== null) {
-            req.session.referer = referer;
-        }
-
-        next();
-    }, passport.authenticate('google', {
-        successRedirect: '/',
-        failureRedirect: '/'
-    }));
+    app.get('/auth/google', 
+        auth.withLoginPage("/login").handleRefererUrl, 
+        passport.authenticate('google', {
+            successRedirect: '/',
+            failureRedirect: '/'
+        }));
 
     app.get('/auth/google/return',
         passport.authenticate('google', {
