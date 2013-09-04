@@ -26,7 +26,7 @@ exports.doLogin = function(page) {
     .then(function() {
         return waitUntil("google auth button is visible", function() {
             return page.promise.evaluate(function(selector) {
-                return $(selector).length > 0;
+                return document.querySelectorAll(selector).length > 0;
             }, selectors.loginWithGoogleButtonSelector);
         });
     })
