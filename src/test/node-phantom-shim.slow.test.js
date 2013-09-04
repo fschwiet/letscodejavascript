@@ -62,6 +62,17 @@ setup.qtest(testBlock, "should pass arguments to evaluate correctly", function()
         });
 });
 
+setup.qtest(testBlock, "should pass exception through with for evaluate", function() {
+
+    var page = this.page;
+
+    return setup.shouldFail(function() {
+        return page.promise.evaluate(function(a, b, c) {
+            throw new Error("some error: " + (a + b + c));
+        }, 1, 2, 3);
+    }, "some error: 6");
+});
+
 setup.qtest(testBlock, "should be able to load page content as a string", function() {
 
     var page = this.page;
@@ -199,10 +210,12 @@ setup.qtest(testBlock, "should be able to listen to client errors", function() {
         recordedError = message;
     };
 
+    function assertExpectedResult(result) {
+        assert.ok(recordedError.toString().indexOf("error message") > -1);
+    }
+
     return page.promise.evaluate(function() {
             throw new Error("error message");
         })
-        .then(function(result) {
-            assert.ok(recordedError.toString().indexOf("error message") > -1);
-        });
+        .then(assertExpectedResult,assertExpectedResult);
 });

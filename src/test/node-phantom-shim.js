@@ -2,12 +2,27 @@ var Q = require("q");
 
 var phantom = require('node-phantom');
 
-function promisify(nodeAsyncFn, context, modifier, callbackParameterPosition) {
+function promisify(nodeAsyncFn, context, modifier, isPageEvaluate) {
     return function() {
         var args = Array.prototype.slice.call(arguments);
         var defer = Q.defer();
 
+        var errors = [];
+        var oldOnError = context.onError;
+        context.onError = function(error) {
+
+            errors.push(error.toString());
+            return oldOnError.apply(this, Array.prototype.slice.apply(arguments));
+        };
+
         callbackWrappingPromise = function(err, val) {
+
+            context.onError = oldOnError;
+
+            if (errors.length > 0) {
+                return defer.reject(errors.join(', '));
+            }
+
             if (err !== null) {
                 return defer.reject(err);
             }
@@ -19,10 +34,10 @@ function promisify(nodeAsyncFn, context, modifier, callbackParameterPosition) {
             return defer.resolve(val);
         };
 
-        if (typeof callbackParameterPosition !== 'number') {
+        if (!isPageEvaluate) {
             args.push(callbackWrappingPromise);
         } else {
-            args.splice(callbackParameterPosition, 0, callbackWrappingPromise);
+            args.splice(1, 0, callbackWrappingPromise);
         }
 
         /*
@@ -36,6 +51,7 @@ function promisify(nodeAsyncFn, context, modifier, callbackParameterPosition) {
         try {
             nodeAsyncFn.apply(context || {}, args);
         } catch (err) {
+            context.onError = oldOnError;
             defer.reject(err || name + " failed within promsifiy.");
             return;
         }
@@ -50,7 +66,7 @@ phantom.promise = {
             createPage: promisify(ph.createPage, ph, function(page) {
                 page.promise = {
                     open: promisify(page.open, page),
-                    evaluate: promisify(page.evaluate, page, null, 1),
+                    evaluate: promisify(page.evaluate, page, null, true),
                     uploadFile: promisify(page.uploadFile, page),
                     get: promisify(page.get, page),
                     render: promisify(page.render, page)
