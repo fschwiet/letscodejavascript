@@ -4,4 +4,9 @@ extends _layout
 block content
     a(href="/auth/google") Login with a Google account
 
+    form(method="post",action="/auth/local")
+        input(name='username',type='text')
+        input(name='password',type='password')
+        input#submitLocalLogin(type='submit')
+
 

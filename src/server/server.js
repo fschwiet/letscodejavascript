@@ -54,11 +54,6 @@
         app.get("/", handleHomepageRequest);
         app.get("/status", handleStatusRequest);
         app.get("/about", handleAboutRequest);
-        app.get("/login", 
-            auth.withLoginPage("/login").handleRefererUrl, 
-            function(req, res) {
-                res.render('loginPage', modelFor("login", req));
-            });
 
         app.get("/client/main-built.js", function(req, res) {
             var mainBuilt = path.resolve(__dirname + '../../../temp/main-built.js');

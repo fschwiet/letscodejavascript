@@ -35,6 +35,11 @@ exports.getAuthHandler = function(req, res, next) {
         if (err) {
             return next(err);
         }
+
+        if (typeof info == 'object' && 'message' in info) {
+            req.flash('info', info.message);
+        }
+
         if (!user) {
             return res.redirect('/login');
         }

@@ -13,8 +13,8 @@ var selectors = {
 
     //  From the login page
     loginWithGoogleButtonSelector: "a[href='/auth/google']",
-    loginUsername : "input#username",
-    loginPassword : "input#password",
+    loginUsername : "input[name='username']",
+    loginPassword : "input[name='password']",
     loginLocalSubmit : "input#submitLocalLogin",
 
     //  Selectors used for google login

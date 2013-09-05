@@ -23,6 +23,6 @@ html
         - if (typeof flash !== "undefined")
             fieldset
                 -if (flash.info)
-                    span.info !{flash.info}
+                    span.info !{flash.info.toString()}
 
         block content
