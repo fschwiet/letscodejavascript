@@ -1,4 +1,5 @@
 
+var bcrypt =require("bcrypt-nodejs");
 var Q = require("q");
 
 var database = require('../database.js');
@@ -52,19 +53,26 @@ exports.findOrCreateUserByGoogleIdentifier = function(identifier, profile, callb
 
 exports.createLocalUser = function(email, friendlyName, password) {
 
-    var connection = database.getConnection();
+    var deferred = Q.defer();
 
-    var query = Q.nbind(connection.query, connection);
+    bcrypt.hash(password, null, null, deferred.makeNodeResolver());
 
-    return query("INSERT INTO users SET ?", { friendlyName: friendlyName })
-    .then(function(result) {
+    return deferred.promise
+    .then(function(passwordHash) {
+        var connection = database.getConnection();
 
-        var userId = result[0].insertId;
+        var query = Q.nbind(connection.query, connection);
 
-        return query("INSERT INTO userPasswords SET ?", {
-            email: email,
-            userId: userId,
-            passwordHash: password
+        return query("INSERT INTO users SET ?", { friendlyName: friendlyName })
+        .then(function(result) {
+
+            var userId = result[0].insertId;
+
+            return query("INSERT INTO userPasswords SET ?", {
+                email: email,
+                userId: userId,
+                passwordHash: passwordHash
+            });
         });
     });
 };
@@ -83,13 +91,20 @@ exports.findUserByLocalAuth = function(email, password) {
 
         var result = results[0][0];
 
-        if (result.passwordHash == password) {
+        var deferred = Q.defer();
+
+        bcrypt.compare(password, result.passwordHash, deferred.makeNodeResolver());
+
+        return deferred.promise
+        .then(function(matched) {
+
+            if (!matched)
+                return null;
+
             return {
                 id : result.userId,
                 friendlyName : result.friendlyName
             };
-        }
-
-        return null;
+        });
     });
 };
