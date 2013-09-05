@@ -5,11 +5,12 @@ var uuid = require("node-uuid");
 
 var database = require("../database.js");
 var dataUserPostsRead = require("./userPostsRead.js");
+var users = require("./users.js");
 
 var setup = require("../../test/setup.js");
 
 
-var findOrCreateUserByGoogleIdentifier = Q.nbind(database.findOrCreateUserByGoogleIdentifier);
+var findOrCreateUserByGoogleIdentifier = Q.nbind(users.findOrCreateUserByGoogleIdentifier);
 
 setup.qtest(exports, "markPostAsRead shouldn't insert duplicates", function() {
 

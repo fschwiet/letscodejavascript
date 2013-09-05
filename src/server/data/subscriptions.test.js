@@ -7,11 +7,11 @@ var _ = require("underscore");
 
 var setup = require("../../test/setup.js");
 
-var database = require("../database.js");
 var dataSubscriptions = require("./subscriptions.js");
 var dataRssUrlStatus = require("./rssUrlStatus.js");
+var users = require("./users.js");
 
-var findOrCreateUserByGoogleIdentifier = Q.nbind(database.findOrCreateUserByGoogleIdentifier);
+var findOrCreateUserByGoogleIdentifier = Q.nbind(users.findOrCreateUserByGoogleIdentifier);
 
 
 setup.qtest(exports, "loadSubscriptions includes whether the feed status needs updating", function() {

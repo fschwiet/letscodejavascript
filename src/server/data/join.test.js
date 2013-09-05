@@ -8,14 +8,13 @@ var _ = require("underscore");
 
 var setup = require("../../test/setup.js");
 
-var database = require("../database.js");
+var users = require("./users.js");
 var dataSubscriptions = require("./subscriptions.js");
 var dataFeedPosts = require("./feedPosts.js");
 var dataUserPostsRead = require("./userPostsRead.js");
 var dataJoin = require("./join.js");
 
-var findOrCreateUserByGoogleIdentifier = Q.nbind(database.findOrCreateUserByGoogleIdentifier);
-
+var findOrCreateUserByGoogleIdentifier = Q.nbind(users.findOrCreateUserByGoogleIdentifier);
 
 setup.qtest(exports, "Can load stored posts for a user", function() {
 

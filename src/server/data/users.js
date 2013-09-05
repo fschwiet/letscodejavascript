@@ -50,7 +50,46 @@ exports.findOrCreateUserByGoogleIdentifier = function(identifier, profile, callb
         });
 };
 
+exports.createLocalUser = function(email, friendlyName, password) {
 
-exports.findUserByLocalAuth = function() {
-    return Q(null);
+    var connection = database.getConnection();
+
+    var query = Q.nbind(connection.query, connection);
+
+    return query("INSERT INTO users SET ?", { friendlyName: friendlyName })
+    .then(function(result) {
+
+        var userId = result[0].insertId;
+
+        return query("INSERT INTO userPasswords SET ?", {
+            email: email,
+            userId: userId,
+            passwordHash: password
+        });
+    });
+};
+
+
+exports.findUserByLocalAuth = function(email, password) {
+
+    var connection = database.getConnection();
+
+    return Q.npost(connection, "query", ["SELECT UP.userId, U.friendlyName, UP.passwordHash FROM userPasswords UP LEFT JOIN users U ON U.id = UP.userId WHERE UP.email = ?", [email]])
+    .then(function(results) {
+
+        if (results[0].length === 0) {
+            return null;
+        }
+
+        var result = results[0][0];
+
+        if (result.passwordHash == password) {
+            return {
+                id : result.userId,
+                friendlyName : result.friendlyName
+            };
+        }
+
+        return null;
+    });
 };

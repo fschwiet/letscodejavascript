@@ -4,9 +4,9 @@ var request = require("request");
 var uuid = require('node-uuid');
 
 var config = require("../server/config.js");
-var database = require("../server/database.js");
 var dataUserPostsRead = require("../server/data/userPostsRead.js");
 var posts = require("../server/posts.js");
+var users = require("../server/data/users.js");
 var setup = require("../test/setup.js");
 
 var testWithRssOnly = setup.given3rdPartyRssServer(exports);
@@ -180,7 +180,7 @@ setup.qtest(testWithRssOnly, "loadFeeds should give error if the http request fa
 });
 
 
-var findOrCreateUserByGoogleIdentifier = Q.nbind(database.findOrCreateUserByGoogleIdentifier);
+var findOrCreateUserByGoogleIdentifier = Q.nbind(users.findOrCreateUserByGoogleIdentifier);
 
 
 setup.qtest(testWithRssOnly, "loadFeedsThroughDatabase should be able to load RSS feeds", function() {

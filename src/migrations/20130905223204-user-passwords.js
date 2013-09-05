@@ -14,7 +14,8 @@ exports.up = function(db, callback) {
             },
 
             userId: {
-                type: 'int'
+                type: 'int',
+                unique: true
             },
 
             passwordHash: {

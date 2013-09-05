@@ -48,3 +48,23 @@ setup.qtest(exports, "findUserByLocalAuth should reject invalid username/passwor
         expect(result).to.be(null);
     });
 });
+
+setup.qtest(exports, "findUserByLocalAuth should load use for valid username/password", function() {
+
+    var email = "Someemail@value.com";
+    var username = "someUsername";
+    var password = "somePassword";
+
+    return Q()
+    .then(function() {
+        return users.createLocalUser(email,username,password);
+    })
+    .then(function() {
+        return users.findUserByLocalAuth(email, password);
+    })
+    .then(function(firstUser) {
+        console.log("firstUser", firstUser);
+        expect(firstUser.id).to.be.a('number');
+        expect(firstUser.friendlyName).to.equal(username);
+    });
+});

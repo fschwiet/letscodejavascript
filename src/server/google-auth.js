@@ -6,7 +6,7 @@ var config = require("./config");
 var Q = require("q");
 
 var auth = require("./auth.js");
-var database = require("./database.js");
+var users = require("./data/users.js");
 var modelFor = require("./modelFor.js");
 
 module.exports = function(port, app) {
@@ -29,7 +29,7 @@ module.exports = function(port, app) {
     passport.use(new GoogleStrategy.Strategy({
                 returnURL: config.urlFor('/auth/google/return'),
                 realm: config.urlFor('/')
-            }, database.findOrCreateUserByGoogleIdentifier));
+            }, users.findOrCreateUserByGoogleIdentifier));
 
     app.use(passport.initialize());
     app.use(passport.session());
