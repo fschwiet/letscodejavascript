@@ -31,11 +31,9 @@ module.exports = function(port, app) {
             failureRedirect: '/'
         }));
 
-    app.get('/auth/google/return',
-        passport.authenticate('google', {
-                failureRedirect: '/'
-            }), function(req, res) {
-            res.redirect(auth.getAfterAuthUrl(req) || '/');
+    app.get('/auth/google/return', 
+        function(req,res,next) {
+            passport.authenticate('google', auth.getAuthHandler(req,res,next))(req,res,next);
         });
 
     app.get("/logout", function(req, res) {

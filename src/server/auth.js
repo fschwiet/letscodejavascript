@@ -24,6 +24,24 @@ exports.withLoginPage = function(loginPath) {
     };
 };
 
-exports.getAfterAuthUrl = function(req) {
+function getAfterAuthUrl(req) {
     return req.session.referer || '/';
+}
+
+exports.getAfterAuthUrl = getAfterAuthUrl;
+
+exports.getAuthHandler = function(req, res, next) {
+    return function (err, user, info) {
+        if (err) {
+            return next(err);
+        }
+        if (!user) {
+            return res.redirect('/login');
+        }
+
+        req.logIn(user, function(err) {
+            if (err) { return next(err); }
+            return res.redirect(getAfterAuthUrl(req));
+        });
+    };
 };
