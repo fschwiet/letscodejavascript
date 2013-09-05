@@ -40,3 +40,11 @@ setup.qtest(exports, "findOrCreateUserByGoogleIdentifier can save and load users
                 });
         });
 });
+
+setup.qtest(exports, "findUserByLocalAuth should reject invalid username/password", function() {
+
+    return users.findUserByLocalAuth("someUsername", "somePassword")
+    .then(function(result) {
+        expect(result).to.be(null);
+    });
+});

@@ -51,3 +51,6 @@ exports.findOrCreateUserByGoogleIdentifier = function(identifier, profile, callb
 };
 
 
+exports.findUserByLocalAuth = function() {
+    return Q(null);
+};
