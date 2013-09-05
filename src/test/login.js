@@ -7,10 +7,17 @@ waitUntil.defaultWait = 15000;
 
 var selectors = {
 
-    loginButtonSelector: "a[href='/login']",
+    //  From the common layout file, available depending on login state.
+    loginButton: "a[href='/login']",
     logoutButtonSelector: "a[href='/logout']",
-    loginWithGoogleButtonSelector: "a[href='/auth/google']",
 
+    //  From the login page
+    loginWithGoogleButtonSelector: "a[href='/auth/google']",
+    loginUsername : "input#username",
+    loginPassword : "input#password",
+    loginLocalSubmit : "input#submitLocalLogin",
+
+    //  Selectors used for google login
     googleLoginEmail: "input[type=email][name=Email]",
     googleLoginPassword: "input[name=Passwd]",
     googleLoginSubmit: "input[type=submit][name=signIn]",
@@ -20,9 +27,11 @@ var selectors = {
     googleAllowSubmit: "button[id=submit_approve_access]"
 };
 
+exports.selectors = selectors;
+
 exports.doLogin = function(page) {
 
-    return page.promise.clickElement(selectors.loginButtonSelector, true)
+    return page.promise.clickElement(selectors.loginButton, true)
     .then(function() {
         return waitUntil("google auth button is visible", function() {
             return page.promise.evaluate(function(selector) {
@@ -42,7 +51,7 @@ exports.doLogin = function(page) {
                 loginButtonCount: document.querySelectorAll(ibs).length,
                 logoutButtonCount: document.querySelectorAll(obs).length
             };
-        }, selectors.loginButtonSelector, selectors.logoutButtonSelector);
+        }, selectors.loginButton, selectors.logoutButtonSelector);
     })
     .then(function(evaluation) {
         assert.equal(evaluation.loginButtonCount, 0);
