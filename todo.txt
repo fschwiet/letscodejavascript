@@ -1,6 +1,14 @@
 
 TODO
 
+  get local login going
+
+  split phantom-shim to another project
+    could get rid of phantom-shim's promisify if:
+      - page.evaluate could be wrapped in a way that Q util functions can wrap that wrapper
+      - Q handles inline exceptions as desired
+      - onError can be monitored with before/after handling for each async call
+
 
   info notification on /feeds should have better layout
 
