@@ -23,3 +23,7 @@ exports.withLoginPage = function(loginPath) {
         }        
     };
 };
+
+exports.getAfterAuthUrl = function(req) {
+    return req.session.referer || '/';
+};

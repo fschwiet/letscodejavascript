@@ -18,6 +18,15 @@ function getRequestWithReferer(referer, existingSessionReferer) {
     };
 }
 
+exports["Referer url defaults to homepage"] = function(test) {
+
+    var req = getRequestWithReferer();
+
+    expect(auth.getAfterAuthUrl(req)).to.be('/');
+
+    test.done();
+};
+
 exports["Referer url is typically used"] = function(test) {
 
     var expectedReferer = "http://www.cnn.com/";
@@ -26,7 +35,7 @@ exports["Referer url is typically used"] = function(test) {
 
     auth.withLoginPage("/login").handleRefererUrl(req, null, function() {
 
-        expect(req.session.referer).to.be(expectedReferer);
+        expect(auth.getAfterAuthUrl(req)).to.be(expectedReferer);
 
         test.done();
     });
@@ -40,7 +49,7 @@ exports["Referer url is ignored when not set"] = function(test) {
 
     auth.withLoginPage("/login").handleRefererUrl(req, null, function() {
     
-        expect(req.session.referer).to.be(expectedReferer);
+        expect(auth.getAfterAuthUrl(req)).to.be(expectedReferer);
 
         test.done();
     });
@@ -55,7 +64,7 @@ exports["Referer url is ignored when it matches the login page"] = function(test
 
     auth.withLoginPage("/login").handleRefererUrl(req, null, function() {
 
-        expect(req.session.referer).to.be(null);
+        expect(auth.getAfterAuthUrl(req)).to.be('/');
 
         test.done();
     });
