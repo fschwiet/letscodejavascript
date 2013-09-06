@@ -8,21 +8,7 @@ function promisify(nodeAsyncFn, context, modifier) {
         var args = Array.prototype.slice.call(arguments);
         var defer = Q.defer();
 
-        var errors = [];
-        var oldOnError = context.onError;
-        context.onError = function(error) {
-
-            errors.push(error.toString());
-            return oldOnError.apply(this, Array.prototype.slice.apply(arguments));
-        };
-
         callbackWrappingPromise = function(err, val) {
-
-            context.onError = oldOnError;
-
-            if (errors.length > 0) {
-                return defer.reject(errors.join(', '));
-            }
 
             if (err !== null) {
                 return defer.reject(err);
@@ -40,7 +26,6 @@ function promisify(nodeAsyncFn, context, modifier) {
         try {
             nodeAsyncFn.apply(context || {}, args);
         } catch (err) {
-            context.onError = oldOnError;
             defer.reject(err || name + " failed within promsifiy.");
             return;
         }
@@ -65,11 +50,37 @@ phantom.promise = {
                 };
 
                 page.promise = {
-                    open: promisify(page.open, page),
-                    evaluate: promisify(page.evaluate2, page),
-                    uploadFile: promisify(page.uploadFile, page),
-                    get: promisify(page.get, page),
-                    render: promisify(page.render, page)
+                    open: Q.nbind(page.open, page),
+                    evaluate: function() { 
+
+                        var evaluateArguments =  Array.prototype.slice.apply(arguments);
+
+                        return Q()
+                        .then(function() {
+                            var errors = [];
+                            var oldOnError = page.onError;
+                            page.onError = function(error) {
+
+                                errors.push(error.toString());
+                                return oldOnError.apply(this, Array.prototype.slice.apply(arguments));
+                            };
+
+                            return Q()
+                            .then(function() {
+                                return Q.nbind(page.evaluate2, page).apply(null,evaluateArguments);
+                            })
+                            .fin(function() {
+                                page.onError = oldOnError;
+
+                                if (errors.length > 0) {
+                                    throw new Error(errors.join(', '));
+                                }
+                            });                            
+                        });
+                    },
+                    uploadFile: Q.nbind(page.uploadFile, page),
+                    get: Q.nbind(page.get, page),
+                    render: Q.nbind(page.render, page)
                 };
 
                 page.promise.clickElement = function(selector, allowAmbiguousSelector) {
