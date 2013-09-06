@@ -7,6 +7,9 @@ TODO
     have form with email/username/password
       validate length
 
+
+  should be able to login by email
+
   allow password reset
     - email..
   
