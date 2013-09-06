@@ -8,6 +8,7 @@ var Q = require("q");
 var auth = require("./auth.js");
 var users = require("./data/users.js");
 var modelFor = require("./modelFor.js");
+var users = require("./data/users.js");
 
 module.exports = function(port, app) {
 
@@ -21,8 +22,18 @@ module.exports = function(port, app) {
 
     passport.use(new LocalStrategy(
         function(username, password, done) {
-            done(null, false, {message: 'not implemented'});
-            // done(null, user) 
+
+            users.findUserByLocalAuth(username, password)
+            .then(function(user) {
+
+                if (user !== null) {
+                    done(null, user);
+                } else {
+                    done(null, false, {message: 'Incorrect username or password'});
+                }
+            }, function(err) {
+                done(err);
+            });
         }
     ));
 

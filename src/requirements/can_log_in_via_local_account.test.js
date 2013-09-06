@@ -1,23 +1,26 @@
 var assert = require("assert");
 var expect = require("expect.js");
+var Q = require("q");
+
+var config = require("../server/config");
+var users = require("../server/data/users.js");
 
 var setup = require("../test/setup");
-var config = require("../server/config");
 var login = require("../test/login.js");
 
 var waitUntil = require("../test/waitUntil.js");
 
+var email = "some@email.com";
 var username = "SomeUsername";
 var password = "SomePassword";
 
-var context = setup.usingPhantomPage(setup.whenRunningTheServer(exports));
+var context = setup.usingPhantomPage(setup.whenRunningTheServer(setup.givenCleanDatabase(exports)));
 
 
 function doLoginFromPage(page, url) {
 
     return page.promise.open(url)
     .then(function() {
-        console.log("1");
         return page.promise.clickElement(login.selectors.loginButton, true);
     })
     .then(function() {
@@ -28,16 +31,22 @@ function doLoginFromPage(page, url) {
         });
     })
     .then(function() {
-        console.log("2");
         return page.promise.evaluate(function(selectors, u,p) {
 
             document.querySelector(selectors.loginUsername).value = u;
             document.querySelector(selectors.loginPassword).value = p;
-        }, login.selectors, username, password);
+        }, login.selectors, email, password);
     })
     .then(function() {
-        console.log("3");
         return page.promise.clickElement(login.selectors.loginLocalSubmit);
+    });
+}
+
+function waitForSelector(page, selector) {
+    return waitUntil("page has element matching " + selector, function() {
+        return page.promise.evaluate(function(s) {
+            return document.querySelector(s) !== null;
+        }, selector);
     });
 }
 
@@ -47,11 +56,7 @@ setup.qtest(context, "should show user message for invalid username/password", f
 
     return doLoginFromPage(page, config.urlFor("/"))
     .then(function() {
-        return waitUntil("login completes", function() {
-            return page.promise.evaluate(function() {
-                return document.querySelector('span.info') !== null;
-            });
-        });
+        return waitForSelector(page, 'span.info');
     })
     .then(function() {
         return page.promise.evaluate(function() {
@@ -69,15 +74,22 @@ function check_login_from(startPage) {
 
         var page = this.page;
 
-        return doLoginFromPage(page, startPage)
+        return Q()
         .then(function() {
-            console.log("4");
+            return users.createLocalUser(email, username, password);
+        })
+        .then(function() {
+            return doLoginFromPage(page, startPage);
+        })
+        .then(function() {
+            return waitForSelector(page, login.selectors.logoutButtonSelector);
+        })
+        .then(function() {
             return page.promise.evaluate(function() {
                 return window.location.toString();
             });
         })
         .then(function(location) {
-            console.log("5");
             assert.equal(location, startPage);
         });
     });

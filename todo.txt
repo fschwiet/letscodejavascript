@@ -1,13 +1,7 @@
 
 TODO
-
-  user table:
-      email  (254)
-      username (32)
-      password hash (60 characters)
-        -> https://npmjs.org/package/login-utils
-
-  get local login going
+  do local registration
+  
 
   split phantom-shim to another project
     could get rid of phantom-shim's promisify if:
