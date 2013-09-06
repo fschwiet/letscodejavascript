@@ -31,7 +31,7 @@ setup.qtest(testBlock, "New user is guided to import feeds and read them.", func
 
     var callToAction = "Import your feeds.";
 
-    return page.promise.open(config.urlFor("/"))
+    return page.open(config.urlFor("/"))
         .then(function(status) {
             assert.equal(status, "success");
             return assertPage.isAtPath(page, "/");
@@ -56,21 +56,21 @@ setup.qtest(testBlock, "New user is guided to import feeds and read them.", func
                 });
         })
         .then(function() {
-            return page.promise.clickElement(".info a");
+            return page.clickElement(".info a");
         })
         .then(function() {
             return assertPage.isAtPath(page, "/");
         })
         .then(function() {
           return waitUntil("feed loads", function() {
-              return page.promise.get("content")
+              return page.get("content")
                   .then(function(content) {
                       return content.indexOf(expectedFeedName) > -1;
                   });
           });                
         })
         .then(function() {
-            return page.promise.get("content");
+            return page.get("content");
         })
         .then(function(content) {
             assert.ok(content.indexOf(expectedFeedName) > -1);

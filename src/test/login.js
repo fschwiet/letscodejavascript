@@ -38,22 +38,22 @@ exports.selectors = selectors;
 
 exports.doLogin = function(page) {
 
-    return page.promise.clickElement(selectors.loginButton, true)
+    return page.clickElement(selectors.loginButton, true)
     .then(function() {
         return waitUntil("google auth button is visible", function() {
-            return page.promise.evaluate(function(selector) {
+            return page.evaluate(function(selector) {
                 return document.querySelectorAll(selector).length > 0;
             }, selectors.loginWithGoogleButtonSelector);
         });
     })
     .then(function() {
-        return page.promise.clickElement(selectors.loginWithGoogleButtonSelector, false);
+        return page.clickElement(selectors.loginWithGoogleButtonSelector, false);
     })
     .then(function() {
         return handleGoogleAuth(page);
     })
     .then(function() {
-        return page.promise.evaluate(function(ibs, obs) {
+        return page.evaluate(function(ibs, obs) {
             return {
                 loginButtonCount: document.querySelectorAll(ibs).length,
                 logoutButtonCount: document.querySelectorAll(obs).length
@@ -75,7 +75,7 @@ function handleGoogleAuth(page) {
     assert.notEqual(googlePassword, null, "A config setting was not found for googleTest_password.");
 
     function getPageState() {
-        return page.promise.evaluate(function(selectors) {
+        return page.evaluate(function(selectors) {
 
             var isGooglePage = window.location.toString().indexOf("google.com") > -1;
 
@@ -97,12 +97,12 @@ function handleGoogleAuth(page) {
             .then(function(state) {
 
                 if (state.needLogin) {
-                    return page.promise.evaluate(function(selectors, username, password) {
+                    return page.evaluate(function(selectors, username, password) {
                         document.querySelector(selectors.googleLoginEmail).value = username;
                         document.querySelector(selectors.googleLoginPassword).value = password;
                     }, selectors, googleUsername, googlePassword)
                         .then(function() {
-                            return page.promise.clickElement(selectors.googleLoginSubmit);
+                            return page.clickElement(selectors.googleLoginSubmit);
                         })
                         .then(function() {
                             return waitUntil("done logging into google", function() {
@@ -116,7 +116,7 @@ function handleGoogleAuth(page) {
                             return false;
                         });
                 } else if (state.needSkip) {
-                    return page.promise.clickElement(selectors.googleNoThanksButton)
+                    return page.clickElement(selectors.googleNoThanksButton)
                         .then(function() {
                             return waitUntil("done skipping password recovery", function() {
                                 return getPageState()
@@ -134,7 +134,7 @@ function handleGoogleAuth(page) {
                         return ++ii > 3;
                     })
                         .then(function() {
-                            return page.promise.clickElement(selectors.googleAllowSubmit);
+                            return page.clickElement(selectors.googleAllowSubmit);
                         })
                         .then(function() {
                             return waitUntil("done allowing google account access", function() {

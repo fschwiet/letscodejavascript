@@ -13,7 +13,7 @@ setup.qtest(testBlock, "can upload rss", function() {
     var page = this.page;
 
     function getPageStatus() {
-        return page.promise.evaluate(function() {
+        return page.evaluate(function() {
             return {
                 fileUploadCount: document.querySelectorAll("form.uploadRss input[type=file]").length,
                 loginButtonCount: document.querySelectorAll("a[href='/login']").length
@@ -24,7 +24,7 @@ setup.qtest(testBlock, "can upload rss", function() {
     var unsubscribeButton = "*[data-rssurl='http://blog.stackoverflow.com/'] a.js-unsubscribe";
 
     function getSubscriptionsFromUI() {
-        return page.promise.evaluate(function() {
+        return page.evaluate(function() {
             var result = {};
             var rows = document.querySelectorAll("[data-rssurl]");
             for (var i = 0; i < rows.length; i++) {
@@ -37,7 +37,7 @@ setup.qtest(testBlock, "can upload rss", function() {
         });
     }
 
-    return page.promise.open(config.urlFor("/feeds"))
+    return page.open(config.urlFor("/feeds"))
         .then(getPageStatus)
         .then(function(status) {
             assert.equal(status.fileUploadCount, 0);
@@ -60,7 +60,7 @@ setup.qtest(testBlock, "can upload rss", function() {
             expect(results["http://feeds.feedburner.com/tedtalks_video"]).to.have.property("title", "TEDTalks (video)");
         })
         .then(function() {
-            return page.promise.open(config.urlFor("/feeds"));
+            return page.open(config.urlFor("/feeds"));
         })
         .then(getSubscriptionsFromUI)
         .then(function(results) {
@@ -69,16 +69,16 @@ setup.qtest(testBlock, "can upload rss", function() {
         })
         .then(function() {
             return waitUntil("page has initialized", function() {
-                return page.promise.evaluate(function() {
+                return page.evaluate(function() {
                     return window.mainInitialized === true;
                 });
             });
         })
         .then(function() {
-            return page.promise.clickElement(unsubscribeButton);
+            return page.clickElement(unsubscribeButton);
         })
         .then(function() {
-            return page.promise.open(config.urlFor("/feeds"));
+            return page.open(config.urlFor("/feeds"));
         })
         .then(getSubscriptionsFromUI)
         .then(function(results) {

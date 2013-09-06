@@ -19,22 +19,22 @@ var context = setup.usingPhantomPage(setup.whenRunningTheServer(setup.givenClean
 
 function doLoginFromPage(page, url) {
 
-    return page.promise.open(url)
+    return page.open(url)
     .then(function() {
-        return page.promise.clickElement(login.selectors.loginButton, true);
+        return page.clickElement(login.selectors.loginButton, true);
     })
     .then(function() {
-        return page.promise.waitForSelector(login.selectors.loginUsername);
+        return page.waitForSelector(login.selectors.loginUsername);
     })
     .then(function() {
-        return page.promise.evaluate(function(selectors, u,p) {
+        return page.evaluate(function(selectors, u,p) {
 
             document.querySelector(selectors.loginUsername).value = u;
             document.querySelector(selectors.loginPassword).value = p;
         }, login.selectors, email, password);
     })
     .then(function() {
-        return page.promise.clickElement(login.selectors.loginLocalSubmit);
+        return page.clickElement(login.selectors.loginLocalSubmit);
     });
 }
 
@@ -44,10 +44,10 @@ setup.qtest(context, "should show user message for invalid username/password", f
 
     return doLoginFromPage(page, config.urlFor("/"))
     .then(function() {
-        return page.promise.waitForSelector('span.info');
+        return page.waitForSelector('span.info');
     })
     .then(function() {
-        return page.promise.evaluate(function() {
+        return page.evaluate(function() {
             return document.querySelector('span.info').textContent;
         });
     })
@@ -70,10 +70,10 @@ function check_login_from(startPage) {
             return doLoginFromPage(page, startPage);
         })
         .then(function() {
-            return page.promise.waitForSelector(login.selectors.logoutButtonSelector);
+            return page.waitForSelector(login.selectors.logoutButtonSelector);
         })
         .then(function() {
-            return page.promise.evaluate(function() {
+            return page.evaluate(function() {
                 return window.location.toString();
             });
         })

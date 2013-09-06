@@ -30,15 +30,15 @@ module.exports = function(page, options) {
 
     return assertPage.isAtPath(page, "/feeds")
         .then(function() {
-            return page.promise.uploadFile('form.uploadRss input[type=file]', tempFile);
+            return page.uploadFile('form.uploadRss input[type=file]', tempFile);
         })
         .then(function() {
-            return page.promise.clickElement('form.uploadRss input[type=submit]');
+            return page.clickElement('form.uploadRss input[type=submit]');
         })
         .then(function() {
 
             return waitUntil("upload is complete", function() {
-                return page.promise.get("content")
+                return page.get("content")
                     .then(function(content) {
                         return content.indexOf("Upload complete") > -1;
                     });

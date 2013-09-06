@@ -20,28 +20,28 @@ function testRegistration(startPage) {
     setup.qtest(context, "should be able to register for an account", function() {
         var page = this.page;
 
-        page.promise.open("/status")
+        page.open("/status")
         .then(function() {
-            return page.promise.clickElement(login.selectors.loginButton, true);
+            return page.clickElement(login.selectors.loginButton, true);
         })
         .then(function() {
-            return page.promise.waitForSelector(login.selectors.registerButton);
+            return page.waitForSelector(login.selectors.registerButton);
         })
         .then(function() {
-            return page.promise.clickElement(login.selectors.registerButton, true);
+            return page.clickElement(login.selectors.registerButton, true);
         })
         .then(function() {
-            return page.promise.waitForSelector(login.selectors.registerUsername);
+            return page.waitForSelector(login.selectors.registerUsername);
         })
         .then(function() {
-            return page.promise.evaluate(function(selectors, email,username,password) {
+            return page.evaluate(function(selectors, email,username,password) {
                 document.querySelector(selectors.registerEmail).val(email);
                 document.querySelector(selectors.registerUsername).val(username);
                 document.querySelector(selectors.registerPassword).val(password);
             }, login.selectors, email, username, password);
         })
         .then(function() {
-            return page.promise.clickElement(selectors.login.registerSubmit);
+            return page.clickElement(selectors.login.registerSubmit);
         })
         .then(function() {
 

@@ -12,12 +12,12 @@ function check_login_from(startPage) {
 
         var page = this.page;
 
-        return page.promise.open(startPage)
+        return page.open(startPage)
             .then(function() {
                 return login.doLogin(page);
             })
             .then(function() {
-                return page.promise.evaluate(function() {
+                return page.evaluate(function() {
                     return window.location.toString();
                 });
             })

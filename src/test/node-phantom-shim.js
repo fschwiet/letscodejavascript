@@ -1,38 +1,7 @@
 var Q = require("q");
 var phantom = require('node-phantom');
-
 var waitUntil = require("./waitUntil.js");
 
-function promisify(nodeAsyncFn, context, modifier) {
-    return function() {
-        var args = Array.prototype.slice.call(arguments);
-        var defer = Q.defer();
-
-        callbackWrappingPromise = function(err, val) {
-
-            if (err !== null) {
-                return defer.reject(err);
-            }
-
-            if (modifier) {
-                modifier(val);
-            }
-
-            return defer.resolve(val);
-        };
-
-        args.push(callbackWrappingPromise);
-
-        try {
-            nodeAsyncFn.apply(context || {}, args);
-        } catch (err) {
-            defer.reject(err || name + " failed within promsifiy.");
-            return;
-        }
-
-        return defer.promise;
-    };
-}
 
 function evaluateCheckingErrors(page) { 
     
@@ -48,7 +17,10 @@ function evaluateCheckingErrors(page) {
             page.onError = function(error) {
 
                 errors.push(error.toString());
-                return oldOnError.apply(this, Array.prototype.slice.apply(arguments));
+
+                if (typeof oldOnError == 'function') {
+                    return oldOnError.apply(this, Array.prototype.slice.apply(arguments));
+                }
             };
 
             return Q()
@@ -75,6 +47,9 @@ function evaluateCheckingErrors(page) {
 
 function PageThatPromises(page) {
     this._page = page;
+
+    this.errors = [];
+    this.consoleMessages = [];
 
     this.open = Q.nbind(page.open, page);
     this.evaluate = evaluateCheckingErrors(page);
@@ -174,24 +149,50 @@ PageThatPromises.prototype.waitForSelector = function(selector) {
     var page = this._page;
 
     return waitUntil("page has element matching " + selector, function() {
-        return page.promise.evaluate(function(s) {
+        return page.evaluate(function(s) {
             return document.querySelector(s) !== null;
         }, selector);
     });
 };
 
+module.exports = {
+    create : function() {
 
-phantom.promise = {
-    create: promisify(phantom.create, phantom, function(ph) {
-        ph.promise = {
-            createPage: promisify(ph.createPage, ph, function(page) {
+        var deferredCreate = Q.defer();
+        var createArguments = Array.prototype.slice(arguments);
+        createArguments.push(deferredCreate.makeNodeResolver());
 
-                page.promise = new PageThatPromises(page);
-            })
-        };
-    })
+        phantom.create.apply(phantom, createArguments);
+
+        return deferredCreate.promise.then(function(ph) {
+
+            var originalCreatePage = ph.createPage;
+
+            ph.createPage = function() {
+                var deferredCreatePage = Q.defer();
+                var createPageArguments = Array.prototype.slice(arguments);
+                createPageArguments.push(deferredCreatePage.makeNodeResolver());
+
+                originalCreatePage.apply(ph, createPageArguments);
+
+                return deferredCreatePage.promise
+                .then(function(page) {
+
+                    var result = new PageThatPromises(page);
+
+                    page.onError = function(message) {
+                        result.errors.push(message);
+                    };
+
+                    page.onConsoleMessage = function(message) {
+                        result.consoleMessages.push(message);
+                    };
+
+                    return result;
+                });
+            };
+
+            return ph;
+        });
+    }
 };
-
-
-
-module.exports = phantom;

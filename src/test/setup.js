@@ -47,7 +47,7 @@ exports.qtest = function(context, name, testImplementation) {
             function(error) {
                 if (that.page) {
                     var screenshotPath = path.resolve(__dirname, "../../test-screenshot.jpg");
-                    that.page.promise.render(screenshotPath)
+                    that.page.render(screenshotPath)
                     .then(function(){
                         console.log("wrote screenshot to", screenshotPath);
                     }, function(renderError) {
@@ -94,13 +94,13 @@ exports.usingPhantomPage = function(outer) {
 
         var that = this;
 
-        phantom.promise
+        phantom
             .create()
             .then(function(phantom) {
 
                 phantomRef = phantom;
 
-                return phantom.promise.createPage()
+                return phantom.createPage()
                     .then(function(page) {
                         that.page = page;
 

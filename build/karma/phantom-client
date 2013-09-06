@@ -2,10 +2,10 @@
 
 var phantom = require("./../../src/test/node-phantom-shim");
 
-phantom.promise.create()
+phantom.create()
 .then(function(ph) {
-  return ph.promise.createPage().then(function(page) {
-    return page.promise.open("http://localhost:9876/");
+  return ph.createPage().then(function(page) {
+    return page.open("http://localhost:9876/");
   })
   .then(function(status) {
     if (status !== "success") {

@@ -11,10 +11,10 @@ setup.qtest(testBlock, "can load about page", function() {
 
     var page = this.page;
 
-    return page.promise.open(config.urlFor("/about"))
+    return page.open(config.urlFor("/about"))
     .then(function() {
         return waitUntil("the about page loads", function() {
-            return page.promise.get("content")
+            return page.get("content")
             .then(function(content){
                 return content.indexOf("About") > -1;
             });

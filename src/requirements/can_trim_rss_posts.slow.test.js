@@ -28,7 +28,7 @@ setup.qtest(testBlock, "can upload rss", function() {
         });
     }
 
-    return page.promise.open(config.urlFor("/feeds"))
+    return page.open(config.urlFor("/feeds"))
         .then(function() {
             return require("../test/login.js").doLogin(page);
         })
@@ -43,28 +43,28 @@ setup.qtest(testBlock, "can upload rss", function() {
         })
         .then(function() {
             return waitUntil("rss import completes", function() {
-                return page.promise.get("content")
+                return page.get("content")
                 .then(function(content) {
                     return content.indexOf("Upload complete") > -1;
                 });
             });
         })
         .then(function() {
-            return page.promise.open(config.urlFor("/"));
+            return page.open(config.urlFor("/"));
         })
         .then(function() {
             return waitUntil("the trim posts form appear", function() {
-                return page.promise.evaluate(function() {
+                return page.evaluate(function() {
                     return document.querySelector("form[name='trimPosts']") !== null;
                 });
             });
         })
         .then(function() {
-            return page.promise.clickElement("input[name='submitTrimPosts']");
+            return page.clickElement("input[name='submitTrimPosts']");
         })
         .then(function() {
             return waitUntil("the page loads with the trimmed posts", function() {
-                return page.promise.evaluate(function() {
+                return page.evaluate(function() {
                     return document.querySelectorAll(".js-post").length == 12;
                 });
             });

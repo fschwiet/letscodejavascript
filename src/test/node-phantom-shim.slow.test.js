@@ -54,7 +54,7 @@ setup.qtest(testBlock, "should pass arguments to evaluate correctly", function()
 
     var page = this.page;
 
-    return page.promise.evaluate(function(a, b, c) {
+    return page.evaluate(function(a, b, c) {
             return a + b + c;
         }, 1, 2, 3)
         .then(function(result) {
@@ -67,7 +67,7 @@ setup.qtest(testBlock, "should pass exception through with for evaluate", functi
     var page = this.page;
 
     return setup.shouldFail(function() {
-        return page.promise.evaluate(function(a, b, c) {
+        return page.evaluate(function(a, b, c) {
             throw new Error("some error: " + (a + b + c));
         }, 1, 2, 3);
     }, "some error: 6");
@@ -77,7 +77,7 @@ setup.qtest(testBlock, "should be able to load page content as a string", functi
 
     var page = this.page;
 
-    return page.promise.open(config.urlFor("/empty"))
+    return page.open(config.urlFor("/empty"))
         .then(function(status) {
             assert.equal(status, "success");
         })
@@ -91,12 +91,12 @@ setup.qtest(clickElement, "should give useful error when not found", function() 
     var page = this.page;
 
     return setup.shouldFail(function() {
-        return page.promise.open(config.urlFor("/empty"))
+        return page.open(config.urlFor("/empty"))
             .then(function(status) {
                 assert.equal(status, "success");
             })
             .then(function() {
-                return page.promise.clickElement("a.target");
+                return page.clickElement("a.target");
             });
     }, "An element matching 'a.target' not found");
 });
@@ -106,12 +106,12 @@ setup.qtest(clickElement, "should give useful error when multiple found", functi
     var page = this.page;
 
     return setup.shouldFail(function() {
-        return page.promise.open(config.urlFor("/multiple"))
+        return page.open(config.urlFor("/multiple"))
             .then(function(status) {
                 assert.equal(status, "success");
             })
             .then(function() {
-                return page.promise.clickElement("a.target");
+                return page.clickElement("a.target");
             });
     }, "More than one elements matching 'a.target' were found");
 });
@@ -120,16 +120,16 @@ setup.qtest(clickElement, "should click element when found", function() {
 
     var page = this.page;
 
-    return page.promise.open(config.urlFor("/links-to-empty"))
+    return page.open(config.urlFor("/links-to-empty"))
         .then(function(status) {
             assert.equal(status, "success");
         })
         .then(function() {
-            return page.promise.clickElement("a.target");
+            return page.clickElement("a.target");
         })
         .then(function() {
             return waitUntil("browser is redirected to /empty", function() {
-                return page.promise.get("url").then(function(url) {
+                return page.get("url").then(function(url) {
                     return url == config.urlFor("/empty");
                 });
             }, 1000);
@@ -140,18 +140,18 @@ setup.qtest(clickElement, "should be able to click element found by evaluation",
 
     var page = this.page;
 
-    return page.promise.open(config.urlFor("/links-to-empty"))
+    return page.open(config.urlFor("/links-to-empty"))
         .then(function(status) {
             assert.equal(status, "success");
         })
         .then(function() {
-            return page.promise.clickElement(function() {
+            return page.clickElement(function() {
                 return document.querySelectorAll("a.target");
             });
         })
         .then(function() {
             return waitUntil("browser is redirected to /empty", function() {
-                return page.promise.get("url").then(function(url) {
+                return page.get("url").then(function(url) {
                     console.log("url was", url);
                     return url == config.urlFor("/empty");
                 });
@@ -163,16 +163,16 @@ setup.qtest(clickElement, "should allow less-strict clicking where uniqueness is
 
     var page = this.page;
 
-    return page.promise.open(config.urlFor("/duplicate-links-to-empty"))
+    return page.open(config.urlFor("/duplicate-links-to-empty"))
         .then(function(status) {
             assert.equal(status, "success");
         })
         .then(function() {
-            return page.promise.clickElement("a.target", true);
+            return page.clickElement("a.target", true);
         })
         .then(function() {
             return waitUntil("browser is redirected to /empty", function() {
-                return page.promise.get("url").then(function(url) {
+                return page.get("url").then(function(url) {
                     console.log("url was", url);
                     return url == config.urlFor("/empty");
                 });
@@ -185,17 +185,11 @@ setup.qtest(testBlock, "should be able to listen to console", function() {
 
     var page = this.page;
 
-    var recordedConsole = null;
-
-    page.onConsoleMessage = function(message) {
-        recordedConsole = message;
-    };
-
-    return page.promise.evaluate(function() {
+    return page.evaluate(function() {
             console.log('hi');
         })
         .then(function(result) {
-            assert.equal(recordedConsole, 'hi');
+            assert.equal(page.consoleMessages[0], 'hi');
         });
 });
 
@@ -204,17 +198,11 @@ setup.qtest(testBlock, "should be able to listen to client errors", function() {
 
     var page = this.page;
 
-    var recordedError = null;
-
-    page.onError = function(message) {
-        recordedError = message;
-    };
-
     function assertExpectedResult(result) {
-        assert.ok(recordedError.toString().indexOf("error message") > -1);
+        assert.ok(page.errors.toString().indexOf("error message") > -1);
     }
 
-    return page.promise.evaluate(function() {
+    return page.evaluate(function() {
             throw new Error("error message");
         })
         .then(assertExpectedResult,assertExpectedResult);
