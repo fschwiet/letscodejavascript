@@ -2,13 +2,13 @@ var assert = require("assert");
 var expect = require("expect.js");
 var Q = require("q");
 
-var config = require("../server/config");
-var users = require("../server/data/users.js");
+var config = require("../../server/config");
+var users = require("../../server/data/users.js");
 
-var setup = require("../test/setup");
-var login = require("../test/login.js");
+var setup = require("../../test/setup");
+var login = require("../../test/login.js");
 
-var waitUntil = require("../test/waitUntil.js");
+var waitUntil = require("../../test/waitUntil.js");
 
 var email = "some@email.com";
 var username = "SomeUsername";
@@ -24,11 +24,7 @@ function doLoginFromPage(page, url) {
         return page.promise.clickElement(login.selectors.loginButton, true);
     })
     .then(function() {
-        return waitUntil("login page loads", function() {
-            return page.promise.evaluate(function(selectors) {
-                return document.querySelector(selectors.loginUsername) !== null;            
-            }, login.selectors);
-        });
+        return page.promise.waitForSelector(login.selectors.loginUsername);
     })
     .then(function() {
         return page.promise.evaluate(function(selectors, u,p) {
@@ -42,21 +38,13 @@ function doLoginFromPage(page, url) {
     });
 }
 
-function waitForSelector(page, selector) {
-    return waitUntil("page has element matching " + selector, function() {
-        return page.promise.evaluate(function(s) {
-            return document.querySelector(s) !== null;
-        }, selector);
-    });
-}
-
 setup.qtest(context, "should show user message for invalid username/password", function() {
 
     var page = this.page;
 
     return doLoginFromPage(page, config.urlFor("/"))
     .then(function() {
-        return waitForSelector(page, 'span.info');
+        return page.promise.waitForSelector('span.info');
     })
     .then(function() {
         return page.promise.evaluate(function() {
@@ -82,7 +70,7 @@ function check_login_from(startPage) {
             return doLoginFromPage(page, startPage);
         })
         .then(function() {
-            return waitForSelector(page, login.selectors.logoutButtonSelector);
+            return page.promise.waitForSelector(login.selectors.logoutButtonSelector);
         })
         .then(function() {
             return page.promise.evaluate(function() {

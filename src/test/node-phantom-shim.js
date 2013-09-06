@@ -1,6 +1,7 @@
 var Q = require("q");
-
 var phantom = require('node-phantom');
+
+var waitUntil = require("./waitUntil.js");
 
 function promisify(nodeAsyncFn, context, modifier, isPageEvaluate) {
     return function() {
@@ -155,6 +156,14 @@ phantom.promise = {
                     }, typeof selector == 'function' ? selector.toString() : selector, allowAmbiguousSelector);
 
                     return deferred.promise;
+                };
+
+                page.promise.waitForSelector = function(selector) {
+                    return waitUntil("page has element matching " + selector, function() {
+                        return page.promise.evaluate(function(s) {
+                            return document.querySelector(s) !== null;
+                        }, selector);
+                    });
                 };
             })
         };
