@@ -51,11 +51,14 @@ function PageThatPromises(page) {
     this.errors = [];
     this.consoleMessages = [];
 
-    this.open = Q.nbind(page.open, page);
     this.evaluate = evaluateCheckingErrors(page);
-    this.uploadFile = Q.nbind(page.uploadFile, page);
-    this.get = Q.nbind(page.get, page);
-    this.render = Q.nbind(page.render, page);
+
+    var methodsToWrap = ["open", "close", "render", "renderBase64", "injectJs", "includeJs", "sendEvent", "uploadFile", "set", "get", "setFn"];
+
+    var that = this;
+    methodsToWrap.forEach(function(method) {
+        that[method] = Q.nbind(page[method], page);
+    });
 }
 
 PageThatPromises.prototype.clickElement = function(selector, allowAmbiguousSelector) {
