@@ -34,50 +34,53 @@ function promisify(nodeAsyncFn, context, modifier) {
     };
 }
 
+function evaluateCheckingErrors(page) { 
+    
+    var originalEvaluate = page.evaluate;
+
+    return function() {
+        var evaluateArguments =  Array.prototype.slice.apply(arguments);
+
+        return Q()
+        .then(function() {
+            var errors = [];
+            var oldOnError = page.onError;
+            page.onError = function(error) {
+
+                errors.push(error.toString());
+                return oldOnError.apply(this, Array.prototype.slice.apply(arguments));
+            };
+
+            return Q()
+            .then(function() {
+
+                var a = Array.prototype.slice.apply(evaluateArguments);
+                var deferred = Q.defer();
+                a.splice(1,0,deferred.makeNodeResolver());
+
+                originalEvaluate.apply(page, a);
+
+                return deferred.promise;
+            })
+            .fin(function() {
+                page.onError = oldOnError;
+
+                if (errors.length > 0) {
+                    throw new Error(errors.join(', '));
+                }
+            });                            
+        });
+    };
+}
+
 phantom.promise = {
     create: promisify(phantom.create, phantom, function(ph) {
         ph.promise = {
             createPage: promisify(ph.createPage, ph, function(page) {
 
-                var originalEvaluate = page.evaluate;
-
-                page.evaluate2 = function() {
-                    var a = Array.prototype.slice.apply(arguments);
-                    var callback = a.pop();
-                    a.splice(1,0,callback);
-
-                    return originalEvaluate.apply(this, a);
-                };
-
                 page.promise = {
                     open: Q.nbind(page.open, page),
-                    evaluate: function() { 
-
-                        var evaluateArguments =  Array.prototype.slice.apply(arguments);
-
-                        return Q()
-                        .then(function() {
-                            var errors = [];
-                            var oldOnError = page.onError;
-                            page.onError = function(error) {
-
-                                errors.push(error.toString());
-                                return oldOnError.apply(this, Array.prototype.slice.apply(arguments));
-                            };
-
-                            return Q()
-                            .then(function() {
-                                return Q.nbind(page.evaluate2, page).apply(null,evaluateArguments);
-                            })
-                            .fin(function() {
-                                page.onError = oldOnError;
-
-                                if (errors.length > 0) {
-                                    throw new Error(errors.join(', '));
-                                }
-                            });                            
-                        });
-                    },
+                    evaluate: evaluateCheckingErrors(page),
                     uploadFile: Q.nbind(page.uploadFile, page),
                     get: Q.nbind(page.get, page),
                     render: Q.nbind(page.render, page)
