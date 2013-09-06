@@ -73,18 +73,22 @@ function evaluateCheckingErrors(page) {
     };
 }
 
+function PageThatPromises(page) {
+    this._page = page;
+}
+
 phantom.promise = {
     create: promisify(phantom.create, phantom, function(ph) {
         ph.promise = {
             createPage: promisify(ph.createPage, ph, function(page) {
 
-                page.promise = {
-                    open: Q.nbind(page.open, page),
-                    evaluate: evaluateCheckingErrors(page),
-                    uploadFile: Q.nbind(page.uploadFile, page),
-                    get: Q.nbind(page.get, page),
-                    render: Q.nbind(page.render, page)
-                };
+                page.promise = new PageThatPromises(page);
+
+                page.promise.open = Q.nbind(page.open, page);
+                page.promise.evaluate = evaluateCheckingErrors(page);
+                page.promise.uploadFile = Q.nbind(page.uploadFile, page);
+                page.promise.get = Q.nbind(page.get, page);
+                page.promise.render = Q.nbind(page.render, page);
 
                 page.promise.clickElement = function(selector, allowAmbiguousSelector) {
 
