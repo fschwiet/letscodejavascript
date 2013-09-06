@@ -149,10 +149,10 @@ PageThatPromises.prototype.clickElement = function(selector, allowAmbiguousSelec
 
 PageThatPromises.prototype.waitForSelector = function(selector) {
 
-    var page = this._page;
+    var that = this;
 
     return waitUntil("page has element matching " + selector, function() {
-        return page.evaluate(function(s) {
+        return that.evaluate(function(s) {
             return document.querySelector(s) !== null;
         }, selector);
     });
