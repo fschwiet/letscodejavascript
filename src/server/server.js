@@ -46,7 +46,8 @@
             app.use(extraMiddleware);
         }
 
-        require("./google-auth.js")(port, app);
+        auth.addToExpress(port, app);
+
         require("./posts.js")(app);
         require("./feeds.js")(app);
         require("./trimPosts.js")(app);
