@@ -1,6 +1,14 @@
 
 TODO
   do local registration
+    data-access:
+      rejects duplicate userid
+      rejects duplicate username
+    have form with email/username/password
+      validate length
+
+  allow password reset
+    - email..
   
 
   split phantom-shim to another project
