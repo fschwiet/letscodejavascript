@@ -3,7 +3,7 @@ var phantom = require('node-phantom');
 
 var waitUntil = require("./waitUntil.js");
 
-function promisify(nodeAsyncFn, context, modifier, isPageEvaluate) {
+function promisify(nodeAsyncFn, context, modifier) {
     return function() {
         var args = Array.prototype.slice.call(arguments);
         var defer = Q.defer();
@@ -35,19 +35,7 @@ function promisify(nodeAsyncFn, context, modifier, isPageEvaluate) {
             return defer.resolve(val);
         };
 
-        if (!isPageEvaluate) {
-            args.push(callbackWrappingPromise);
-        } else {
-            args.splice(1, 0, callbackWrappingPromise);
-        }
-
-        /*
-      for(var key in context) {
-        if (context[key] == nodeAsyncFn) {
-          console.log("running " + key);
-        }
-      }
-      */
+        args.push(callbackWrappingPromise);
 
         try {
             nodeAsyncFn.apply(context || {}, args);
@@ -65,9 +53,20 @@ phantom.promise = {
     create: promisify(phantom.create, phantom, function(ph) {
         ph.promise = {
             createPage: promisify(ph.createPage, ph, function(page) {
+
+                var originalEvaluate = page.evaluate;
+
+                page.evaluate2 = function() {
+                    var a = Array.prototype.slice.apply(arguments);
+                    var callback = a.pop();
+                    a.splice(1,0,callback);
+
+                    return originalEvaluate.apply(this, a);
+                };
+
                 page.promise = {
                     open: promisify(page.open, page),
-                    evaluate: promisify(page.evaluate, page, null, true),
+                    evaluate: promisify(page.evaluate2, page),
                     uploadFile: promisify(page.uploadFile, page),
                     get: promisify(page.get, page),
                     render: promisify(page.render, page)
