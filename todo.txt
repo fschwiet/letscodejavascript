@@ -6,6 +6,8 @@ TODO
       rejects duplicate username
     have form with email/username/password
       validate length
+      have user type password twice
+
 
 
   should be able to login by email

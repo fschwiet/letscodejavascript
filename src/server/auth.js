@@ -105,6 +105,10 @@ exports.addToExpress = function(port, app) {
             res.render('loginPage', modelFor("login", req));
         });
 
+    app.get("/register", function(req,res){
+        res.render('registerPage', modelFor("register", req));
+    });
+
     app.get("/logout", function(req, res) {
         req.logout();
         res.redirect("/");

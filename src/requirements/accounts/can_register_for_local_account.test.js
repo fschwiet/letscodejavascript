@@ -20,7 +20,7 @@ function testRegistration(startPage) {
     setup.qtest(context, "should be able to register for an account", function() {
         var page = this.page;
 
-        page.open("/status")
+        return page.open(startPage)
         .then(function() {
             return page.clickElement(login.selectors.loginButton, true);
         })
@@ -35,13 +35,13 @@ function testRegistration(startPage) {
         })
         .then(function() {
             return page.evaluate(function(selectors, email,username,password) {
-                document.querySelector(selectors.registerEmail).val(email);
-                document.querySelector(selectors.registerUsername).val(username);
-                document.querySelector(selectors.registerPassword).val(password);
+                document.querySelector(selectors.registerEmail).value = email;
+                document.querySelector(selectors.registerUsername).value = username;
+                document.querySelector(selectors.registerPassword).value = password;
             }, login.selectors, email, username, password);
         })
         .then(function() {
-            return page.clickElement(selectors.login.registerSubmit);
+            return page.clickElement(login.selectors.registerSubmit);
         })
         .then(function() {
 
@@ -49,6 +49,6 @@ function testRegistration(startPage) {
     });
 }
 /*
-testRegistration("/status");
-testRegistration("/feeds");
+testRegistration(config.urlFor("/status"));
+testRegistration(config.urlFor("/feeds"));
 */

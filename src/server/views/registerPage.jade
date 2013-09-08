@@ -1,0 +1,11 @@
+
+extends _layout
+
+block content
+    form(method="post",action="/register")
+        input(name='email',type='text')
+        input(name='username',type='text')
+        input(name='password',type='password')
+        input#submitRegistration(type='submit')
+
+    a(href='/login') Login if you already an account

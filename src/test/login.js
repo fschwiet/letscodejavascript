@@ -16,13 +16,13 @@ var selectors = {
     loginUsername : "input[name='username']",
     loginPassword : "input[name='password']",
     loginLocalSubmit : "input#submitLocalLogin",
-    registerButton: "a[href='/register'",
+    registerButton: "a[href='/register']    ",
 
     //  From the registration page
     registerUsername : "input[name='username']",
-    registerEmail : "input[name='username']",
+    registerEmail : "input[name='email']",
     registerPassword : "input[name='password']",
-    registerSubmit : "input#submitLocalLogin",
+    registerSubmit : "input#submitRegistration",
 
     //  Selectors used for google login
     googleLoginEmail: "input[type=email][name=Email]",
