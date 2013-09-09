@@ -3,9 +3,9 @@ extends _layout
 
 block content
     form(method="post",action="/register")
-        input(name='email',type='text')
-        input(name='username',type='text')
-        input(name='password',type='password')
+        input(name='email',type='email',maxlength='254')
+        input(name='username',type='text',pattern=".{6,}",maxlength='64',title='Please choose a username that is at least 6 characters long.')
+        input(name='password',pattern=".{8,}",type='password',title='Please choose a password that is at least 8 characters long.')
         input#submitRegistration(type='submit')
 
     a(href='/login') Login if you already an account
