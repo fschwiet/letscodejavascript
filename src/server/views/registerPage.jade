@@ -5,6 +5,12 @@ block content
     form(method="post",action="/register")
         fieldset
             legend New User Registration
+
+            - if (typeof flash !== "undefined")
+                -if (flash.error)
+                    for message in flash.error
+                        div.alert.alert-error !{message}
+
             label Email
             input(name='email',type='email',maxlength='254')
             label Username

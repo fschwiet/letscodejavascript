@@ -13,6 +13,33 @@ var waitUntil = require("../../test/waitUntil.js");
 
 var context = setup.usingPhantomPage(setup.whenRunningTheServer(exports));
 
+function tryRegistration(page, startPage, email, username, password) {
+
+    return page.open(startPage)
+    .then(function() {
+        return page.clickElement(login.selectors.loginButton, true);
+    })
+    .then(function() {
+        return page.waitForSelector(login.selectors.registerButton);
+    })
+    .then(function() {
+        return page.clickElement(login.selectors.registerButton, true);
+    })
+    .then(function() {
+        return page.waitForSelector(login.selectors.registerUsername);
+    })
+    .then(function() {
+        return page.evaluate(function(selectors, email,username,password) {
+            document.querySelector(selectors.registerEmail).value = email;
+            document.querySelector(selectors.registerUsername).value = username;
+            document.querySelector(selectors.registerPassword).value = password;
+        }, login.selectors, email, username, password);
+    })
+    .then(function() {
+        return page.clickElement(login.selectors.registerSubmit);
+    });
+}
+
 function testRegistration(startPage) {
 
     setup.qtest(context, "should be able to register for an account", function() {
@@ -23,29 +50,7 @@ function testRegistration(startPage) {
         var username = "SomeUsername" + uuid();
         var password = "SomePassword";
 
-        return page.open(startPage)
-        .then(function() {
-            return page.clickElement(login.selectors.loginButton, true);
-        })
-        .then(function() {
-            return page.waitForSelector(login.selectors.registerButton);
-        })
-        .then(function() {
-            return page.clickElement(login.selectors.registerButton, true);
-        })
-        .then(function() {
-            return page.waitForSelector(login.selectors.registerUsername);
-        })
-        .then(function() {
-            return page.evaluate(function(selectors, email,username,password) {
-                document.querySelector(selectors.registerEmail).value = email;
-                document.querySelector(selectors.registerUsername).value = username;
-                document.querySelector(selectors.registerPassword).value = password;
-            }, login.selectors, email, username, password);
-        })
-        .then(function() {
-            return page.clickElement(login.selectors.registerSubmit);
-        })
+        return tryRegistration(page, startPage, email,username,password)
         .then(function() {
             return page.waitForSelector(login.selectors.logoutButtonSelector);
         });
@@ -68,36 +73,14 @@ setup.qtest(context, "should receive an error message if email is already taken"
         return users.createLocalUser(email, "username" + uuid(), "password" + uuid());
     })
     .then(function() {
-        return page.open(config.urlFor("/status"));
+        return tryRegistration(page, config.urlFor("/status"), email,username,password);
     })
     .then(function() {
-        return page.clickElement(login.selectors.loginButton, true);
-    })
-    .then(function() {
-        return page.waitForSelector(login.selectors.registerButton);
-    })
-    .then(function() {
-        return page.clickElement(login.selectors.registerButton, true);
-    })
-    .then(function() {
-        return page.waitForSelector(login.selectors.registerUsername);
-    })
-    .then(function() {
-        return page.evaluate(function(selectors, email,username,password) {
-            document.querySelector(selectors.registerEmail).value = email;
-            document.querySelector(selectors.registerUsername).value = username;
-            document.querySelector(selectors.registerPassword).value = password;
-        }, login.selectors, email, username, password);
-    })
-    .then(function() {
-        return page.clickElement(login.selectors.registerSubmit);
-    })
-    .then(function() {
-        return page.waitForSelector("span.info");
+        return page.waitForSelector("div.alert-error");
     })
     .then(function() {
         return page.evaluate(function() {
-            return document.querySelector("span.info").innerHTML;
+            return document.querySelector("div.alert-error").innerHTML;
         });
     })
     .then(function(infoSpanText) {
@@ -118,36 +101,14 @@ setup.qtest(context, "should receive an error message if username is already tak
         return users.createLocalUser("someotheremail" + uuid() + "@server.com", username, "password" + uuid());
     })
     .then(function() {
-        return page.open(config.urlFor("/status"));
+        return tryRegistration(page, config.urlFor("/status"), email,username,password);
     })
     .then(function() {
-        return page.clickElement(login.selectors.loginButton, true);
-    })
-    .then(function() {
-        return page.waitForSelector(login.selectors.registerButton);
-    })
-    .then(function() {
-        return page.clickElement(login.selectors.registerButton, true);
-    })
-    .then(function() {
-        return page.waitForSelector(login.selectors.registerUsername);
-    })
-    .then(function() {
-        return page.evaluate(function(selectors, email,username,password) {
-            document.querySelector(selectors.registerEmail).value = email;
-            document.querySelector(selectors.registerUsername).value = username;
-            document.querySelector(selectors.registerPassword).value = password;
-        }, login.selectors, email, username, password);
-    })
-    .then(function() {
-        return page.clickElement(login.selectors.registerSubmit);
-    })
-    .then(function() {
-        return page.waitForSelector("span.info");
+        return page.waitForSelector("div.alert-error");
     })
     .then(function() {
         return page.evaluate(function() {
-            return document.querySelector("span.info").innerHTML;
+            return document.querySelector("div.alert-error").innerHTML;
         });
     })
     .then(function(infoSpanText) {

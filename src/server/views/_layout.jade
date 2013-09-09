@@ -21,8 +21,9 @@ html
                         include loginButton
 
         - if (typeof flash !== "undefined")
-            fieldset
-                -if (flash.info)
-                    span.info !{flash.info.toString()}
+            -if (flash.info)
+                fieldset
+                    for message in flash.info
+                        span.info !{message}
 
         block content

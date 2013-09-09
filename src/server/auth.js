@@ -2,6 +2,7 @@
 var passport = require('passport');
 var Q = require("q");
 var url = require('url');
+var validator = require('validator');
 
 var GoogleStrategy = require('passport-google');
 var LocalStrategy = require('passport-local').Strategy;
@@ -111,9 +112,34 @@ exports.addToExpress = function(port, app) {
 
     app.post("/register", function(req,res,next) {
 
+        function handleUserError(message) {
+            req.flash("error", message);
+            res.render("registerPage", modelFor("register", req));
+        }
+
         var email = req.param("email", null);
         var username = req.param("username", null);
         var password = req.param("password", null);
+
+        var haveClientErrors = false;
+        var v = new validator.Validator();
+        v.error = function(msg) {
+            req.flash("error", msg);
+            haveClientErrors = true;
+        };
+
+        try {
+            v.check(email, "Email should be a valid email address.").isEmail().len(0,255);
+            v.check(username, "Username should be letters or digits, maybe a '_' or '-' if you're fancy, and less than 64 characters.").is(/^[a-z0-9_-]{6,64}$/i);
+            v.check(password, "Password should be at least 8 characters.").len(8);
+        } catch(ignored) {
+
+        }
+
+        if (haveClientErrors) {
+            res.render("registerPage", modelFor("register", req));
+            return;
+        }
 
         users.createLocalUser(email,username,password)
         .then(function() {
@@ -128,17 +154,16 @@ exports.addToExpress = function(port, app) {
         })
         .fail(function(err){
 
-                console.log("/register error", err);
             var errorString = err.toString();
             if (errorString.indexOf("ER_DUP_ENTRY") > -1) {
 
                 if (errorString.indexOf("friendlyName") > -1) {
-                    req.flash("info", "That username has already been registered on this system.");
+                    handleUserError("That username has already been registered on this system.");
+                } else if (errorString.indexOf("PRIMARY") > -1) {
+                    handleUserError("That email has already been registered on this system.");
                 } else {
-                    req.flash("info", "That email has already been registered on this system.");
+                    next(err);
                 }
-
-                res.redirect("/login");
             } else {
                 next(err);
             }
