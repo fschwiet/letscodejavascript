@@ -13,7 +13,9 @@ var waitUntil = require("../../test/waitUntil.js");
 
 var context = setup.usingPhantomPage(setup.whenRunningTheServer(exports));
 
-function tryRegistration(page, startPage, email, username, password) {
+function tryRegistration(page, startPage, email, username, password, retypedPassword) {
+
+    retypedPassword = retypedPassword || password;
 
     return page.open(startPage)
     .then(function() {
@@ -29,11 +31,12 @@ function tryRegistration(page, startPage, email, username, password) {
         return page.waitForSelector(login.selectors.registerUsername);
     })
     .then(function() {
-        return page.evaluate(function(selectors, email,username,password) {
+        return page.evaluate(function(selectors, email,username,password, retypedPassword) {
             document.querySelector(selectors.registerEmail).value = email;
             document.querySelector(selectors.registerUsername).value = username;
             document.querySelector(selectors.registerPassword).value = password;
-        }, login.selectors, email, username, password);
+            document.querySelector(selectors.registerRetypedPassword).value = retypedPassword;
+        }, login.selectors, email, username, password, retypedPassword);
     })
     .then(function() {
         return page.clickElement(login.selectors.registerSubmit);
@@ -73,7 +76,7 @@ setup.qtest(context, "should receive an error message if email is already taken"
         return users.createLocalUser(email, "username" + uuid(), "password" + uuid());
     })
     .then(function() {
-        return tryRegistration(page, config.urlFor("/status"), email,username,password);
+        return tryRegistration(page, config.urlFor("/status"), email, username, password);
     })
     .then(function() {
         return page.waitForSelector("div.alert-error");
@@ -101,7 +104,7 @@ setup.qtest(context, "should receive an error message if username is already tak
         return users.createLocalUser("someotheremail" + uuid() + "@server.com", username, "password" + uuid());
     })
     .then(function() {
-        return tryRegistration(page, config.urlFor("/status"), email,username,password);
+        return tryRegistration(page, config.urlFor("/status"), email, username, password);
     })
     .then(function() {
         return page.waitForSelector("div.alert-error");
@@ -115,5 +118,32 @@ setup.qtest(context, "should receive an error message if username is already tak
         expect(infoSpanText).to.be("That username has already been registered on this system.");
     });
 });
+
+
+setup.qtest(context, "should receive an error message if password is not retyped correctly", function() {
+    
+    var page = this.page;
+
+    var email = "some" + uuid() + "@email.com";
+    var username = "SomeUsername" + uuid();
+    var password = "SomePassword";
+
+    return Q()
+    .then(function() {
+        return tryRegistration(page, config.urlFor("/status"), email, username, password, "mistyped password");
+    })
+    .then(function() {
+        return page.waitForSelector("div.alert-error");
+    })
+    .then(function() {
+        return page.evaluate(function() {
+            return document.querySelector("div.alert-error").innerHTML;
+        });
+    })
+    .then(function(infoSpanText) {
+        expect(infoSpanText).to.be("Please type the password twice for verification.");
+    });
+});
+
 
 

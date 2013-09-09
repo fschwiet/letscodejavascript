@@ -120,6 +120,7 @@ exports.addToExpress = function(port, app) {
         var email = req.param("email", null);
         var username = req.param("username", null);
         var password = req.param("password", null);
+        var retypedPassword = req.param("retypedPassword", null);
 
         var haveClientErrors = false;
         var v = new validator.Validator();
@@ -130,7 +131,7 @@ exports.addToExpress = function(port, app) {
 
         try {
             v.check(email, "Email should be a valid email address.").isEmail().len(0,255);
-            v.check(username, "Username should be letters or digits, maybe a '_' or '-' if you're fancy, and less than 64 characters.").is(/^[a-z0-9_-]{6,64}$/i);
+            v.check(username, "Username should be letters or digits, maybe a '_' or '-' character.  The username should be less than 64 characters.").is(/^[a-z0-9_-]{6,64}$/i);
             v.check(password, "Password should be at least 8 characters.").len(8);
         } catch(ignored) {
 
@@ -138,6 +139,11 @@ exports.addToExpress = function(port, app) {
 
         if (haveClientErrors) {
             res.render("registerPage", modelFor("register", req));
+            return;
+        }
+
+        if (password != retypedPassword) {
+            handleUserError("Please type the password twice for verification.");
             return;
         }
 

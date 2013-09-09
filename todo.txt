@@ -1,18 +1,7 @@
 
 TODO
-  do local registration
-    have form with email/username/password
-      validate length
-      server-side: https://github.com/chriso/node-validator
-      have user type password twice
-
-
-
-
-  should be able to login by email
-
   allow password reset
-    - email..
+    - email... read this: http://documentup.com/andris9/nodemailer/#
   
 
   split phantom-shim to another project

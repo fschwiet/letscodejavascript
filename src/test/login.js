@@ -22,6 +22,7 @@ var selectors = {
     registerUsername : "input[name='username']",
     registerEmail : "input[name='email']",
     registerPassword : "input[name='password']",
+    registerRetypedPassword : "input[name='retypedPassword']",
     registerSubmit : "input#submitRegistration",
 
     //  Selectors used for google login

@@ -17,11 +17,13 @@ block content
             input(name='username',type='text',pattern=".{6,}",maxlength='64',title='Please choose a username that is at least 6 characters long.')
             label Password
             input(name='password',pattern=".{8,}",type='password',title='Please choose a password that is at least 8 characters long.')
+            label Retype password
+            input(name='retypedPassword',type='password',title='Please type the password again for verification.')
             label
             input.btn#submitRegistration(type='submit') Register
 
     div If you'd like to log in with a Google account, 
-        a(href="/auth/google") click here to login.
+        a(href="/auth/google") click here.
 
     div If you already have an account, 
-        a(href='/login') click here to login.
+        a(href='/login') click here.
