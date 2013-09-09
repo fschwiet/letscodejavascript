@@ -5,6 +5,7 @@ var http = require("http");
 var path = require("path");
 var RSS = require("rss");
 var setDefault = require('set-default');
+var uuid = require("node-uuid");
 
 var config = require("./../server/config.js");
 var database = require("../server/database.js");
@@ -248,7 +249,7 @@ exports.given3rdPartyRssServer = function(outer) {
 
 exports.getGoogleProfile = function(postfix) {
     return {
-        displayName: 'displayName' + postfix,
+        displayName: 'displayName' + postfix + uuid(),
         emails: [{
                 value: 'emailValue' + postfix
             }

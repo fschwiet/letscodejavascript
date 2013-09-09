@@ -128,13 +128,18 @@ exports.addToExpress = function(port, app) {
         })
         .fail(function(err){
 
+                console.log("/register error", err);
             var errorString = err.toString();
             if (errorString.indexOf("ER_DUP_ENTRY") > -1) {
 
-                req.flash("info", "That email has already been registered on this system.");
+                if (errorString.indexOf("friendlyName") > -1) {
+                    req.flash("info", "That username has already been registered on this system.");
+                } else {
+                    req.flash("info", "That email has already been registered on this system.");
+                }
+
                 res.redirect("/login");
             } else {
-                console.log("/register error", err);
                 next(err);
             }
         });

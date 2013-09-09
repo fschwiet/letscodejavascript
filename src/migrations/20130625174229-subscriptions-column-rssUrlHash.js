@@ -36,7 +36,6 @@ exports.up = function(db, callback) {
     }, function(err) {
         callback(err);
     });
-
 };
 
 exports.down = function(db, callback) {
@@ -61,5 +60,4 @@ exports.down = function(db, callback) {
     }, function(err) {
         callback(err);
     });
-
 };

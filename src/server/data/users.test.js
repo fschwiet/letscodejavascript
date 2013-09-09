@@ -21,14 +21,14 @@ setup.qtest(exports, "findOrCreateUserByGoogleIdentifier can save and load users
     return findOrCreateUserByGoogleIdentifier(firstGoogleIdentifier, firstGoogleProfile)
         .then(function(firstUser) {
             expect(firstUser.id).to.be.a('number');
-            expect(firstUser.friendlyName).to.equal("displayNameFirst");
+            expect(firstUser.friendlyName).to.equal(firstGoogleProfile.displayName);
 
             //  Load the second user
             return findOrCreateUserByGoogleIdentifier(secondGoogleIdentifier, secondGoogleProfile)
                 .then(function(secondUser) {
                     expect(secondUser.id).to.be.a('number');
                     expect(secondUser.id).not.to.equal(firstUser.id);
-                    expect(secondUser.friendlyName).to.equal("displayNameSecond");
+                    expect(secondUser.friendlyName).to.equal(secondGoogleProfile.displayName);
                 })
                 .then(function() {
 
@@ -36,7 +36,7 @@ setup.qtest(exports, "findOrCreateUserByGoogleIdentifier can save and load users
                     return findOrCreateUserByGoogleIdentifier(firstGoogleIdentifier, firstGoogleProfile)
                         .then(function(reloadedUser) {
                             expect(reloadedUser.id).to.equal(firstUser.id);
-                            expect(reloadedUser.friendlyName).to.equal("displayNameFirst");
+                            expect(reloadedUser.friendlyName).to.equal(firstGoogleProfile.displayName);
                         });
                 });
         });
