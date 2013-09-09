@@ -2,6 +2,33 @@
 TODO
   allow password reset
     - email... read this: http://documentup.com/andris9/nodemailer/#
+        
+      var nodemailer = require("nodemailer");
+
+      var transport = nodemailer.createTransport("SMTP", {
+          host: "oxmail.registrar-servers.com", // hostname
+          secureConnection: true, // use SSL
+          port:465, // port for secure SMTP
+          auth: {
+              user: "support@asimplereader.com",
+              pass: "..."
+          }
+      });
+
+      transport.sendMail({
+          to: "fschwiet@gmail.com",
+          from: "support at A Simpler Reader <support@asimplereader.com>",
+          subject: "this is another test",
+          text: "this is a test."
+      }
+      , function(error, response){
+          if(error){
+              console.log(error);
+          }else{
+              console.log("Message sent: " + response.message);
+          }
+      });
+
   
 
   split phantom-shim to another project
