@@ -15,7 +15,7 @@ var selectors = {
     loginWithGoogleButtonSelector: "a[href='/auth/google']",
     loginUsername : "input[name='username']",
     loginPassword : "input[name='password']",
-    loginLocalSubmit : "input#submitLocalLogin",
+    loginLocalSubmit : "#submitLocalLogin",
     registerButton: "a[href='/register']    ",
 
     //  From the registration page

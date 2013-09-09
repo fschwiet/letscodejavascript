@@ -2,12 +2,21 @@
 extends _layout
 
 block content
-    a(href="/auth/google") Login with a Google account
 
     form(method="post",action="/auth/local")
-        input(name='username',type='text')
-        input(name='password',type='password')
-        input#submitLocalLogin(type='submit')
-        a(href='/register') Register to create an account
+        fieldset
+            legend Login
+            label Email or Username
+            input(name='username',type='text')
+            label Password
+            input(name='password',type='password')
+            label
+            input.btn#submitLocalLogin(type='submit')
+
+    div If you'd like to log in with a Google account, 
+        a(href="/auth/google") click here to login.
+
+    div If you do not yet have an account, 
+        a(href='/register') click here to register an account.
 
 
