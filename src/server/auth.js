@@ -49,8 +49,6 @@ function authHandler(req, res, next) {
             return next(err);
         }
 
-        console.log("authHandler", err, user, info, req.body);
-
         if (typeof info == 'object' && 'message' in info) {
             req.flash('info', info.message);
         }
@@ -78,8 +76,6 @@ exports.addToExpress = function(port, app) {
 
     passport.use(new LocalStrategy(
         function(username, password, done) {
-
-            console.log("logging in ", username, password);
 
             users.findUserByLocalAuth(username, password)
             .then(function(user) {
@@ -131,8 +127,16 @@ exports.addToExpress = function(port, app) {
             });
         })
         .fail(function(err){
-            console.log("/register error", err);
-            next(err);
+
+            var errorString = err.toString();
+            if (errorString.indexOf("ER_DUP_ENTRY") > -1) {
+
+                req.flash("info", "That email has already been registered on this system.");
+                res.redirect("/login");
+            } else {
+                console.log("/register error", err);
+                next(err);
+            }
         });
     });
 
@@ -143,7 +147,6 @@ exports.addToExpress = function(port, app) {
 
     app.post('/auth/local', 
         function(req,res,next) {
-            console.log('/auth/local', req.body);
             passport.authenticate('local', authHandler(req,res,next))(req,res,next);
         });
 
