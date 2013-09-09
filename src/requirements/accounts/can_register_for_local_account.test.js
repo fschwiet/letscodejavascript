@@ -44,11 +44,10 @@ function testRegistration(startPage) {
             return page.clickElement(login.selectors.registerSubmit);
         })
         .then(function() {
-
+            return page.waitForSelector(login.selectors.logoutButtonSelector);
         });
     });
 }
-/*
+
 testRegistration(config.urlFor("/status"));
 testRegistration(config.urlFor("/feeds"));
-*/

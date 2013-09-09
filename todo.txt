@@ -6,7 +6,10 @@ TODO
       rejects duplicate username
     have form with email/username/password
       validate length
+      client-side: use available input attributes
+      server-side: https://github.com/chriso/node-validator
       have user type password twice
+
 
 
 

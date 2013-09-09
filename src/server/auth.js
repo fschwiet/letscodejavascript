@@ -49,6 +49,8 @@ function authHandler(req, res, next) {
             return next(err);
         }
 
+        console.log("authHandler", err, user, info, req.body);
+
         if (typeof info == 'object' && 'message' in info) {
             req.flash('info', info.message);
         }
@@ -76,6 +78,8 @@ exports.addToExpress = function(port, app) {
 
     passport.use(new LocalStrategy(
         function(username, password, done) {
+
+            console.log("logging in ", username, password);
 
             users.findUserByLocalAuth(username, password)
             .then(function(user) {
@@ -109,6 +113,29 @@ exports.addToExpress = function(port, app) {
         res.render('registerPage', modelFor("register", req));
     });
 
+    app.post("/register", function(req,res,next) {
+
+        var email = req.param("email", null);
+        var username = req.param("username", null);
+        var password = req.param("password", null);
+
+        users.createLocalUser(email,username,password)
+        .then(function() {
+            return users.findUserByLocalAuth(email,password)
+            .then(function(user) {
+
+                return Q.ninvoke(req, "login", user)
+                .then(function() {
+                    res.redirect(getAfterAuthUrl(req));
+                });
+            });
+        })
+        .fail(function(err){
+            console.log("/register error", err);
+            next(err);
+        });
+    });
+
     app.get("/logout", function(req, res) {
         req.logout();
         res.redirect("/");
@@ -116,6 +143,7 @@ exports.addToExpress = function(port, app) {
 
     app.post('/auth/local', 
         function(req,res,next) {
+            console.log('/auth/local', req.body);
             passport.authenticate('local', authHandler(req,res,next))(req,res,next);
         });
 
