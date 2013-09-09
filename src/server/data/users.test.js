@@ -2,6 +2,7 @@ var Q = require("q");
 var uuid = require('node-uuid');
 var expect = require("expect.js");
 var assert = require("assert");
+var uuid = require("node-uuid");
 
 var setup = require("../../test/setup.js");
 var users = require("./users.js");
@@ -49,11 +50,11 @@ setup.qtest(exports, "findUserByLocalAuth should reject invalid username/passwor
     });
 });
 
-setup.qtest(exports, "findUserByLocalAuth should load use for valid username/password", function() {
+setup.qtest(exports, "findUserByLocalAuth should load use for valid email/password", function() {
 
-    var email = "Someemail@value.com";
-    var username = "someUsername";
-    var password = "somePassword";
+    var email = "Someemail" + uuid() +"@value.com";
+    var username = "someUsername" + uuid();
+    var password = "somePassword" + uuid();
 
     return Q()
     .then(function() {
@@ -61,6 +62,25 @@ setup.qtest(exports, "findUserByLocalAuth should load use for valid username/pas
     })
     .then(function() {
         return users.findUserByLocalAuth(email, password);
+    })
+    .then(function(firstUser) {
+        console.log("firstUser", firstUser);
+        expect(firstUser.id).to.be.a('number');
+        expect(firstUser.friendlyName).to.equal(username);
+    });
+});
+setup.qtest(exports, "findUserByLocalAuth should load use for valid username/password", function() {
+
+    var email = "Someemail" + uuid() + "@value.com";
+    var username = "someUsername" + uuid();
+    var password = "somePassword" + uuid();
+
+    return Q()
+    .then(function() {
+        return users.createLocalUser(email,username,password);
+    })
+    .then(function() {
+        return users.findUserByLocalAuth(username, password);
     })
     .then(function(firstUser) {
         console.log("firstUser", firstUser);

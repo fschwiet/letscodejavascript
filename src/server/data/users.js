@@ -78,11 +78,19 @@ exports.createLocalUser = function(email, friendlyName, password) {
 };
 
 
-exports.findUserByLocalAuth = function(email, password) {
+exports.findUserByLocalAuth = function(usernameOrEmail, password) {
 
     var connection = database.getConnection();
 
-    return Q.npost(connection, "query", ["SELECT UP.userId, U.friendlyName, UP.passwordHash FROM userPasswords UP LEFT JOIN users U ON U.id = UP.userId WHERE UP.email = ?", [email]])
+    // "LEFT JOIN users amiguous" in order to not match any usernames that happen to be
+    // someone else's email.
+
+    return Q.npost(connection, "query", [
+        "SELECT UP.userId, U.friendlyName, UP.passwordHash " +
+        "FROM userPasswords UP " +
+        "JOIN users U ON U.id = UP.userId " +
+        "LEFT JOIN userPasswords ambiguous ON ambiguous.email = U.friendlyName " +
+        "WHERE UP.email = ? OR (U.friendlyName = ? AND ambiguous.userId IS NULL) ", [usernameOrEmail,usernameOrEmail]])
     .then(function(results) {
 
         if (results[0].length === 0) {
