@@ -1,7 +1,7 @@
 
 TODO
   passwordResets.js
-     shouldn't recognize reset URLs past a certain time limit
+     shouldn't allow reset urls to be reused
 
   allow password reset
     - for testing mail, use smtp-tester  : https://npmjs.org/package/smtp-tester
