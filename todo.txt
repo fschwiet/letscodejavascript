@@ -1,38 +1,7 @@
 
 TODO
   allow password reset
-    - for testing mail, use smtp-tester  : https://npmjs.org/package/smtp-tester
-    - email... read this: http://documentup.com/andris9/nodemailer/#
-        
-      var nodemailer = require("nodemailer");
 
-      var transport = nodemailer.createTransport("SMTP", {
-          host: "oxmail.registrar-servers.com", // hostname
-          secureConnection: true, // use SSL
-          port:465, // port for secure SMTP
-          auth: {
-              user: "support@asimplereader.com",
-              pass: "..."
-          }
-      });
-
-      transport.sendMail({
-          to: "fschwiet@gmail.com",
-          from: "support at A Simpler Reader <support@asimplereader.com>",
-          subject: "this is another test",
-          text: "this is a test."
-      }
-      , function(error, response){
-          if(error){
-              console.log(error);
-          }else{
-              console.log("Message sent: " + response.message);
-          }
-      });
-
-  how to smoke test email settings?
-
-  
 
   split phantom-shim to another project
     could get rid of phantom-shim's promisify if:

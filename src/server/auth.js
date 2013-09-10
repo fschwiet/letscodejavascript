@@ -203,12 +203,16 @@ exports.addToExpress = function(port, app) {
 
         var body = util.format("A password request was requested for your account at %s.  Please follow this link to reset your password: %s.", config.urlFor("/"), "http://localhost/resetPassword/343-43234");
 
-        Q.ninvoke(transport, "sendMail", {
-            to: "someEmail@server.com",
+        var sendMailParameters = {
+            to: "mail@server.com",
             from: config.get("server_friendlyName") + " <" + config.get("support_email") + ">",
             subject: "your password reset request",
             text: body
-        })
+        };
+
+        console.log("sendMailParameters", sendMailParameters);
+
+        Q.ninvoke(transport, "sendMail", sendMailParameters)
         .then(function() {
             req.flash("info", "A password reset email has been sent.  If you do not receive it shortly, check your spam folder.");
             res.render("resetPasswordPage", modelFor("Reset your Password", req));
@@ -216,6 +220,13 @@ exports.addToExpress = function(port, app) {
         .fail(function(err) {
             next(err);
         });
+    });
+
+    app.get("/resetPassword/*", function(req,res) {
+
+        console.log("uuid", req.params[0]);
+
+        res.render("resetPasswordPage", modelFor("Reset your Password", req));
     });
 
     app.get("/logout", function(req, res) {
