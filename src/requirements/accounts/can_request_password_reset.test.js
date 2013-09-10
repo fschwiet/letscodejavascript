@@ -10,7 +10,7 @@ var login = require("../../test/login.js");
 
 var waitUntil = require("../../test/waitUntil.js");
 
-var context = setup.usingPhantomPage(setup.whenRunningTheServer(exports));
+var context = setup.usingPhantomPage(setup.whenRunningTheServer(setup.givenSmtpServer(exports)));
 
 setup.qtest(context, "User should be able to request a password reset", function() {
 
@@ -43,5 +43,13 @@ setup.qtest(context, "User should be able to request a password reset", function
     .then(function() {
         expect(location).to.be(config.urlFor("/login"));
         expect(spanInfo).to.contain("password reset email has been sent");
+    })
+    .then(function(){
+        // verify:
+        // email has correct "to" address
+        // email has configured "from" address
+        // email body contains hyperlink that looks like a reset url
+
+        //  THEN, click the link, fill in a new password, and log in.
     });
 });

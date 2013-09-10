@@ -27,7 +27,12 @@ function getDefaults() {
         "deployment_configFile": "production.config.json",
         "deployment_port": 80,
         "deployment_smoketestPort": 8082,
-        "deployment_basePath": "c:/inetpub/letscodejavascript"
+        "deployment_basePath": "c:/inetpub/letscodejavascript",
+
+        "smtp_host": "localhost",
+        "smtp_port": 8083,
+        "smtp_username": "usernameTestSMTP",
+        "smtp_password": "passwordTestSMTP"
     };
 }
 

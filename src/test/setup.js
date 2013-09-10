@@ -2,6 +2,7 @@ var Q = require('q');
 var assert = require("assert");
 var fs = require("fs");
 var http = require("http");
+var smtpTest = require("smtp-tester");
 var path = require("path");
 var RSS = require("rss");
 var setDefault = require('set-default');
@@ -173,6 +174,31 @@ exports.givenCleanDatabase = function(outer) {
     outer["given a clean database"] = inner;
 
     inner.setUp = require("../server/database.js").emptyDatabase;
+
+    return inner;
+};
+
+exports.givenSmtpServer = function(outer) {
+
+    var that = this;
+
+    var smtpServer;
+
+    var inner = {};
+
+    outer["given an SMTP server"] = inner;
+
+    inner.setUp = function(done) {
+        smtpServer = smtpTest.init(config.get("smtp_port"));
+        that.smtpServer = smtpServer;
+        done();
+    };
+
+    inner.tearDown = function(done) {
+
+        smtpServer.stop();
+        done();
+    };
 
     return inner;
 };
