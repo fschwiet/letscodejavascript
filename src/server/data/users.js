@@ -84,7 +84,7 @@ exports.createLocalUser = function(email, friendlyName, password) {
             });
         });
     });
-}
+};
 
 
 exports.findUserByLocalAuth = function(usernameOrEmail, password) {

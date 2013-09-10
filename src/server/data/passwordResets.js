@@ -28,6 +28,10 @@ exports.useResetId = function(resetId, newPassword) {
         return Q.ninvoke(connection, "query", "SELECT U.id FROM passwordResets PR JOIN users U ON U.id = PR.userId WHERE PR.id = ?", [resetId])
         .then(function(results) {
 
+            if (results[0].length == 0) {
+                return false;
+            }
+
             var userId = results[0][0].id;
 
             return users.updateUserPassword(userId, newPassword);

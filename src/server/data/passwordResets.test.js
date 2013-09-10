@@ -49,6 +49,35 @@ setup.qtest(exports, "Should be able to generate and use a reset guid", function
     });
 });
 
+setup.qtest(exports, "Should ignore invalid guids", function() {
 
-// shouldn't recognize reset URLs past a certain time limit
-// shouldn't recognize reset URLs when too many are created for one user
+    var email = "someEmail" + uuid() + "@server.com";
+    var username = "someUser" + uuid();
+    var password = "oldPassword";
+
+    return Q()
+    .then(function() {
+        return users.createLocalUser(email,username,password);
+    })
+    .then(function() {
+        return users.findUserByLocalAuth(email, password);
+    })
+    .then(function(user) {
+        expect(user).not.to.be(null);
+
+        return passwordResets.requestResetId(user.id);
+    })
+    .then(function(ignoredPasswordResetId) {
+
+        return passwordResets.useResetId(uuid(), uuid());
+    })
+    .then(function(success) {
+        expect(success).to.be(false);
+
+        return users.findUserByLocalAuth(email, password);
+    })
+    .then(function(user) {
+        expect(user).not.to.be(null);
+    });
+});
+
