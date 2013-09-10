@@ -105,5 +105,3 @@ setup.qtest(context, "User should be able to request a password reset by usernam
 
 //  Old or unrecognized redirect urls should be handled
 
-// shouldn't recognize reset URLs past a certain time limit
-// shouldn't recognize reset URLs when too many are created for one user
