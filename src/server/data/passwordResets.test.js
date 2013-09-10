@@ -146,7 +146,6 @@ setup.qtest(exports, "should only honor password reset guids for 2 hours", funct
 
     return Q()
     .then(function() {
-            console.log(1);
         return users.createLocalUser(email,username,password);
     })
     .then(function() {
@@ -154,20 +153,52 @@ setup.qtest(exports, "should only honor password reset guids for 2 hours", funct
     })
     .then(function(user) {
 
-            console.log(2, user);
         return passwordResets.requestResetId(user.id)
         .then(function(resetId) {
-            console.log(3);
 
             return database.getPooledConnection()
             .then(function(connection) {
-                console.log(4);
                 return Q.ninvoke(connection, "query", "UPDATE passwordResets SET dateCreated=DATE_ADD(dateCreated, INTERVAL -2 HOUR)")
                 .fin(function() {
                     connection.end();
                 });
             })
             .then(function() {
+                return passwordResets.useResetId(resetId, uuid());
+            })
+            .then(function(success) {
+                expect(success).to.be(false);
+            });
+        });
+    });
+});
+
+
+setup.qtest(exports, "should only honor each password reset guid once", function() {
+
+    var email = "someEmail" + uuid() + "@server.com";
+    var username = "someUser" + uuid();
+    var password = "oldPassword";
+
+    return Q()
+    .then(function() {
+        return users.createLocalUser(email,username,password);
+    })
+    .then(function() {
+        return users.findUserByLocalAuth(email, password);
+    })
+    .then(function(user) {
+
+        return passwordResets.requestResetId(user.id)
+        .then(function(resetId) {
+
+            return Q()
+            .then(function() {
+                return passwordResets.useResetId(resetId, uuid());
+            })
+            .then(function(success) {
+                expect(success).to.be(true);
+
                 return passwordResets.useResetId(resetId, uuid());
             })
             .then(function(success) {

@@ -1,8 +1,5 @@
 
 TODO
-  passwordResets.js
-     shouldn't allow reset urls to be reused
-
   allow password reset
     - for testing mail, use smtp-tester  : https://npmjs.org/package/smtp-tester
     - email... read this: http://documentup.com/andris9/nodemailer/#

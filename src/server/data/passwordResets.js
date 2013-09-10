@@ -36,7 +36,7 @@ exports.useResetId = function(resetId, newPassword) {
 
     return database.getPooledConnection()
     .then(function(connection) {
-        return Q.ninvoke(connection, "query", "SELECT U.id FROM passwordResets PR JOIN users U ON U.id = PR.userId WHERE PR.uuid = ?", [resetId])
+        return Q.ninvoke(connection, "query", "SELECT U.id FROM passwordResets PR JOIN users U ON U.id = PR.userId WHERE PR.uuid = ? AND PR.dateCreated > DATE_ADD(NOW(), INTERVAL -2 HOUR)", [resetId])
         .then(function(results) {
 
             if (results[0].length === 0) {
@@ -45,10 +45,13 @@ exports.useResetId = function(resetId, newPassword) {
 
             var userId = results[0][0].id;
 
-            return users.updateUserPassword(userId, newPassword);
-        })
-        .fin(function() {
-            connection.end();
-        });     
+            return Q.ninvoke(connection, "query", "DELETE FROM passwordResets WHERE uuid = ?", [resetId])
+            .fin(function() {
+                connection.end();
+            })            
+            .then(function() {
+                return users.updateUserPassword(userId, newPassword);
+            });
+        });
     });
 };
