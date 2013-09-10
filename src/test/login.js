@@ -16,7 +16,8 @@ var selectors = {
     loginUsername : "input[name='username']",
     loginPassword : "input[name='password']",
     loginLocalSubmit : "#submitLocalLogin",
-    registerButton: "a[href='/register']    ",
+    registerButton: "a[href='/register']",
+    resetPasswordButton: "a[href='/resetPassword']",
 
     //  From the registration page
     registerUsername : "input[name='username']",
@@ -24,6 +25,10 @@ var selectors = {
     registerPassword : "input[name='password']",
     registerRetypedPassword : "input[name='retypedPassword']",
     registerSubmit : "input#submitRegistration",
+
+    //  From the reset password page
+    resetUsernameOrEmail: "input[name='usernameOrEmail']",
+    resetSubmit: "#submitResetPassword",
 
     //  Selectors used for google login
     googleLoginEmail: "input[type=email][name=Email]",

@@ -1,6 +1,7 @@
 
 TODO
   allow password reset
+    - for testing mail, use smtp-tester  : https://npmjs.org/package/smtp-tester
     - email... read this: http://documentup.com/andris9/nodemailer/#
         
       var nodemailer = require("nodemailer");
