@@ -110,7 +110,7 @@
 
     function handleHomepageRequest(request, response, next) {
 
-        var model = modelFor("homepage", request);
+        var model = modelFor(config.get("server_friendlyName"), request);
 
         if (model.isAuthenticated) {
 

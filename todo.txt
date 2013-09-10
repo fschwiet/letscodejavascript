@@ -30,6 +30,8 @@ TODO
           }
       });
 
+  how to smoke test email settings?
+
   
 
   split phantom-shim to another project

@@ -1,4 +1,5 @@
 
+var nodemailer = require("nodemailer");
 var passport = require('passport');
 var Q = require("q");
 var url = require('url');
@@ -173,6 +174,44 @@ exports.addToExpress = function(port, app) {
             } else {
                 next(err);
             }
+        });
+    });
+
+    app.get("/resetPassword", function(req,res) {
+        res.render("resetPasswordPage", modelFor("Reset your Password", req));
+    });
+
+    app.post("/resetPassword", function(req,res,next) {
+
+        var transportConfig = {
+            host: config.get("smtp_host"),
+            secureConnection: config.get("smtp_useSSL"),
+            port: config.get("smtp_port")
+        };    
+
+        var smtpUsername = config.get("smtp_username"), smtpPassword = config.get("smtp_password");
+
+        if (smtpUsername !== null || smtpPassword !== null) {
+            transportConfig.auth = {
+                user: config.get("smtp_username"),
+                pass: config.get("smtp_password")
+            };
+        }
+
+        var transport = nodemailer.createTransport("SMTP", transportConfig);
+
+        Q.ninvoke(transport, "sendMail", {
+            to: "someEmail@server.com",
+            from: config.get("server_friendlyName") + " <" + config.get("support_email") + ">",
+            subject: "this is another test",
+            text: "this is a test."
+        })
+        .then(function() {
+            req.flash("info", "A password reset email has been sent.  If you do not receive it shortly, check your spam folder.");
+            res.render("resetPasswordPage", modelFor("Reset your Password", req));
+        })
+        .fail(function(err) {
+            next(err);
         });
     });
 

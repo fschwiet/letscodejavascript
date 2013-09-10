@@ -182,15 +182,13 @@ exports.givenSmtpServer = function(outer) {
 
     var that = this;
 
-    var smtpServer;
-
     var inner = {};
 
     outer["given an SMTP server"] = inner;
 
     inner.setUp = function(done) {
         smtpServer = smtpTest.init(config.get("smtp_port"));
-        that.smtpServer = smtpServer;
+        this.smtpServer = smtpServer;
         done();
     };
 
