@@ -64,7 +64,6 @@ setup.qtest(exports, "findUserByLocalAuth should load use for valid email/passwo
         return users.findUserByLocalAuth(email, password);
     })
     .then(function(firstUser) {
-        console.log("firstUser", firstUser);
         expect(firstUser.id).to.be.a('number');
         expect(firstUser.friendlyName).to.equal(username);
     });
@@ -83,8 +82,36 @@ setup.qtest(exports, "findUserByLocalAuth should load use for valid username/pas
         return users.findUserByLocalAuth(username, password);
     })
     .then(function(firstUser) {
-        console.log("firstUser", firstUser);
         expect(firstUser.id).to.be.a('number');
         expect(firstUser.friendlyName).to.equal(username);
     });
 });
+
+/*
+
+setup.qtest(exports, "updateUserPassword should change a user's password", function() {
+
+    var email = "Someemail" + uuid() + "@value.com";
+    var username = "someUsername" + uuid();
+    var oldPassword = "oldPassword" + uuid();
+    var newPassword = "newPassword" + uuid();
+
+    return Q()
+    .then(function() {
+        return users.createLocalUser(email,username,oldPassword);
+    })
+    .then(function() {
+        return users.findUserByLocalAuth(username, oldPassword);
+    })
+    .then(function(user) {
+        return users.updateUserPassword(user.id, newPassword);
+    })
+    .then(function() {
+        return users.findUserByLocalAuth(username, newPassword);
+    })
+    .then(function(user) {
+        expect(user).not.to.be(null);
+    });
+});
+
+*/
