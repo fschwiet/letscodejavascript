@@ -2,7 +2,6 @@
 var assert = require("assert");
 var expect = require("expect.js");
 var Q = require("q");
-
 var uuid = require("node-uuid");
 
 var setup = require("../../test/setup.js");
@@ -39,6 +38,14 @@ setup.qtest(exports, "Should be able to generate and use a reset guid", function
         expect(success).to.be(true);
 
         return users.findUserByLocalAuth(email, originalPassword);
+    })
+    .then(function(user) { 
+        expect(user).to.be(null);
+
+        return users.findUserByLocalAuth(email, newPassword);
+    })
+    .then(function(user) {
+        expect(user).not.to.be(null);
     });
 });
 
