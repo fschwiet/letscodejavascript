@@ -12,13 +12,13 @@ block content
                         div.alert.alert-error !{message}
 
             label Email
-            input(name='email',type='email',maxlength='254')
+            input(name='email',type='email',maxlength='254',required='true')
             label Username
-            input(name='username',type='text',pattern=".{6,}",maxlength='64',title='Please choose a username that is at least 6 characters long.')
+            input(name='username',type='text',pattern=".{6,}",maxlength='64',title='Please choose a username that is at least 6 characters long.',required='true')
             label Password
-            input(name='password',pattern=".{8,}",type='password',title='Please choose a password that is at least 8 characters long.')
+            input(name='password',pattern=".{8,}",type='password',title='Please choose a password that is at least 8 characters long.',required='true')
             label Retype password
-            input(name='retypedPassword',type='password',title='Please type the password again for verification.')
+            input(name='retypedPassword',type='password',title='Please type the password again for verification.',required='true')
             label
             input.btn#submitRegistration(type='submit') Register
 
