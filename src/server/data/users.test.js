@@ -87,7 +87,6 @@ setup.qtest(exports, "findUserByLocalAuth should load use for valid username/pas
     });
 });
 
-/*
 
 setup.qtest(exports, "updateUserPassword should change a user's password", function() {
 
@@ -106,7 +105,8 @@ setup.qtest(exports, "updateUserPassword should change a user's password", funct
     .then(function(user) {
         return users.updateUserPassword(user.id, newPassword);
     })
-    .then(function() {
+    .then(function(result) {
+        expect(result).to.be(true);
         return users.findUserByLocalAuth(username, newPassword);
     })
     .then(function(user) {
@@ -114,4 +114,13 @@ setup.qtest(exports, "updateUserPassword should change a user's password", funct
     });
 });
 
-*/
+setup.qtest(exports, "updateUserPassword should report if the user's local password could not be found", function() {
+    return Q()
+    .then(function() {
+        return users.updateUserPassword(1234345, "Fsdf");
+    })
+    .then(function(result) {
+        expect(result).to.be(false);
+    });
+});
+

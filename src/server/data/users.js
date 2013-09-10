@@ -4,6 +4,10 @@ var Q = require("q");
 
 var database = require('../database.js');
 
+function promiseHashOf(value) {
+    return Q.ninvoke(bcrypt, "hash", value, null, null);
+}
+
 
 exports.findOrCreateUserByGoogleIdentifier = function(identifier, profile, callback) {
 
@@ -57,7 +61,7 @@ exports.createLocalUser = function(email, friendlyName, password) {
 
     return Q()
     .then(function() {
-        return Q.ninvoke(bcrypt, "hash", password, null, null);
+        return promiseHashOf(password);
     })
     .then(function(passwordHash) {
         return database.getPooledConnection()
@@ -104,11 +108,7 @@ exports.findUserByLocalAuth = function(usernameOrEmail, password) {
 
             var result = results[0][0];
 
-            var deferred = Q.defer();
-
-            bcrypt.compare(password, result.passwordHash, deferred.makeNodeResolver());
-
-            return deferred.promise
+            return Q.ninvoke(bcrypt, "compare", password, result.passwordHash)
             .then(function(matched) {
 
                 if (!matched)
@@ -129,4 +129,20 @@ exports.findUserByLocalAuth = function(usernameOrEmail, password) {
 
 exports.updateUserPassword = function(userId, newPassword) {
 
-}
+    return Q()
+    .then(function() {
+        return promiseHashOf(newPassword);
+    })
+    .then(function(passwordHash) {
+        return database.getPooledConnection()
+        .then(function(connection) {
+            return Q.ninvoke(connection, "query", "UPDATE userPasswords SET ? WHERE userId = ?", [{passwordHash: passwordHash}, userId])
+            .then(function(queryResults) {
+                return queryResults[0].affectedRows > 0;
+            })
+            .fin(function() {
+                connection.end();
+            });
+        });
+    });
+};
