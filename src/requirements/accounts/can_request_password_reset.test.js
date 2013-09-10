@@ -17,6 +17,7 @@ setup.qtest(context, "User should be able to request a password reset by usernam
 
     var username = "someUsername";
     var emailAddress = "someEmail@server.com";
+    var newPassword = "someNewPassword";
 
     var page = this.page;
     var smtpServer = this.smtpServer;
@@ -69,20 +70,34 @@ setup.qtest(context, "User should be able to request a password reset by usernam
         expect(emailsReceived.length).to.be(1);
         var email = emailsReceived[0];
 
-        console.log("email", email);
-
         expect(email.sender).to.be(config.get("support_email"));
         expect(email.data).to.contain(util.format('From: "%s" <%s>', config.get("server_friendlyName"), config.get("support_email")));
 
         var expectedReceivers = {};
         expectedReceivers[emailAddress] = true;
         expect(email.receivers).to.eql(expectedReceivers);
-        // verify:
-        // email has correct "to" address
-        // email has configured "from" address
-        // email body contains hyperlink that looks like a reset url
 
-        //  THEN, click the link, fill in a new password, and log in.
+        var urlRegex = /http:\/\/[.a-z0-9]+\/resetPassword\/[-a-z0-9]+/;
+        var match = urlRegex.exec(email.body);
+
+        expect(match).not.to.be(null);
+
+        return page.open(match[0]);
+    })
+    .then(function() {
+        return page.waitForSelector(login.selectors.resetNewPassword);
+    })
+    .then(function() {
+        return page.evaluate(function(selectors, password) {
+            document.querySelector(selectors.resetNewPassword).value = password;
+            document.querySelector(selectors.resetNewPasswordConfirmation).value = password;
+        }, selectors, newPassword);
+    })
+    .then(function() {
+        return page.clickElement(login.selectors.resetNewSubmit);
+    })
+    .then(function() {
+        return page.waitForSelector("span.success");
     });
 });
 

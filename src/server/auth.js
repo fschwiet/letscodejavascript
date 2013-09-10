@@ -3,6 +3,7 @@ var nodemailer = require("nodemailer");
 var passport = require('passport');
 var Q = require("q");
 var url = require('url');
+var util = require("util");
 var validator = require('validator');
 
 var GoogleStrategy = require('passport-google');
@@ -200,11 +201,13 @@ exports.addToExpress = function(port, app) {
 
         var transport = nodemailer.createTransport("SMTP", transportConfig);
 
+        var body = util.format("A password request was requested for your account at %s.  Please follow this link to reset your password: %s.", config.urlFor("/"), "http://localhost/resetPassword/343-43234");
+
         Q.ninvoke(transport, "sendMail", {
             to: "someEmail@server.com",
             from: config.get("server_friendlyName") + " <" + config.get("support_email") + ">",
-            subject: "this is another test",
-            text: "this is a test."
+            subject: "your password reset request",
+            text: body
         })
         .then(function() {
             req.flash("info", "A password reset email has been sent.  If you do not receive it shortly, check your spam folder.");

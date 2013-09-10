@@ -28,7 +28,13 @@ var selectors = {
 
     //  From the reset password page
     resetUsernameOrEmail: "input[name='usernameOrEmail']",
-    resetSubmit: "#submitResetPassword",
+    resetSubmit: "#submitNewPasswordRequest",
+
+    //  From the 2nd reset password page
+    resetNewPassword: "input[name='newPassword']",
+    resetNewPasswordConfirmation: "input[name='newPasswordConfirmation']",
+    resetNewSubmit: "#submitNewPassword",
+
 
     //  Selectors used for google login
     googleLoginEmail: "input[type=email][name=Email]",
