@@ -81,3 +81,58 @@ setup.qtest(exports, "Should ignore invalid guids", function() {
     });
 });
 
+setup.qtest(exports, "should limit the number of password reset guids per user", function() {
+
+var email = "someEmail" + uuid() + "@server.com";
+    var username = "someUser" + uuid();
+    var password = "oldPassword";
+
+    return Q()
+    .then(function() {
+        return users.createLocalUser(email,username,password);
+    })
+    .then(function() {
+        return users.findUserByLocalAuth(email, password);
+    })
+    .then(function(user) {
+
+        var tasks = [];
+        var resetIds = [];
+
+        function requestPasswordReset() {
+            return passwordResets.requestResetId(user.id)
+            .then(function(resetId) {
+                resetIds.push(resetId);
+            });
+        }
+
+        for(var i = 0; i < 6; i++) {
+            tasks.push(requestPasswordReset);
+        }
+
+        return tasks.reduce(Q.when, Q())
+        .then(function() {
+            return resetIds;
+        });
+    })
+    .then(function(resetIds) {
+
+        expect(resetIds.length).to.be(6);
+
+        //  We expect the last 5 ids to work, so check the first of six fails and the second succeeds.
+
+        return Q()
+        .then(function() {
+            return passwordResets.useResetId(resetIds[0], uuid());
+        })
+        .then(function(result) {
+            expect(result).to.be(false);
+        })
+        .then(function() {
+            return passwordResets.useResetId(resetIds[1], uuid());
+        })
+        .then(function(result) {
+            expect(result).to.be(true);
+        });
+    });
+});

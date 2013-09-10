@@ -12,15 +12,22 @@ exports.up = function(db, callback) {
     createTable('passwordResets', {
             
             id: {
-                type: 'string',
-                length: 36,
+                type: 'int',
+                autoIncrement: true,
                 primaryKey: true
+            },
+
+            uuid: {
+                type: 'string',
+                unique: true,
+                length: 36
             },
 
             userId: {
                 type: 'int',
                 notNull: true
             },
+
         })
     .then(function() {
         return runSql(utils.addDateCreated("passwordResets"));

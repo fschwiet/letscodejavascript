@@ -11,7 +11,18 @@ exports.requestResetId = function(userId) {
 
     return database.getPooledConnection()
     .then(function(connection) {
-        return Q.ninvoke(connection, "query", "INSERT INTO passwordResets SET ?", [{id:newId, userId:userId}])
+        return Q.ninvoke(connection, "query", "INSERT INTO passwordResets SET ?", [{uuid:newId, userId:userId}])
+        .then(function() {
+            return Q.ninvoke(connection, "query", "SELECT id FROM passwordResets WHERE userId = ? ORDER BY id DESC LIMIT 4,1", [userId, userId]);
+        })
+        .then(function(idCutoffResult) {
+
+            if (idCutoffResult[0].length > 0) {
+                var idCutoff = idCutoffResult[0][0].id;
+
+                return Q.ninvoke(connection, "query", "DELETE FROM passwordResets WHERE userId = ? and id < ?", [userId, idCutoff]);
+            }
+        })
         .then(function() {
             return newId;
         })
@@ -25,10 +36,10 @@ exports.useResetId = function(resetId, newPassword) {
 
     return database.getPooledConnection()
     .then(function(connection) {
-        return Q.ninvoke(connection, "query", "SELECT U.id FROM passwordResets PR JOIN users U ON U.id = PR.userId WHERE PR.id = ?", [resetId])
+        return Q.ninvoke(connection, "query", "SELECT U.id FROM passwordResets PR JOIN users U ON U.id = PR.userId WHERE PR.uuid = ?", [resetId])
         .then(function(results) {
 
-            if (results[0].length == 0) {
+            if (results[0].length === 0) {
                 return false;
             }
 
