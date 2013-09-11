@@ -1,7 +1,7 @@
 requirejs.config({
         "baseUrl": "/client",
         "paths": {
-            "jquery": "//ajax.googleapis.com/ajax/libs/jquery/2.0.0/jquery.min",
+            "jquery": "./clientLib/jquery-2.0.0.min",
             "main": [
                 "./main-built",
                 "./main"

@@ -1,6 +1,7 @@
 
 TODO
-  review auth.js
+
+  status page should indicate if email settings are working
 
   setup production config values and deploy
 

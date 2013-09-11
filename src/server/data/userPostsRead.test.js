@@ -14,7 +14,7 @@ var findOrCreateUserByGoogleIdentifier = Q.nbind(users.findOrCreateUserByGoogleI
 
 setup.qtest(exports, "markPostAsRead shouldn't insert duplicates", function() {
 
-    return findOrCreateUserByGoogleIdentifier(uuid.v4(), setup.getGoogleProfile("Other"))
+    return findOrCreateUserByGoogleIdentifier(uuid(), setup.getGoogleProfile("Other"))
     .then(function(user) {
         return dataUserPostsRead.markPostAsRead(user.id, "http://someurl.com/")
         .then(function() {
