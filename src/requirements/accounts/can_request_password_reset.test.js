@@ -14,6 +14,8 @@ var waitUntil = require("../../test/waitUntil.js");
 
 var context = setup.usingPhantomPage(setup.whenRunningTheServer(setup.givenSmtpServer(exports)));
 
+Q.longStackSupport = true;
+
 setup.qtest(context, "User should be able to request a password reset by username", function() {
 
     var username = "someUsername" + uuid();
@@ -114,3 +116,36 @@ setup.qtest(context, "User should be able to request a password reset by usernam
 });
 
 
+setup.qtest(context, "invalid reset urls should be handled gracefully", function() {
+
+    var page = this.page;
+
+    var newPassword = uuid();
+
+    return page.open(config.urlFor("/resetPassword/" + uuid()))
+    .then(function() {
+        return page.evaluate(function(selectors, password) {
+            document.querySelector(selectors.resetNewPassword).value = password;
+            document.querySelector(selectors.resetNewPasswordConfirmation).value = password;
+        }, login.selectors, newPassword);
+    })
+    .then(function() {
+        return page.clickElement(login.selectors.resetNewSubmit);
+    })
+    .then(function() {
+        return page.waitForSelector("span.info");
+    })
+    .then(function() {
+        return page.evaluate(function() {
+            return {
+                message : document.querySelector("span.info").innerText,
+                locationPath : window.location.pathname             
+            };
+        });
+    })
+    .then(function(results){
+        console.log(6);
+        expect(results.message).to.contain("The password reset link you have turns out to be invalid");
+        expect(results.locationPath).to.be("/resetPassword");
+    });
+});

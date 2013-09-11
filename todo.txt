@@ -1,9 +1,7 @@
 
 TODO
   allow password reset
-     User should be able to request a password reset by email
-     Old or unrecognized redirect urls should be handled
-
+     reset password page should validate the password was typed twice correctly
 
   split phantom-shim to another project
     could get rid of phantom-shim's promisify if:

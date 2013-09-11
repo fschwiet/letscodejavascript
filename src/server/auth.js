@@ -250,17 +250,24 @@ exports.addToExpress = function(port, app) {
         res.render("resetPasswordPage2", modelFor("Choose a New Password", req));
     });
 
-    app.post("/resetPassword/*", function(req,res,next) {
+    app.post("/resetPassword/:uuid", function(req,res,next) {
 
-        var resetId = req.param[0];
+        var resetId = req.param("uuid", null);
         var password = req.param("newPassword", null);
         var passwordConfirmation = req.param("newPasswordConfirmation", null);
 
-        passwordResets.useResetId(resetId, password)
-        .then(function() {
+        console.log("doing reset", resetId, password);
 
-            req.flash("info", "Your password has be reset.");
-            res.redirect("/login");
+        passwordResets.useResetId(resetId, password)
+        .then(function(result) {
+
+            if (result) {
+                req.flash("info", "Your password has be reset.");
+                res.redirect("/login");
+            } else {
+                req.flash("info", "The password reset link you have turns out to be invalid- perhaps it expired.  You'll need to request another one.");
+                res.redirect("/resetPassword");
+            }
         })
         .fail(function(err) {
             next(err);
