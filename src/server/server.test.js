@@ -24,25 +24,6 @@
         });
     };
 
-    exports.test_servesFileForHomepage = function(test) {
-
-        server.start(port, function() {
-            var url = config.urlFor("/");
-
-            request(url, function(err, response, body) {
-
-                test.ok(err === null, "Error: " + err);
-
-                test.equal(response.statusCode, 200, "Expected 200 response code for url " + url);
-                test.notEqual(-1, body.indexOf("<title>" + config.get("server_friendlyName") + "</title>"));
-
-                server.stop(function() {
-                    test.done();
-                });
-            });
-        });
-    };
-
     exports.test_has404Page = function(test) {
 
         server.start(port, function() {

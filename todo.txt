@@ -2,6 +2,8 @@
 TODO
   review auth.js
 
+  setup production config values and deploy
+
   how to port the auth stuff to another site?
 
   split phantom-shim to another project

@@ -112,43 +112,43 @@
 
         var model = modelFor(config.get("server_friendlyName"), request);
 
-        if (model.isAuthenticated) {
+        if (!model.isAuthenticated) { 
+            response.redirect('/login');
+            return;
+        }
 
-            dataSubscriptions.loadSubscriptions(request.user.id, new Date())
-                .then(function(subscriptions) {
 
-                    model.feeds = subscriptions;
+        dataSubscriptions.loadSubscriptions(request.user.id, new Date())
+        .then(function(subscriptions) {
 
-                    if (subscriptions.length > 0) {
-                        return dataJoin.loadPostsForUser(request.user.id)
-                        .then(function(posts) {
+            model.feeds = subscriptions;
 
-                            posts = _.sortBy(posts, function(v) {
-                                if (v.postDate !== null) {
-                                    return -v.postDate.getTime();
-                                }
-                                else {
-                                    return -(new Date(1980,1,1).getTime());
-                                }
-                            });
+            if (subscriptions.length > 0) {
+                return dataJoin.loadPostsForUser(request.user.id)
+                .then(function(posts) {
 
-                            model.posts = posts;
+                    posts = _.sortBy(posts, function(v) {
+                        if (v.postDate !== null) {
+                            return -v.postDate.getTime();
+                        }
+                        else {
+                            return -(new Date(1980,1,1).getTime());
+                        }
+                    });
 
-                            response.render('index', model);
-                        });
+                    model.posts = posts;
 
-                    } else {
-
-                        response.redirect("/feeds");
-                    }
-                })
-                .fail(function(err) {
-                    next(err);
+                    response.render('index', model);
                 });
 
-        } else {
-            response.render('index', model);
-        }
+            } else {
+
+                response.redirect("/feeds");
+            }
+        })
+        .fail(function(err) {
+            next(err);
+        });
     }
 
     function canWrite(owner, inGroup, mode) {
