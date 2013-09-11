@@ -9,7 +9,7 @@ requirejs.config({
         baseUrl: '/base/src/client',
 
         paths: {
-            "jquery": "//ajax.googleapis.com/ajax/libs/jquery/2.0.0/jquery.min",
+            "jquery": "./clientLib/jquery-2.0.0.min",
             "sinon": "../../node_modules/sinon/pkg/sinon-1.7.2",
             "views": "../../src/server/views",
             "test-init": "../../build/karma/init",

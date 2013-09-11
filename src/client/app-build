@@ -1,7 +1,7 @@
 module.exports = {
     baseUrl: "./src/client",
     paths: {
-        jquery: "//ajax.googleapis.com/ajax/libs/jquery/2.0.0/jquery.min",
+        jquery: "./clientLib/jquery-2.0.0.min",
         views: "../../temp/views",
         "jadeRuntime": "../../node_modules/jade/runtime"
     },
