@@ -1,7 +1,8 @@
 
 TODO
-  allow password reset
-     reset password page should validate the password was typed twice correctly
+  review auth.js
+
+  how to port the auth stuff to another site?
 
   split phantom-shim to another project
     could get rid of phantom-shim's promisify if:

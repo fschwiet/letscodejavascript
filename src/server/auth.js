@@ -256,7 +256,11 @@ exports.addToExpress = function(port, app) {
         var password = req.param("newPassword", null);
         var passwordConfirmation = req.param("newPasswordConfirmation", null);
 
-        console.log("doing reset", resetId, password);
+        if (password != passwordConfirmation) {
+            req.flash("error", "To ensure we have the right password, it must be typed twice.");
+            res.render("resetPasswordPage2", modelFor("Choose a New Password", req));
+            return;
+        }
 
         passwordResets.useResetId(resetId, password)
         .then(function(result) {

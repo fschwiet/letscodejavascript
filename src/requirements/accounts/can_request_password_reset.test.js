@@ -144,8 +144,42 @@ setup.qtest(context, "invalid reset urls should be handled gracefully", function
         });
     })
     .then(function(results){
-        console.log(6);
         expect(results.message).to.contain("The password reset link you have turns out to be invalid");
         expect(results.locationPath).to.be("/resetPassword");
+    });
+});
+
+
+setup.qtest(context, "The user is required to type in their new password twice", function() {
+
+    var page = this.page;
+
+    var startingPath = "/resetPassword/" + uuid();
+    var newPassword = uuid();
+
+    return page.open(config.urlFor(startingPath))
+    .then(function() {
+        return page.evaluate(function(selectors, password1, password2) {
+            document.querySelector(selectors.resetNewPassword).value = password1;
+            document.querySelector(selectors.resetNewPasswordConfirmation).value = password2;
+        }, login.selectors, uuid(), uuid());
+    })
+    .then(function() {
+        return page.clickElement(login.selectors.resetNewSubmit);
+    })
+    .then(function() {
+        return page.waitForSelector(".alert-error");
+    })
+    .then(function() {
+        return page.evaluate(function() {
+            return {
+                message : document.querySelector(".alert-error").innerText,
+                locationPath : window.location.pathname             
+            };
+        });
+    })
+    .then(function(results){
+        expect(results.message).to.contain("To ensure we have the right password, it must be typed twice.");
+        expect(results.locationPath).to.be(startingPath);
     });
 });
