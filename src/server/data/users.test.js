@@ -66,6 +66,7 @@ setup.qtest(exports, "findUserByLocalAuth should load use for valid email/passwo
     .then(function(firstUser) {
         expect(firstUser.id).to.be.a('number');
         expect(firstUser.friendlyName).to.equal(username);
+        expect(firstUser.email).to.equal(email);
     });
 });
 setup.qtest(exports, "findUserByLocalAuth should load use for valid username/password", function() {
@@ -84,6 +85,7 @@ setup.qtest(exports, "findUserByLocalAuth should load use for valid username/pas
     .then(function(firstUser) {
         expect(firstUser.id).to.be.a('number');
         expect(firstUser.friendlyName).to.equal(username);
+        expect(firstUser.email).to.equal(email);
     });
 });
 

@@ -9,6 +9,9 @@ function promiseHashOf(value) {
 }
 
 
+//
+//  Does not include email
+//
 exports.findOrCreateUserByGoogleIdentifier = function(identifier, profile, callback) {
 
     return database.getPooledConnection()
@@ -87,7 +90,13 @@ exports.createLocalUser = function(email, friendlyName, password) {
 };
 
 
-exports.findUserByLocalAuth = function(usernameOrEmail, password) {
+exports.findUserByUsernameOrEmail = function(usernameOrEmail, handler) {
+
+    if (typeof handler == "undefined") {
+        handler = function(user,passwordHash) {
+            return Q(user);
+        };
+    }
 
     return database.getPooledConnection()
     .then(function(connection) {
@@ -95,7 +104,7 @@ exports.findUserByLocalAuth = function(usernameOrEmail, password) {
         // someone else's email.
 
         return Q.ninvoke(connection, "query",
-            "SELECT UP.userId, U.friendlyName, UP.passwordHash " +
+            "SELECT UP.userId, U.friendlyName, UP.email, UP.passwordHash " +
             "FROM userPasswords UP " +
             "JOIN users U ON U.id = UP.userId " +
             "LEFT JOIN userPasswords ambiguous ON ambiguous.email = U.friendlyName " +
@@ -108,22 +117,30 @@ exports.findUserByLocalAuth = function(usernameOrEmail, password) {
 
             var result = results[0][0];
 
-            return Q.ninvoke(bcrypt, "compare", password, result.passwordHash)
-            .then(function(matched) {
-
-                if (!matched)
-                    return null;
-
-                return {
-                    id : result.userId,
-                    friendlyName : result.friendlyName
-                };
-            });
+            return handler({ id : result.userId, friendlyName : result.friendlyName, email: result.email }, result.passwordHash);
         })
         .fin(function() {
             connection.end();
         });
     });
+};
+
+
+exports.findUserByLocalAuth = function(usernameOrEmail, password) {
+
+    function handleResult(user, passwordHash) {
+
+        return Q.ninvoke(bcrypt, "compare", password, passwordHash)
+        .then(function(matched) {
+
+            if (!matched)
+                return null;
+
+            return user;
+        });
+    }
+
+    return exports.findUserByUsernameOrEmail(usernameOrEmail, handleResult);
 };
 
 
