@@ -16,30 +16,31 @@ var users = require("./data/users.js");
 var passwordResets = require("./data/passwordResets.js");
 
 
-function withLoginPage(loginPath) {
-    return {
-        //
-        //  We ignore the referer header if its missing or matches our login page.
-        //
-        handleRefererUrl: function(req, res, next) {
-            var referer = req.header("referer");
+function handleRefererHeaderUsingLoginPage(loginPath) {
 
-            if (typeof referer == 'string') {
+    //
+    //  We ignore the referer header if its missing or matches our login page.
+    //
 
-                var parsedReferer = url.parse(referer);
+    return function(req, res, next) {
 
-                if (parsedReferer.pathname != loginPath) {
+        var referer = req.header("referer");
 
-                    req.session.referer = referer;
-                }
+        if (typeof referer == 'string') {
+
+            var parsedReferer = url.parse(referer);
+
+            if (parsedReferer.pathname != loginPath) {
+
+                req.session.referer = referer;
             }
+        }
 
-            next();
-        }        
+        next();
     };
 }
 
-exports.withLoginPage = withLoginPage;
+exports.handleRefererHeaderUsingLoginPage = handleRefererHeaderUsingLoginPage;
 
 function getAfterAuthUrl(req) {
     return req.session.referer || '/';
@@ -104,7 +105,7 @@ exports.addToExpress = function(port, app) {
     app.use(passport.session());
 
     app.get("/login", 
-        withLoginPage("/login").handleRefererUrl, 
+        handleRefererHeaderUsingLoginPage("/login"), 
         function(req, res) {
             res.render('loginPage', modelFor("login", req));
         });
@@ -289,7 +290,7 @@ exports.addToExpress = function(port, app) {
         });
 
     app.get('/auth/google', 
-        withLoginPage("/login").handleRefererUrl, 
+        handleRefererHeaderUsingLoginPage("/login"), 
         passport.authenticate('google', {
             successRedirect: '/',
             failureRedirect: '/'

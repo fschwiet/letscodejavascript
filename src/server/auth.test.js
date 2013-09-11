@@ -33,7 +33,7 @@ exports["Referer url is typically used"] = function(test) {
 
     var req = getRequestWithReferer(expectedReferer);
 
-    auth.withLoginPage("/login").handleRefererUrl(req, null, function() {
+    auth.handleRefererHeaderUsingLoginPage("/login")(req, null, function() {
 
         expect(auth.getAfterAuthUrl(req)).to.be(expectedReferer);
 
@@ -47,7 +47,7 @@ exports["Referer url is ignored when not set"] = function(test) {
 
     var req = getRequestWithReferer(null, expectedReferer);
 
-    auth.withLoginPage("/login").handleRefererUrl(req, null, function() {
+    auth.handleRefererHeaderUsingLoginPage("/login")(req, null, function() {
     
         expect(auth.getAfterAuthUrl(req)).to.be(expectedReferer);
 
@@ -62,7 +62,7 @@ exports["Referer url is ignored when it matches the login page"] = function(test
 
     var req = getRequestWithReferer(config.urlFor("/login", { someQuery : "value"}), null);
 
-    auth.withLoginPage("/login").handleRefererUrl(req, null, function() {
+    auth.handleRefererHeaderUsingLoginPage("/login")(req, null, function() {
 
         expect(auth.getAfterAuthUrl(req)).to.be('/');
 
