@@ -107,18 +107,18 @@ exports.addToExpress = function(port, app) {
     app.get("/login", 
         handleRefererHeaderUsingLoginPage("/login"), 
         function(req, res) {
-            res.render('loginPage', modelFor("login", req));
+            res.render('accounts/loginPage', modelFor("login", req));
         });
 
     app.get("/register", function(req,res){
-        res.render('registerPage', modelFor("register", req));
+        res.render('accounts/registerPage', modelFor("register", req));
     });
 
     app.post("/register", function(req,res,next) {
 
         function handleUserError(message) {
             req.flash("error", message);
-            res.render("registerPage", modelFor("register", req));
+            res.render("accounts/registerPage", modelFor("register", req));
         }
 
         var email = req.param("email", null);
@@ -181,7 +181,7 @@ exports.addToExpress = function(port, app) {
     });
 
     app.get("/resetPassword", function(req,res) {
-        res.render("resetPasswordPage", modelFor("Reset your Password", req));
+        res.render("accounts/resetPasswordPage", modelFor("Reset your Password", req));
     });
 
     app.post("/resetPassword", function(req,res,next) {
@@ -233,7 +233,7 @@ exports.addToExpress = function(port, app) {
             Q.ninvoke(transport, "sendMail", sendMailParameters)
             .then(function(r) {
                 req.flash("info", "A password reset email has been sent.  If you do not receive it shortly, check your spam folder.");
-                res.render("resetPasswordPage", modelFor("Reset your Password", req));
+                res.render("accounts/resetPasswordPage", modelFor("Reset your Password", req));
             })
             .fail(function(err) {
                 next(err);
@@ -248,7 +248,7 @@ exports.addToExpress = function(port, app) {
 
         var resetId = req.param[0];
 
-        res.render("resetPasswordPage2", modelFor("Choose a New Password", req));
+        res.render("accounts/resetPasswordPage2", modelFor("Choose a New Password", req));
     });
 
     app.post("/resetPassword/:uuid", function(req,res,next) {
@@ -259,7 +259,7 @@ exports.addToExpress = function(port, app) {
 
         if (password != passwordConfirmation) {
             req.flash("error", "To ensure we have the right password, it must be typed twice.");
-            res.render("resetPasswordPage2", modelFor("Choose a New Password", req));
+            res.render("accounts/resetPasswordPage2", modelFor("Choose a New Password", req));
             return;
         }
 

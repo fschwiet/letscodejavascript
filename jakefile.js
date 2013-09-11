@@ -418,12 +418,12 @@ task("compileJadeViews", function() {
     var root = path.resolve(__dirname + "/src/server/views");
     var newRoot = path.resolve(__dirname + "/temp/views");
 
-    fs.mkdirsSync(newRoot);
-
     var files = find.fileSync((/\.jade/), root);
 
     files.forEach(function(file) {
         var target = file.replace(root, newRoot) + ".js";
+
+        fs.mkdirsSync(path.resolve(target, ".."));
 
         var compiledContent = jadePreprocessor.compile(file);
         fs.writeFileSync(target, compiledContent);
