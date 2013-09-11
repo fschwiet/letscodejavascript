@@ -95,13 +95,21 @@ setup.qtest(context, "User should be able to request a password reset by usernam
         return page.evaluate(function(selectors, password) {
             document.querySelector(selectors.resetNewPassword).value = password;
             document.querySelector(selectors.resetNewPasswordConfirmation).value = password;
-        }, selectors, newPassword);
+        }, login.selectors, newPassword);
     })
     .then(function() {
         return page.clickElement(login.selectors.resetNewSubmit);
     })
     .then(function() {
-        return page.waitForSelector("span.success");
+        return page.waitForSelector("span.info");
+    })
+    .then(function() {
+        return page.evaluate(function() {
+            return document.querySelector("span.info").innerText;
+        });
+    })
+    .then(function(spanInfoText) {
+        expect(spanInfoText).to.contain("Your password has be reset");
     });
 });
 

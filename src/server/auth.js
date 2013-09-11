@@ -245,7 +245,26 @@ exports.addToExpress = function(port, app) {
 
     app.get("/resetPassword/*", function(req,res) {
 
-        res.render("resetPasswordPage", modelFor("Reset your Password", req));
+        var resetId = req.param[0];
+
+        res.render("resetPasswordPage2", modelFor("Choose a New Password", req));
+    });
+
+    app.post("/resetPassword/*", function(req,res,next) {
+
+        var resetId = req.param[0];
+        var password = req.param("newPassword", null);
+        var passwordConfirmation = req.param("newPasswordConfirmation", null);
+
+        passwordResets.useResetId(resetId, password)
+        .then(function() {
+
+            req.flash("info", "Your password has be reset.");
+            res.redirect("/login");
+        })
+        .fail(function(err) {
+            next(err);
+        });
     });
 
     app.get("/logout", function(req, res) {
