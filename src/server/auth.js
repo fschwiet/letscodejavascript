@@ -13,6 +13,7 @@ var config = require("./config");
 var users = require("./data/users.js");
 var modelFor = require("./modelFor.js");
 var users = require("./data/users.js");
+var passwordResets = require("./data/passwordResets.js");
 
 
 function withLoginPage(loginPath) {
@@ -190,6 +191,16 @@ exports.addToExpress = function(port, app) {
             return Q(user);
         })
         .then(function(user) {
+            return passwordResets.requestResetId(user.id)
+            .then(function(resetId) {
+                return {
+                    email: user.email,
+                    resetUrl: config.urlFor("/resetPassword/" + resetId)
+                };
+            });
+        })
+        .then(function(context) {
+
             var transportConfig = {
                 host: config.get("smtp_host"),
                 secureConnection: config.get("smtp_useSSL"),
@@ -207,10 +218,12 @@ exports.addToExpress = function(port, app) {
 
             var transport = nodemailer.createTransport("SMTP", transportConfig);
 
-            var body = util.format("A password request was requested for your account at %s.  Please follow this link to reset your password: %s.", config.urlFor("/"), "http://localhost/resetPassword/343-43234");
+            var body = util.format("A password request was requested for your account at %s.  Please follow this link to reset your password: %s.", 
+                    config.get("server_friendlyName"), 
+                    context.resetUrl);
 
             var sendMailParameters = {
-                to: user.email,
+                to: context.email,
                 from: config.get("server_friendlyName") + " <" + config.get("support_email") + ">",
                 subject: "your password reset request",
                 text: body
@@ -224,6 +237,9 @@ exports.addToExpress = function(port, app) {
             .fail(function(err) {
                 next(err);
             });
+        })
+        .fail(function(err) {
+            next(err);
         });
     });
 

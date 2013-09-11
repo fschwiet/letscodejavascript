@@ -81,7 +81,7 @@ setup.qtest(context, "User should be able to request a password reset by usernam
         expectedReceivers[emailAddress] = true;
         expect(email.receivers).to.eql(expectedReceivers);
 
-        var urlRegex = /http:\/\/[.a-z0-9]+\/resetPassword\/[-a-z0-9]+/;
+        var urlRegex = /http:\/\/[.a-z0-9]+(:[0-9]+)?\/resetPassword\/[-a-z0-9]+/;
         var match = urlRegex.exec(email.body);
 
         expect(match).not.to.be(null);
