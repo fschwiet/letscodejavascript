@@ -62,6 +62,8 @@ exports.findOrCreateUserByGoogleIdentifier = function(identifier, profile, callb
 
 exports.createLocalUser = function(email, friendlyName, password) {
 
+    // should be a transaction
+
     return Q()
     .then(function() {
         return promiseHashOf(password);
@@ -69,9 +71,13 @@ exports.createLocalUser = function(email, friendlyName, password) {
     .then(function(passwordHash) {
         return database.getPooledConnection()
         .then(function(connection) {
-            var query = Q.nbind(connection.query, connection);
-
-            return Q.ninvoke(connection, "query", "INSERT INTO users SET ?", { friendlyName: friendlyName })
+            return Q()
+            .then(function() {
+                return Q.ninvoke(connection, "query", "START TRANSACTION");
+            })
+            .then(function() {
+                return Q.ninvoke(connection, "query", "INSERT INTO users SET ?", { friendlyName: friendlyName });
+            })
             .then(function(result) {
 
                 var userId = result[0].insertId;
@@ -80,6 +86,16 @@ exports.createLocalUser = function(email, friendlyName, password) {
                     email: email,
                     userId: userId,
                     passwordHash: passwordHash
+                });
+            })
+            .then(function() {
+
+                return Q.ninvoke(connection, "query", "COMMIT");
+            }, function(err) {
+
+                return Q.ninvoke(connection, "query", "ROLLBACK")
+                .then(function() {
+                    throw err;
                 });
             })
             .fin(function() {

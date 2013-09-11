@@ -42,6 +42,30 @@ setup.qtest(exports, "findOrCreateUserByGoogleIdentifier can save and load users
         });
 });
 
+setup.qtest(exports, "createLocalUser reserves a friendlyName and email transactionally", function() {
+
+    var username = "username" + uuid();
+    var email1 = "email1_" + uuid() + "@server.com";
+    var email2 = "email2_" + uuid() + "@server.com";
+    var password = uuid();
+
+    return users.createLocalUser(email1, "other" + uuid(), uuid())
+    .then(function() {
+        return users.createLocalUser(email1,username,uuid());
+    })
+    .then(function() {
+        throw new Error("expected second createLocalUser call to fail");
+    }, function(err) {
+        return users.createLocalUser(email2, username, password);
+    })
+    .then(function() {
+        return users.findUserByLocalAuth(email2, password);
+    })
+    .then(function(user) {
+        expect(user.friendlyName).to.be(username);
+    });
+});
+
 setup.qtest(exports, "findUserByLocalAuth should reject invalid username/password", function() {
 
     return users.findUserByLocalAuth("someUsername", "somePassword")
