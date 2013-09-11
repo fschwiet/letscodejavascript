@@ -184,47 +184,50 @@ exports.addToExpress = function(port, app) {
 
     app.post("/resetPassword", function(req,res,next) {
 
-        var transportConfig = {
-            host: config.get("smtp_host"),
-            secureConnection: config.get("smtp_useSSL"),
-            port: config.get("smtp_port")
-        };    
+        var usernameOrEmail = req.param("usernameOrEmail", null);
 
-        var smtpUsername = config.get("smtp_username"), smtpPassword = config.get("smtp_password");
-
-        if (smtpUsername !== null || smtpPassword !== null) {
-            transportConfig.auth = {
-                user: config.get("smtp_username"),
-                pass: config.get("smtp_password")
-            };
-        }
-
-        var transport = nodemailer.createTransport("SMTP", transportConfig);
-
-        var body = util.format("A password request was requested for your account at %s.  Please follow this link to reset your password: %s.", config.urlFor("/"), "http://localhost/resetPassword/343-43234");
-
-        var sendMailParameters = {
-            to: "mail@server.com",
-            from: config.get("server_friendlyName") + " <" + config.get("support_email") + ">",
-            subject: "your password reset request",
-            text: body
-        };
-
-        console.log("sendMailParameters", sendMailParameters);
-
-        Q.ninvoke(transport, "sendMail", sendMailParameters)
-        .then(function() {
-            req.flash("info", "A password reset email has been sent.  If you do not receive it shortly, check your spam folder.");
-            res.render("resetPasswordPage", modelFor("Reset your Password", req));
+        users.findUserByUsernameOrEmail(usernameOrEmail, function(user) {
+            return Q(user);
         })
-        .fail(function(err) {
-            next(err);
+        .then(function(user) {
+            var transportConfig = {
+                host: config.get("smtp_host"),
+                secureConnection: config.get("smtp_useSSL"),
+                port: config.get("smtp_port")
+            };    
+
+            var smtpUsername = config.get("smtp_username"), smtpPassword = config.get("smtp_password");
+
+            if (smtpUsername !== null || smtpPassword !== null) {
+                transportConfig.auth = {
+                    user: config.get("smtp_username"),
+                    pass: config.get("smtp_password")
+                };
+            }
+
+            var transport = nodemailer.createTransport("SMTP", transportConfig);
+
+            var body = util.format("A password request was requested for your account at %s.  Please follow this link to reset your password: %s.", config.urlFor("/"), "http://localhost/resetPassword/343-43234");
+
+            var sendMailParameters = {
+                to: user.email,
+                from: config.get("server_friendlyName") + " <" + config.get("support_email") + ">",
+                subject: "your password reset request",
+                text: body
+            };
+
+            Q.ninvoke(transport, "sendMail", sendMailParameters)
+            .then(function(r) {
+                req.flash("info", "A password reset email has been sent.  If you do not receive it shortly, check your spam folder.");
+                res.render("resetPasswordPage", modelFor("Reset your Password", req));
+            })
+            .fail(function(err) {
+                next(err);
+            });
         });
     });
 
     app.get("/resetPassword/*", function(req,res) {
-
-        console.log("uuid", req.params[0]);
 
         res.render("resetPasswordPage", modelFor("Reset your Password", req));
     });

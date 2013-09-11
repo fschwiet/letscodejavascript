@@ -1,6 +1,8 @@
 
 TODO
   allow password reset
+     User should be able to request a password reset by email
+     Old or unrecognized redirect urls should be handled
 
 
   split phantom-shim to another project

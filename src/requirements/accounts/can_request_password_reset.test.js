@@ -2,6 +2,7 @@ var assert = require("assert");
 var expect = require("expect.js");
 var Q = require("q");
 var util = require("util");
+var uuid = require("node-uuid");
 
 var config = require("../../server/config");
 var users = require("../../server/data/users.js");
@@ -15,8 +16,8 @@ var context = setup.usingPhantomPage(setup.whenRunningTheServer(setup.givenSmtpS
 
 setup.qtest(context, "User should be able to request a password reset by username", function() {
 
-    var username = "someUsername";
-    var emailAddress = "someEmail@server.com";
+    var username = "someUsername" + uuid();
+    var emailAddress = "someEmail" + uuid() + "@server.com";
     var newPassword = "someNewPassword";
 
     var page = this.page;
@@ -29,6 +30,9 @@ setup.qtest(context, "User should be able to request a password reset by usernam
     });
 
     return Q()
+    .then(function() {
+        return users.createLocalUser(emailAddress, username, uuid());
+    })
     .then(function() {
         return page.open(config.urlFor("/status"));
     })
@@ -101,7 +105,4 @@ setup.qtest(context, "User should be able to request a password reset by usernam
     });
 });
 
-// User should be able to request a password reset by email
-
-//  Old or unrecognized redirect urls should be handled
 
