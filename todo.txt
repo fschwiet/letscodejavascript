@@ -1,13 +1,19 @@
 
 TODO
 
-  verify password reset works in production
-
   status page should indicate if email settings are working
-
-  setup production config values and deploy
+     - watch http://stackoverflow.com/questions/18774630/how-can-i-validate-smtp-hostname-port-username-password-is-working-on-node-js
 
   how to port the auth stuff to another site?
+    - MySQL
+    - all the passport stuff
+      - views
+      - auth.js
+      - tests
+      - data-access
+      - migrations
+
+      
 
   split phantom-shim to another project
     could get rid of phantom-shim's promisify if:
