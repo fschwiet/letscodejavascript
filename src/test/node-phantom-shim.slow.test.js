@@ -7,11 +7,14 @@ var waitUntil = require("./waitUntil.js");
 var assertPage = require("./assertPage.js");
 
 var setup = require("../test/setup");
+var NodeunitBuilder = require("../test/nodeunit-builder.js");
 var server;
 
 var port = config.get("server_port");
 
-exports.setUp = function(callback) {
+module.exports = new NodeunitBuilder();
+
+module.exports.setUp = function(callback) {
 
     var app = express();
 
@@ -37,7 +40,7 @@ exports.setUp = function(callback) {
     });
 };
 
-exports.tearDown = function(callback) {
+module.exports.tearDown = function(callback) {
     if (server) {
         server.close(callback);
         server = null;
@@ -46,11 +49,10 @@ exports.tearDown = function(callback) {
     }
 };
 
-var testBlock = setup.usingPhantomPage(exports);
+var testBlock = setup.usingPhantomPage(module.exports);
+var clickElement = testBlock.clickElement = new NodeunitBuilder();
 
-var clickElement = testBlock.clickElement = {};
-
-setup.qtest(testBlock, "should pass arguments to evaluate correctly", function() {
+testBlock.withPromiseTest("should pass arguments to evaluate correctly", function() {
 
     var page = this.page;
 
@@ -62,18 +64,18 @@ setup.qtest(testBlock, "should pass arguments to evaluate correctly", function()
         });
 });
 
-setup.qtest(testBlock, "should pass exception through with for evaluate", function() {
+testBlock.withPromiseTest("should pass exception through with for evaluate", function() {
 
     var page = this.page;
-
-    return setup.shouldFail(function() {
+return
+     setup.shouldFail(function() {
         return page.evaluate(function(a, b, c) {
             throw new Error("some error: " + (a + b + c));
         }, 1, 2, 3);
     }, "some error: 6");
 });
 
-setup.qtest(testBlock, "should be able to load page content as a string", function() {
+testBlock.withPromiseTest("should be able to load page content as a string", function() {
 
     var page = this.page;
 
@@ -86,7 +88,7 @@ setup.qtest(testBlock, "should be able to load page content as a string", functi
         });
 });
 
-setup.qtest(clickElement, "should give useful error when not found", function() {
+testBlock.withPromiseTest("should give useful error when not found", function() {
 
     var page = this.page;
 
@@ -101,7 +103,7 @@ setup.qtest(clickElement, "should give useful error when not found", function() 
     }, "An element matching 'a.target' not found");
 });
 
-setup.qtest(clickElement, "should give useful error when multiple found", function() {
+clickElement.withPromiseTest("should give useful error when multiple found", function() {
 
     var page = this.page;
 
@@ -116,7 +118,7 @@ setup.qtest(clickElement, "should give useful error when multiple found", functi
     }, "More than one elements matching 'a.target' were found");
 });
 
-setup.qtest(clickElement, "should click element when found", function() {
+clickElement.withPromiseTest("should click element when found", function() {
 
     var page = this.page;
 
@@ -136,7 +138,7 @@ setup.qtest(clickElement, "should click element when found", function() {
         });
 });
 
-setup.qtest(clickElement, "should be able to click element found by evaluation", function() {
+clickElement.withPromiseTest("should be able to click element found by evaluation", function() {
 
     var page = this.page;
 
@@ -159,7 +161,7 @@ setup.qtest(clickElement, "should be able to click element found by evaluation",
         });
 });
 
-setup.qtest(clickElement, "should allow less-strict clicking where uniqueness is not required", function() {
+clickElement.withPromiseTest("should allow less-strict clicking where uniqueness is not required", function() {
 
     var page = this.page;
 
@@ -181,7 +183,7 @@ setup.qtest(clickElement, "should allow less-strict clicking where uniqueness is
 });
 
 
-setup.qtest(testBlock, "should be able to listen to console", function() {
+testBlock.withPromiseTest("should be able to listen to console", function() {
 
     var page = this.page;
 
@@ -194,7 +196,7 @@ setup.qtest(testBlock, "should be able to listen to console", function() {
 });
 
 
-setup.qtest(testBlock, "should be able to listen to client errors", function() {
+testBlock.withPromiseTest("should be able to listen to client errors", function() {
 
     var page = this.page;
 
