@@ -13,6 +13,8 @@ var database = require("../server/database.js");
 
 var phantom = require("./node-phantom-shim.js");
 
+var NodeunitBuilder = require("./nodeunit-builder.js");
+
 
 exports.qtest = function(context, name, testImplementation) {
 
@@ -85,14 +87,9 @@ exports.shouldFail = function(promiseFactory, expectedText) {
 };
 
 
-exports.usingPhantomPage = function(outer) {
-
-    var inner = {};
-    outer["using phantom page"] = inner;
-
-    var phantomRef;
-
-    inner.setUp = function(done) {
+exports.usingPhantomPage = NodeunitBuilder.createTestScopeExtender(
+    "using phantom page",
+    function(done) {
 
         var that = this;
 
@@ -120,19 +117,15 @@ exports.usingPhantomPage = function(outer) {
             }, function(err) {
                 done(err);
             });
-    };
-
-    inner.tearDown = function(done) {
+    },
+    function(done) {
 
         if (typeof phantomRef !== "undefined") {
             phantomRef.exit();
         }
 
         done();
-    };
-
-    return inner;
-};
+    });
 
 
 exports.whenRunningTheServer = function(outer) {
