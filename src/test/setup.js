@@ -128,97 +128,69 @@ exports.usingPhantomPage = NodeunitBuilder.createTestScopeExtender(
     });
 
 
-exports.whenRunningTheServer = function(outer) {
+var server = require("../server/server.js");
 
-    var inner = {};
-    outer["when running the server"] = inner;
-
-    var server = require("../server/server.js");
-
-    var thisServerContext = {};
-    thisServerContext.extraMiddleware = function(req,res,next) {
-        next();
-    };
-
-    inner.setUp = function(done) {
+exports.whenRunningTheServer = NodeunitBuilder.createTestScopeExtender(
+    "when running the server",
+    function(done) {
 
         // test setup can modify this.server.extraMiddleware to do extra prep
 
-        this.server = thisServerContext;
+        this.server = {};
+        this.server.extraMiddleware = function(req,res,next) {
+            next();
+        };
+
+        var thisServerContext = this.server;
 
         server.start(config.get("server_port"), done, function(req, res, next) {
             thisServerContext.extraMiddleware(req,res,next);
         });
-    };
-
-    inner.tearDown = function(done) {
+    },
+    function(done) {
         server.stop(function()
-            {
-                done();
-            });
-    };
+        {
+            done();
+        });
+    });
 
-    return inner;
-};
+exports.givenCleanDatabase = NodeunitBuilder.createTestScopeExtender(
+    "given a clean database",
+    require("../server/database.js").emptyDatabase);
 
-exports.givenCleanDatabase = function(outer) {
-
-    var inner = {};
-    outer["given a clean database"] = inner;
-
-    inner.setUp = require("../server/database.js").emptyDatabase;
-
-    return inner;
-};
-
-exports.givenSmtpServer = function(outer) {
-
-    var that = this;
-
-    var inner = {};
-
-    outer["given an SMTP server"] = inner;
-
-    inner.setUp = function(done) {
+exports.givenSmtpServer = NodeunitBuilder.createTestScopeExtender(
+    "given an SMTP server",
+    function(done) {
         smtpServer = smtpTest.init(config.get("smtp_port"));
         this.smtpServer = smtpServer;
         done();
-    };
-
-    inner.tearDown = function(done) {
+    },
+    function(done) {
 
         smtpServer.stop();
         done();
-    };
-
-    return inner;
-};
+    });
 
 
-exports.given3rdPartyRssServer = function(outer) {
+exports.given3rdPartyRssServer = NodeunitBuilder.createTestScopeExtender(
+    "given a 3rd part RSS server",
+    function(done) {
 
-    var hostname = "127.0.0.76";
-    var port = config.get("server_port");
+        var hostname = "127.0.0.76";
+        var port = config.get("server_port");
 
-    var thisRssServerContext = {
-        feedName: "FeedForAll Sample Feed",
-        posts: [ {
-                postName: "RSS Solutions for Restaurants",
-                postUrl: "http://www.feedforall.com/restaurant.htm",
-                postDate: "June 1, 2013"
+        var thisRssServerContext = {
+            feedName: "FeedForAll Sample Feed",
+            posts: [ {
+                    postName: "RSS Solutions for Restaurants",
+                    postUrl: "http://www.feedforall.com/restaurant.htm",
+                    postDate: "June 1, 2013"
+                }
+            ],
+            urlFor : function(path) {
+                return "http://" + hostname + ":" + port.toString() + path;
             }
-        ],
-        urlFor : function(path) {
-            return "http://" + hostname + ":" + port.toString() + path;
-        }
-    };
-
-    var server;
-
-    var inner = {};
-    outer["given a 3rd part RSS server"] = inner;
-
-    inner.setUp = function(done) {
+        };
 
         var that = this;
 
@@ -250,18 +222,14 @@ exports.given3rdPartyRssServer = function(outer) {
             res.send("given3rdPartyRssServer OK");
         });
 
-        server = http.createServer(app);
+        this.rssServer.server = http.createServer(app);
 
-        server.listen(port, hostname, done);
+        this.rssServer.server.listen(port, hostname, done);
 
-    };
-
-    inner.tearDown = function(done) {
-        server.close(done);
-    };
-
-    return inner;
-};
+    },
+    function(done) {
+        this.rssServer.server.close(done);
+    });
 
 
 exports.getGoogleProfile = function(postfix) {
