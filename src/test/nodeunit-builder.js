@@ -1,6 +1,7 @@
 
-function NodeunitBuilder() {
+function NodeunitBuilder(outer, name) {
 
+    outer[name] = this;
 }
 
 NodeunitBuilder.prototype.withPromiseTest = function(name, callback) {
@@ -35,19 +36,37 @@ NodeunitBuilder.prototype.withPromiseTest = function(name, callback) {
                 .then(function() {
                     test.done();
                 }, function(err) {
-                    test.ok(false, err);
-                    test.done();
+                    return errorHandler(that)
+                    .fin(function() {
+                        test.ok(false,err);
+                        test.done();
+                    });
                 });
         }
     };    
 };
 
+function handler(that) {
+    if (that.page) {
+        var screenshotPath = path.resolve(require.main.filename, "test-screenshot.jpg");
+        return that.page.render(screenshotPath)
+        .then(function(){
+            console.log("wrote screenshot to", screenshotPath);
+        }, function(renderError) {
+            console.log ("error writing screenshot:", renderError);
+        });
+    }
+    else
+    {
+        return Q();
+    }
+}
+
 
 function createTestScopeExtender (name, setUp, tearDown) {
 
     return function(outer) {
-        var inner = new NodeunitBuilder();
-        outer[name] = inner;
+        var inner = new NodeunitBuilder(outer, name);
 
         inner.setUp = setUp;
         inner.tearDown = tearDown;

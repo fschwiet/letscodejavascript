@@ -10,9 +10,10 @@ var users = require("../server/data/users.js");
 var setup = require("../test/setup.js");
 
 var testWithRssOnly = setup.given3rdPartyRssServer(exports);
-var testBlock = setup.whenRunningTheServer(testWithRssOnly);
 
 var expectedPostUrl = "http://www.feedforall.com/restaurant.htm";
+
+var NodeunitBuilder = require("../test/nodeunit-builder.js");
 
 function assertMatchesExpectedPosts(posts) {
     assert.equal(JSON.stringify(posts), JSON.stringify([{
@@ -26,10 +27,9 @@ function assertMatchesExpectedPosts(posts) {
 
 var expectedUserId = 123; // this.server.extraMiddleware
 
-var inner = {};
-testBlock["with user id"] = inner;
+var testBlock = new NodeunitBuilder(setup.whenRunningTheServer(testWithRssOnly), "with user id");
 
-inner.setUp = function(done) {
+testBlock.setUp = function(done) {
 
     this.server.extraMiddleware = function(req,res,next) {
         req.user = { 
@@ -41,10 +41,8 @@ inner.setUp = function(done) {
     done();
 };
 
-testBlock = inner;
 
-
-setup.qtest(testBlock, "Should be able to load RSS feeds", function() {
+testBlock.withPromiseTest("Should be able to load RSS feeds", function() {
 
     var url = config.urlFor("/posts", {
             rssUrl: this.rssServer.urlFor("/rss/foo")
@@ -63,7 +61,7 @@ setup.qtest(testBlock, "Should be able to load RSS feeds", function() {
 });
 
 
-setup.qtest(testBlock, "Should return empty result for invalid feeds", function() {
+testBlock.withPromiseTest("Should return empty result for invalid feeds", function() {
 
     var url = config.urlFor("/posts", {
             rssUrl: this.rssServer.urlFor("/notexistingPath")
@@ -81,7 +79,7 @@ setup.qtest(testBlock, "Should return empty result for invalid feeds", function(
         });
 });
 
-setup.qtest(testBlock, "Should be able to mark feeds as finished", function() {
+testBlock.withPromiseTest("Should be able to mark feeds as finished", function() {
 
     var url = config.urlFor("/posts", {
             rssUrl: this.rssServer.urlFor("/rss/foo")
@@ -144,7 +142,7 @@ setup.qtest(testBlock, "Should be able to mark feeds as finished", function() {
         });
 });
 
-setup.qtest(testWithRssOnly, "loadMeta should be able to load feedName", function() {
+testWithRssOnly.withPromiseTest("loadMeta should be able to load feedName", function() {
 
     var that = this;
     var rssUrl = this.rssServer.urlFor("/rss/foo");
@@ -155,14 +153,14 @@ setup.qtest(testWithRssOnly, "loadMeta should be able to load feedName", functio
     });
 });
 
-setup.qtest(testWithRssOnly, "loadFeeds should be able to load RSS feeds", function() {
+testWithRssOnly.withPromiseTest("loadFeeds should be able to load RSS feeds", function() {
 
     return posts.loadFeeds(this.rssServer.urlFor("/rss/foo"))
     .then(assertMatchesExpectedPosts);
 });
 
 
-setup.qtest(testWithRssOnly, "loadFeeds should give error if the http request fails", function() {
+testWithRssOnly.withPromiseTest("loadFeeds should give error if the http request fails", function() {
 
     return setup.shouldFail(function() {
         return posts.loadFeeds("http://nonexistsantserver.coommmm/rss/foo");
@@ -170,7 +168,7 @@ setup.qtest(testWithRssOnly, "loadFeeds should give error if the http request fa
 });
 
 
-setup.qtest(testWithRssOnly, "loadFeeds should give error if the http request fails #2", function() {
+testWithRssOnly.withPromiseTest("loadFeeds should give error if the http request fails #2", function() {
 
     var that = this;
 
@@ -183,7 +181,7 @@ setup.qtest(testWithRssOnly, "loadFeeds should give error if the http request fa
 var findOrCreateUserByGoogleIdentifier = Q.nbind(users.findOrCreateUserByGoogleIdentifier);
 
 
-setup.qtest(testWithRssOnly, "loadFeedsThroughDatabase should be able to load RSS feeds", function() {
+testWithRssOnly.withPromiseTest("loadFeedsThroughDatabase should be able to load RSS feeds", function() {
 
     var rssUrl = this.rssServer.urlFor("/rss/" + uuid.v4());
 
@@ -198,7 +196,7 @@ setup.qtest(testWithRssOnly, "loadFeedsThroughDatabase should be able to load RS
 });
 
 
-setup.qtest(testWithRssOnly, "loadFeedsThroughDatabase should not insert duplicates", function() {
+testWithRssOnly.withPromiseTest("loadFeedsThroughDatabase should not insert duplicates", function() {
 
     var rssUrl = this.rssServer.urlFor("/rss/" + uuid.v4());
 
@@ -219,7 +217,7 @@ setup.qtest(testWithRssOnly, "loadFeedsThroughDatabase should not insert duplica
 });
 
 
-setup.qtest(testWithRssOnly, "loadFeedsThroughDatabase should use database values, if fresh", function() {
+testWithRssOnly.withPromiseTest("loadFeedsThroughDatabase should use database values, if fresh", function() {
 
     var that = this;
 
@@ -253,7 +251,7 @@ setup.qtest(testWithRssOnly, "loadFeedsThroughDatabase should use database value
 });
 
 
-setup.qtest(testWithRssOnly, "loadFeedsThroughDatabase should not return feeds that have been marked as read by the user", function() {
+testWithRssOnly.withPromiseTest("loadFeedsThroughDatabase should not return feeds that have been marked as read by the user", function() {
 
     var rssUrl = this.rssServer.urlFor("/rss/" + uuid.v4());
     var postUrl = "http://www.feedforall.com/restaurant.htm";

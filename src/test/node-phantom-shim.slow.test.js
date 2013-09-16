@@ -12,9 +12,9 @@ var server;
 
 var port = config.get("server_port");
 
-module.exports = new NodeunitBuilder();
+var withServer = new NodeunitBuilder(exports, "with sample server");
 
-module.exports.setUp = function(callback) {
+withServer.setUp = function(callback) {
 
     var app = express();
 
@@ -40,7 +40,7 @@ module.exports.setUp = function(callback) {
     });
 };
 
-module.exports.tearDown = function(callback) {
+withServer.tearDown = function(callback) {
     if (server) {
         server.close(callback);
         server = null;
@@ -49,8 +49,8 @@ module.exports.tearDown = function(callback) {
     }
 };
 
-var testBlock = setup.usingPhantomPage(module.exports);
-var clickElement = testBlock.clickElement = new NodeunitBuilder();
+var testBlock = setup.usingPhantomPage(withServer);
+var clickElement = new NodeunitBuilder(testBlock, "using clickElement");
 
 testBlock.withPromiseTest("should pass arguments to evaluate correctly", function() {
 
@@ -67,8 +67,7 @@ testBlock.withPromiseTest("should pass arguments to evaluate correctly", functio
 testBlock.withPromiseTest("should pass exception through with for evaluate", function() {
 
     var page = this.page;
-return
-     setup.shouldFail(function() {
+    return setup.shouldFail(function() {
         return page.evaluate(function(a, b, c) {
             throw new Error("some error: " + (a + b + c));
         }, 1, 2, 3);
