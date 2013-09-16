@@ -46,7 +46,7 @@ NodeunitBuilder.prototype.withPromiseTest = function(name, callback) {
     };    
 };
 
-function handler(that) {
+function errorHandler(that) {
     if (that.page) {
         var screenshotPath = path.resolve(require.main.filename, "test-screenshot.jpg");
         return that.page.render(screenshotPath)
