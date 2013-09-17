@@ -1,5 +1,6 @@
 
 var path = require('path');
+var Q = require('q');
 
 
 function NodeunitBuilder(outer, name) {
@@ -41,7 +42,8 @@ NodeunitBuilder.prototype.withPromiseTest = function(name, callback) {
                 .then(function() {
                     test.done();
                 }, function(err) {
-                    errorHandler(that)
+                    that.promiseErrorHandlers = that.promiseErrorHandlers || [];
+                    that.promiseErrorHandlers.reduce(Q.when, Q())
                     .fin(function() {
                         test.ok(false,err);
                         test.done();
@@ -50,22 +52,6 @@ NodeunitBuilder.prototype.withPromiseTest = function(name, callback) {
         }
     };    
 };
-
-function errorHandler(that) {
-    if ("page" in that) {
-        var screenshotPath = path.resolve(".", "test-screenshot.jpg");
-        return that.page.render(screenshotPath)
-        .then(function(){
-            console.log("wrote screenshot to", screenshotPath);
-        }, function(renderError) {
-            console.log ("error writing screenshot:", renderError);
-        });
-    }
-    else
-    {
-        return Q();
-    }
-}
 
 
 function createTestScopeExtender (name, setUp, tearDown) {
