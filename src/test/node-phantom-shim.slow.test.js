@@ -6,8 +6,8 @@ var waitUntil = require("./waitUntil.js");
 var assertPage = require("./assertPage.js");
 var urlParser = require("url");
 
-var NodeunitBuilder = require("../test/nodeunit-builder.js");
-var shouldFail = require("../test/should-fail.js");
+var NodeunitBuilder = require("./nodeunit-builder.js");
+var shouldFail = require("./should-fail.js");
 var server;
 
 var urlParser = require("url");
@@ -20,7 +20,6 @@ function urlFor(path, query) {
     parts.port = port;
     parts.pathname = path;
     parts.query = query;
-    console.log("using url", urlParser.format(parts));
     return urlParser.format(parts);
 }
 

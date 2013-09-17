@@ -1,5 +1,5 @@
 var assert = require("assert");
-var waitUntil = require("../test/waitUntil.js");
+var waitUntil = require("./waitUntil.js");
 
 exports.isAtPath = function(page, path) {
     return waitUntil("page is at path " + path, function() {
