@@ -248,9 +248,8 @@ In this example, the foo:baz task depends on the the default and foo:bar tasks.
 
 ### Rules
 
-When you add a filename as a prerequisite for a task, but there is not a file on
-disk, or a file-task defined for it, Jake can create file-tasks on the fly from
-Rules.
+When you add a filename as a prerequisite for a task, but there is not a a
+file-task defined for it, Jake can create file-tasks on the fly from Rules.
 
 Here's an example:
 
@@ -800,7 +799,7 @@ has an `append` method for adding new commands to the list of commands to run.
 Here's an example:
 
 ```javascript
-var ex = jake.createExec(['do_thing.sh'], {printStdout: true});
+var ex = jake.createExec(['do_thing.sh']);
 ex.addListener('error', function (msg, code) {
   if (code == 127) {
     console.log("Couldn't find do_thing script, trying do_other_thing");
@@ -1051,6 +1050,21 @@ following steps:
 5. Package the new version of your project
 6. Publish it to NPM
 7. Clean up the package
+
+If you want to publish to a private NPM repository, you can specify a custom publishing command:
+
+```javascript
+npmPublishTask('jake', function () {
+  this.packageFiles.include([
+  , 'index.js'
+  , 'package.json'
+    ]);
+
+  // Publishes using the gemfury cli
+  // `%filename` will be replaced with the package filename
+  this.publishCmd = 'fury push %filename';
+});
+```
 
 ## CoffeeScript Jakefiles
 
