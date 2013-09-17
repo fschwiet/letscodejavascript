@@ -64,9 +64,7 @@ task("beautify", ["verifyEmptyGitStatus"], function() {
             });
     });
 
-    promiseJake(Q.all(promises));
-}, {
-    async: true
+    return Q.all(promises);
 });
 
 desc("write sample config file");
