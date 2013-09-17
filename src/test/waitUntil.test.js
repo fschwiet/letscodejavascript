@@ -3,11 +3,14 @@
 
     var assert = require("assert");
     var Q = require("q");
-    var setup = require("./setup.js");
     var waitUntil = require("./waitUntil.js");
     var shouldFail = require("./should-fail.js");
 
-    setup.qtest(exports, "should wait for evaluation to be true", function() {
+    var NodeunitBuilder = require("./nodeunit-builder.js");
+
+    var scope = new NodeunitBuilder(exports, "using NodeunitBuilder");
+
+    scope.test("should wait for evaluation to be true", function() {
         var waits = 0;
 
         return waitUntil("hi", function() {
@@ -17,7 +20,7 @@
         });
     });
 
-    setup.qtest(exports, "should wait for promise evaluation to be true", function() {
+    scope.test("should wait for promise evaluation to be true", function() {
         var waits = 0;
 
         return waitUntil("hi", function() {
@@ -32,7 +35,7 @@
         });
     });
 
-    setup.qtest(exports, "should eventually fail if evaluation is false", function() {
+    scope.test("should eventually fail if evaluation is false", function() {
         var attempts = 0;
 
         return shouldFail(function() {
@@ -43,7 +46,7 @@
         }, "timed out");
     });
 
-    setup.qtest(exports, "should eventually fail if promise evaluation is false", function() {
+    scope.test("should eventually fail if promise evaluation is false", function() {
         var attempts = 0;
 
         return shouldFail(function() {
@@ -57,7 +60,7 @@
         }, "timed out");
     });
 
-    setup.qtest(exports, "should propagate synchronous exceptions", function() {
+    scope.test("should propagate synchronous exceptions", function() {
         var waits = 0;
 
         return shouldFail(function() {
@@ -69,7 +72,7 @@
         }, "foo fiddly pham");
     });
 
-    setup.qtest(exports, "should propagate asynchronous exceptions", function() {
+    scope.test("should propagate asynchronous exceptions", function() {
         var waits = 0;
 
         return shouldFail(function() {
@@ -88,7 +91,7 @@
         }, "foo async fiddly pham");
     });
 
-    setup.qtest(exports, "should give helpful error when unexpected parameters", function() {
+    scope.test("should give helpful error when unexpected parameters", function() {
 
         return shouldFail(function(){
 
