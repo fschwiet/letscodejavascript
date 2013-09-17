@@ -14,7 +14,7 @@ var testWithRssOnly = setup.given3rdPartyRssServer(exports);
 
 var expectedPostUrl = "http://www.feedforall.com/restaurant.htm";
 
-var NodeunitBuilder = require("../test/nodeunit-builder.js");
+var NodeunitBuilder = require("cauldron").nodeunit;
 
 function assertMatchesExpectedPosts(posts) {
     assert.equal(JSON.stringify(posts), JSON.stringify([{

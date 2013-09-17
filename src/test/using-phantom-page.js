@@ -1,7 +1,7 @@
 
 var path = require('path');
 
-var NodeunitBuilder = require("./nodeunit-builder.js");
+var NodeunitBuilder = require("cauldron").nodeunit;
 var phantom = require("cauldron").phantom;
 
 

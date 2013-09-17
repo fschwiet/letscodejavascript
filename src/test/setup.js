@@ -11,64 +11,12 @@ var uuid = require("node-uuid");
 var config = require("./../server/config.js");
 var database = require("../server/database.js");
 
-var NodeunitBuilder = require("./nodeunit-builder.js");
+var NodeunitBuilder = require("cauldron").nodeunit;
 
 
 exports.qtest = function(context, name, testImplementation) {
 
-    context[name] = function(test) {
-
-        testImplementation = testImplementation || function(promise) {
-            promise.reject("not implemented");
-            return promise;
-        };
-
-        var result;
-        var that = this;
-
-        try
-        {
-            result = testImplementation.call(that);
-        }
-        catch(err) {
-            test.ifError(err);
-            test.done();
-            return;
-        }
-         
-
-        if ( !result || typeof result.then !== 'function') {
-            test.fail("qtest expects a function that returns a promise.");
-            test.done();
-        }
-        else {
-            result
-            .then(function() {
-                test.done();
-            }, 
-            function(error) {
-                if (that.page) {
-                    var screenshotPath = path.resolve(__dirname, "../../test-screenshot.jpg");
-                    that.page.render(screenshotPath)
-                    .then(function(){
-                        console.log("wrote screenshot to", screenshotPath);
-                    }, function(renderError) {
-                        console.log ("error writing screenshot:", renderError);
-                    })
-                    .fin(function() {
-                        test.ok(false, error);
-                        test.done();
-                    });
-                    return;
-                }
-                else
-                {
-                    test.ok(false, error);
-                    test.done();
-                }
-            });
-        }
-    };
+    NodeunitBuilder.prototype.test.call(context, name, testImplementation);
 };
 
 
