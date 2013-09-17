@@ -4,7 +4,7 @@ var setDefault = require('set-default');
 
 var config = require("../server/config.js");
 
-var waitUntil = require("./waitUntil.js");
+var waitUntil = require("cauldron").waitUntil;
 var testData = require("./test-data.js");
 var assertPage = require("./assertPage.js");
 

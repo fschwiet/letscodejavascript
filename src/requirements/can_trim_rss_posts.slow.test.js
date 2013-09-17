@@ -4,7 +4,7 @@ var expect = require("expect.js");
 var config = require("../server/config.js");
 
 var setup = require("../test/setup");
-var waitUntil = require("../test/waitUntil");
+var waitUntil = require("cauldron").waitUntil;
 
 var testBlock = 
     setup.usingPhantomPage(

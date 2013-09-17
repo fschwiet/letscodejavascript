@@ -3,7 +3,7 @@ var setup = require("../test/setup.js");
 var assertPage = require("../test/assertPage.js");
 var assert = require("assert");
 
-var waitUntil = require("../test/waitUntil");
+var waitUntil = require("cauldron").waitUntil;
 
 var expectedFeedName = "expectedFeedName";
 var expectedPostName = "expectedPostName";

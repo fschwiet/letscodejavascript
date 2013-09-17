@@ -1,5 +1,5 @@
 var assert = require("assert");
-var waitUntil = require("./waitUntil.js");
+var waitUntil = require("cauldron").waitUntil;
 
 exports.isAtPath = function(page, path) {
     return waitUntil("page is at path " + path, function() {

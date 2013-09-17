@@ -1,6 +1,6 @@
 var Q = require("q");
 var phantom = require('node-phantom');
-var waitUntil = require("./waitUntil.js");
+var waitUntil = require("cauldron").waitUntil;
 
 
 function evaluateCheckingErrors(page) { 

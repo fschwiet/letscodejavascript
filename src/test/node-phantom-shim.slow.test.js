@@ -2,7 +2,7 @@ var assert = require("assert");
 var express = require("express");
 var http = require('http');
 var Q = require("q");
-var waitUntil = require("./waitUntil.js");
+var waitUntil = require("cauldron").waitUntil;
 var assertPage = require("./assertPage.js");
 var urlParser = require("url");
 

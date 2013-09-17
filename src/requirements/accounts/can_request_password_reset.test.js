@@ -10,7 +10,7 @@ var users = require("../../server/data/users.js");
 var setup = require("../../test/setup");
 var login = require("../../test/login.js");
 
-var waitUntil = require("../../test/waitUntil.js");
+var waitUntil = require("cauldron").waitUntil;
 
 var context = setup.usingPhantomPage(setup.whenRunningTheServer(setup.givenSmtpServer(exports)));
 

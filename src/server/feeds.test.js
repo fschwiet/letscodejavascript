@@ -4,7 +4,7 @@ var expect = require("expect.js");
 var config = require("../server/config.js");
 var login = require("../test/login.js");
 var setup = require("../test/setup.js");
-var waitUntil = require("../test/waitUntil");
+var waitUntil = require("cauldron").waitUntil;
 
 
 var context = setup.usingPhantomPage(setup.whenRunningTheServer(setup.given3rdPartyRssServer(exports)));
