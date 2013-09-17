@@ -8,7 +8,7 @@ function NodeunitBuilder(outer, name) {
     outer[name] = this;
 }
 
-NodeunitBuilder.prototype.withPromiseTest = function(name, callback) {
+NodeunitBuilder.prototype.test = function(name, callback) {
 
     this[name] = function(test) {
 
@@ -22,34 +22,20 @@ NodeunitBuilder.prototype.withPromiseTest = function(name, callback) {
 
         var result;
 
-        try
-        {
-            result = callback.call(this);
-        }
-        catch(err) {
-            test.ok(false, err);
+        Q()
+        .then(function() {
+            return callback.call(that);
+        })
+        .then(function() {
             test.done();
-            return;
-        }
-         
-
-        if ( !result || typeof result.then !== 'function') {
-            test.fail("withPromiseTest expects a function that returns a promise.");
-            test.done();
-        }
-        else {
-            result
-                .then(function() {
-                    test.done();
-                }, function(err) {
-                    that.promiseErrorHandlers = that.promiseErrorHandlers || [];
-                    that.promiseErrorHandlers.reduce(Q.when, Q())
-                    .fin(function() {
-                        test.ok(false,err);
-                        test.done();
-                    });
-                });
-        }
+        }, function(err) {
+            that.promiseErrorHandlers = that.promiseErrorHandlers || [];
+            that.promiseErrorHandlers.reduce(Q.when, Q())
+            .fin(function() {
+                test.ok(false,err);
+                test.done();
+            });
+        });
     };    
 };
 

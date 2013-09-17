@@ -42,7 +42,7 @@ testBlock.setUp = function(done) {
 };
 
 
-testBlock.withPromiseTest("Should be able to load RSS feeds", function() {
+testBlock.test("Should be able to load RSS feeds", function() {
 
     var url = config.urlFor("/posts", {
             rssUrl: this.rssServer.urlFor("/rss/foo")
@@ -61,7 +61,7 @@ testBlock.withPromiseTest("Should be able to load RSS feeds", function() {
 });
 
 
-testBlock.withPromiseTest("Should return empty result for invalid feeds", function() {
+testBlock.test("Should return empty result for invalid feeds", function() {
 
     var url = config.urlFor("/posts", {
             rssUrl: this.rssServer.urlFor("/notexistingPath")
@@ -79,7 +79,7 @@ testBlock.withPromiseTest("Should return empty result for invalid feeds", functi
         });
 });
 
-testBlock.withPromiseTest("Should be able to mark feeds as finished", function() {
+testBlock.test("Should be able to mark feeds as finished", function() {
 
     var url = config.urlFor("/posts", {
             rssUrl: this.rssServer.urlFor("/rss/foo")
@@ -142,7 +142,7 @@ testBlock.withPromiseTest("Should be able to mark feeds as finished", function()
         });
 });
 
-testWithRssOnly.withPromiseTest("loadMeta should be able to load feedName", function() {
+testWithRssOnly.test("loadMeta should be able to load feedName", function() {
 
     var that = this;
     var rssUrl = this.rssServer.urlFor("/rss/foo");
@@ -153,14 +153,14 @@ testWithRssOnly.withPromiseTest("loadMeta should be able to load feedName", func
     });
 });
 
-testWithRssOnly.withPromiseTest("loadFeeds should be able to load RSS feeds", function() {
+testWithRssOnly.test("loadFeeds should be able to load RSS feeds", function() {
 
     return posts.loadFeeds(this.rssServer.urlFor("/rss/foo"))
     .then(assertMatchesExpectedPosts);
 });
 
 
-testWithRssOnly.withPromiseTest("loadFeeds should give error if the http request fails", function() {
+testWithRssOnly.test("loadFeeds should give error if the http request fails", function() {
 
     return setup.shouldFail(function() {
         return posts.loadFeeds("http://nonexistsantserver.coommmm/rss/foo");
@@ -168,7 +168,7 @@ testWithRssOnly.withPromiseTest("loadFeeds should give error if the http request
 });
 
 
-testWithRssOnly.withPromiseTest("loadFeeds should give error if the http request fails #2", function() {
+testWithRssOnly.test("loadFeeds should give error if the http request fails #2", function() {
 
     var that = this;
 
@@ -181,7 +181,7 @@ testWithRssOnly.withPromiseTest("loadFeeds should give error if the http request
 var findOrCreateUserByGoogleIdentifier = Q.nbind(users.findOrCreateUserByGoogleIdentifier);
 
 
-testWithRssOnly.withPromiseTest("loadFeedsThroughDatabase should be able to load RSS feeds", function() {
+testWithRssOnly.test("loadFeedsThroughDatabase should be able to load RSS feeds", function() {
 
     var rssUrl = this.rssServer.urlFor("/rss/" + uuid.v4());
 
@@ -196,7 +196,7 @@ testWithRssOnly.withPromiseTest("loadFeedsThroughDatabase should be able to load
 });
 
 
-testWithRssOnly.withPromiseTest("loadFeedsThroughDatabase should not insert duplicates", function() {
+testWithRssOnly.test("loadFeedsThroughDatabase should not insert duplicates", function() {
 
     var rssUrl = this.rssServer.urlFor("/rss/" + uuid.v4());
 
@@ -217,7 +217,7 @@ testWithRssOnly.withPromiseTest("loadFeedsThroughDatabase should not insert dupl
 });
 
 
-testWithRssOnly.withPromiseTest("loadFeedsThroughDatabase should use database values, if fresh", function() {
+testWithRssOnly.test("loadFeedsThroughDatabase should use database values, if fresh", function() {
 
     var that = this;
 
@@ -251,7 +251,7 @@ testWithRssOnly.withPromiseTest("loadFeedsThroughDatabase should use database va
 });
 
 
-testWithRssOnly.withPromiseTest("loadFeedsThroughDatabase should not return feeds that have been marked as read by the user", function() {
+testWithRssOnly.test("loadFeedsThroughDatabase should not return feeds that have been marked as read by the user", function() {
 
     var rssUrl = this.rssServer.urlFor("/rss/" + uuid.v4());
     var postUrl = "http://www.feedforall.com/restaurant.htm";

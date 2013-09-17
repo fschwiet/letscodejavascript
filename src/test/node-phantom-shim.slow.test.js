@@ -52,7 +52,7 @@ withServer.tearDown = function(callback) {
 var testBlock = setup.usingPhantomPage(withServer);
 var clickElement = new NodeunitBuilder(testBlock, "using clickElement");
 
-testBlock.withPromiseTest("should pass arguments to evaluate correctly", function() {
+testBlock.test("should pass arguments to evaluate correctly", function() {
 
     var page = this.page;
 
@@ -64,7 +64,7 @@ testBlock.withPromiseTest("should pass arguments to evaluate correctly", functio
         });
 });
 
-testBlock.withPromiseTest("should pass exception through with for evaluate", function() {
+testBlock.test("should pass exception through with for evaluate", function() {
 
     var page = this.page;
     return setup.shouldFail(function() {
@@ -74,7 +74,7 @@ testBlock.withPromiseTest("should pass exception through with for evaluate", fun
     }, "some error: 6");
 });
 
-testBlock.withPromiseTest("should be able to load page content as a string", function() {
+testBlock.test("should be able to load page content as a string", function() {
 
     var page = this.page;
 
@@ -87,7 +87,7 @@ testBlock.withPromiseTest("should be able to load page content as a string", fun
         });
 });
 
-testBlock.withPromiseTest("should give useful error when not found", function() {
+testBlock.test("should give useful error when not found", function() {
 
     var page = this.page;
 
@@ -102,7 +102,7 @@ testBlock.withPromiseTest("should give useful error when not found", function() 
     }, "An element matching 'a.target' not found");
 });
 
-clickElement.withPromiseTest("should give useful error when multiple found", function() {
+clickElement.test("should give useful error when multiple found", function() {
 
     var page = this.page;
 
@@ -117,7 +117,7 @@ clickElement.withPromiseTest("should give useful error when multiple found", fun
     }, "More than one elements matching 'a.target' were found");
 });
 
-clickElement.withPromiseTest("should click element when found", function() {
+clickElement.test("should click element when found", function() {
 
     var page = this.page;
 
@@ -137,7 +137,7 @@ clickElement.withPromiseTest("should click element when found", function() {
         });
 });
 
-clickElement.withPromiseTest("should be able to click element found by evaluation", function() {
+clickElement.test("should be able to click element found by evaluation", function() {
 
     var page = this.page;
 
@@ -160,7 +160,7 @@ clickElement.withPromiseTest("should be able to click element found by evaluatio
         });
 });
 
-clickElement.withPromiseTest("should allow less-strict clicking where uniqueness is not required", function() {
+clickElement.test("should allow less-strict clicking where uniqueness is not required", function() {
 
     var page = this.page;
 
@@ -182,7 +182,7 @@ clickElement.withPromiseTest("should allow less-strict clicking where uniqueness
 });
 
 
-testBlock.withPromiseTest("should be able to listen to console", function() {
+testBlock.test("should be able to listen to console", function() {
 
     var page = this.page;
 
@@ -195,7 +195,7 @@ testBlock.withPromiseTest("should be able to listen to console", function() {
 });
 
 
-testBlock.withPromiseTest("should be able to listen to client errors", function() {
+testBlock.test("should be able to listen to client errors", function() {
 
     var page = this.page;
 
