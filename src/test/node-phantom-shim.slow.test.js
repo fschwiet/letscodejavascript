@@ -2,16 +2,27 @@ var assert = require("assert");
 var express = require("express");
 var http = require('http');
 var Q = require("q");
-var config = require("../server/config.js");
 var waitUntil = require("./waitUntil.js");
 var assertPage = require("./assertPage.js");
+var urlParser = require("url");
 
-var setup = require("../test/setup");
 var NodeunitBuilder = require("../test/nodeunit-builder.js");
 var shouldFail = require("../test/should-fail.js");
 var server;
 
-var port = config.get("server_port");
+var urlParser = require("url");
+var port = 8081;
+
+function urlFor(path, query) {
+    var parts = {};
+    parts.protocol = "http";
+    parts.hostname = "localhost";
+    parts.port = port;
+    parts.pathname = path;
+    parts.query = query;
+    console.log("using url", urlParser.format(parts));
+    return urlParser.format(parts);
+}
 
 var withServer = new NodeunitBuilder(exports, "with sample server");
 
@@ -79,7 +90,7 @@ testBlock.test("should be able to load page content as a string", function() {
 
     var page = this.page;
 
-    return page.open(config.urlFor("/empty"))
+    return page.open(urlFor("/empty"))
         .then(function(status) {
             assert.equal(status, "success");
         })
@@ -93,7 +104,7 @@ testBlock.test("should give useful error when not found", function() {
     var page = this.page;
 
     return shouldFail(function() {
-        return page.open(config.urlFor("/empty"))
+        return page.open(urlFor("/empty"))
             .then(function(status) {
                 assert.equal(status, "success");
             })
@@ -108,7 +119,7 @@ clickElement.test("should give useful error when multiple found", function() {
     var page = this.page;
 
     return shouldFail(function() {
-        return page.open(config.urlFor("/multiple"))
+        return page.open(urlFor("/multiple"))
             .then(function(status) {
                 assert.equal(status, "success");
             })
@@ -122,7 +133,7 @@ clickElement.test("should click element when found", function() {
 
     var page = this.page;
 
-    return page.open(config.urlFor("/links-to-empty"))
+    return page.open(urlFor("/links-to-empty"))
         .then(function(status) {
             assert.equal(status, "success");
         })
@@ -132,7 +143,7 @@ clickElement.test("should click element when found", function() {
         .then(function() {
             return waitUntil("browser is redirected to /empty", function() {
                 return page.get("url").then(function(url) {
-                    return url == config.urlFor("/empty");
+                    return url == urlFor("/empty");
                 });
             }, 1000);
         });
@@ -142,7 +153,7 @@ clickElement.test("should be able to click element found by evaluation", functio
 
     var page = this.page;
 
-    return page.open(config.urlFor("/links-to-empty"))
+    return page.open(urlFor("/links-to-empty"))
         .then(function(status) {
             assert.equal(status, "success");
         })
@@ -155,7 +166,7 @@ clickElement.test("should be able to click element found by evaluation", functio
             return waitUntil("browser is redirected to /empty", function() {
                 return page.get("url").then(function(url) {
                     console.log("url was", url);
-                    return url == config.urlFor("/empty");
+                    return url == urlFor("/empty");
                 });
             }, 1000);
         });
@@ -165,7 +176,7 @@ clickElement.test("should allow less-strict clicking where uniqueness is not req
 
     var page = this.page;
 
-    return page.open(config.urlFor("/duplicate-links-to-empty"))
+    return page.open(urlFor("/duplicate-links-to-empty"))
         .then(function(status) {
             assert.equal(status, "success");
         })
@@ -176,7 +187,7 @@ clickElement.test("should allow less-strict clicking where uniqueness is not req
             return waitUntil("browser is redirected to /empty", function() {
                 return page.get("url").then(function(url) {
                     console.log("url was", url);
-                    return url == config.urlFor("/empty");
+                    return url == urlFor("/empty");
                 });
             }, 1000);
         });
