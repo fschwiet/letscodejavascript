@@ -1,4 +1,7 @@
 
+var path = require('path');
+
+
 function NodeunitBuilder(outer, name) {
 
     outer[name] = this;
@@ -7,6 +10,8 @@ function NodeunitBuilder(outer, name) {
 NodeunitBuilder.prototype.withPromiseTest = function(name, callback) {
 
     this[name] = function(test) {
+
+        var that = this;
 
         if (typeof callback !== "function") {
             test.ok(false, "Not implemented");
@@ -36,7 +41,7 @@ NodeunitBuilder.prototype.withPromiseTest = function(name, callback) {
                 .then(function() {
                     test.done();
                 }, function(err) {
-                    return errorHandler(that)
+                    errorHandler(that)
                     .fin(function() {
                         test.ok(false,err);
                         test.done();
@@ -47,8 +52,8 @@ NodeunitBuilder.prototype.withPromiseTest = function(name, callback) {
 };
 
 function errorHandler(that) {
-    if (that.page) {
-        var screenshotPath = path.resolve(require.main.filename, "test-screenshot.jpg");
+    if ("page" in that) {
+        var screenshotPath = path.resolve(".", "test-screenshot.jpg");
         return that.page.render(screenshotPath)
         .then(function(){
             console.log("wrote screenshot to", screenshotPath);
