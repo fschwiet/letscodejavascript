@@ -8,6 +8,7 @@ var assertPage = require("./assertPage.js");
 
 var setup = require("../test/setup");
 var NodeunitBuilder = require("../test/nodeunit-builder.js");
+var shouldFail = require("../test/should-fail.js");
 var server;
 
 var port = config.get("server_port");
@@ -67,7 +68,7 @@ testBlock.test("should pass arguments to evaluate correctly", function() {
 testBlock.test("should pass exception through with for evaluate", function() {
 
     var page = this.page;
-    return setup.shouldFail(function() {
+    return shouldFail(function() {
         return page.evaluate(function(a, b, c) {
             throw new Error("some error: " + (a + b + c));
         }, 1, 2, 3);
@@ -91,7 +92,7 @@ testBlock.test("should give useful error when not found", function() {
 
     var page = this.page;
 
-    return setup.shouldFail(function() {
+    return shouldFail(function() {
         return page.open(config.urlFor("/empty"))
             .then(function(status) {
                 assert.equal(status, "success");
@@ -106,7 +107,7 @@ clickElement.test("should give useful error when multiple found", function() {
 
     var page = this.page;
 
-    return setup.shouldFail(function() {
+    return shouldFail(function() {
         return page.open(config.urlFor("/multiple"))
             .then(function(status) {
                 assert.equal(status, "success");

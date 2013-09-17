@@ -5,6 +5,7 @@
     var Q = require("q");
     var setup = require("./setup.js");
     var waitUntil = require("./waitUntil.js");
+    var shouldFail = require("./should-fail.js");
 
     setup.qtest(exports, "should wait for evaluation to be true", function() {
         var waits = 0;
@@ -34,7 +35,7 @@
     setup.qtest(exports, "should eventually fail if evaluation is false", function() {
         var attempts = 0;
 
-        return setup.shouldFail(function() {
+        return shouldFail(function() {
             return waitUntil("hi", function() {
                 attempts++;
                 return false;
@@ -45,7 +46,7 @@
     setup.qtest(exports, "should eventually fail if promise evaluation is false", function() {
         var attempts = 0;
 
-        return setup.shouldFail(function() {
+        return shouldFail(function() {
             return waitUntil("hi", function() {
 
                 attempts++;
@@ -59,7 +60,7 @@
     setup.qtest(exports, "should propagate synchronous exceptions", function() {
         var waits = 0;
 
-        return setup.shouldFail(function() {
+        return shouldFail(function() {
             return waitUntil("hi", function() {
                 if (++waits >= 5) {
                     throw new Error("foo fiddly pham");
@@ -71,7 +72,7 @@
     setup.qtest(exports, "should propagate asynchronous exceptions", function() {
         var waits = 0;
 
-        return setup.shouldFail(function() {
+        return shouldFail(function() {
             return waitUntil("hi", function() {
 
                 var deferred = Q.defer();
@@ -89,7 +90,7 @@
 
     setup.qtest(exports, "should give helpful error when unexpected parameters", function() {
 
-        return setup.shouldFail(function(){
+        return shouldFail(function(){
 
             return waitUntil(function() {
             });

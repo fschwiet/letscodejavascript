@@ -8,6 +8,7 @@ var dataUserPostsRead = require("../server/data/userPostsRead.js");
 var posts = require("../server/posts.js");
 var users = require("../server/data/users.js");
 var setup = require("../test/setup.js");
+var shouldFail = require("../test/should-fail.js");
 
 var testWithRssOnly = setup.given3rdPartyRssServer(exports);
 
@@ -162,7 +163,7 @@ testWithRssOnly.test("loadFeeds should be able to load RSS feeds", function() {
 
 testWithRssOnly.test("loadFeeds should give error if the http request fails", function() {
 
-    return setup.shouldFail(function() {
+    return shouldFail(function() {
         return posts.loadFeeds("http://nonexistsantserver.coommmm/rss/foo");
     }, "getaddrinfo ENOTFOUND");
 });
@@ -172,7 +173,7 @@ testWithRssOnly.test("loadFeeds should give error if the http request fails #2",
 
     var that = this;
 
-    return setup.shouldFail(function() {
+    return shouldFail(function() {
         return posts.loadFeeds(that.rssServer.urlFor("/notexistingPath"));
     }, "Not a feed");
 });

@@ -73,20 +73,6 @@ exports.qtest = function(context, name, testImplementation) {
     };
 };
 
-exports.shouldFail = function(promiseFactory, expectedText) {
-
-    return promiseFactory()
-        .then(function() {
-            throw new Error("Expected exception");
-        }, function(err) {
-            if (expectedText) {
-                assert.ok(err.toString().indexOf(expectedText) > -1,
-                    "Did not see expected error text :" + expectedText + "\nActual text was " + err.toString());
-            }
-        });
-};
-
-
 exports.usingPhantomPage = NodeunitBuilder.createTestScopeExtender(
     "using phantom page",
     function(done) {
