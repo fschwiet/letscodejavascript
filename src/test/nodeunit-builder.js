@@ -20,8 +20,6 @@ NodeunitBuilder.prototype.test = function(name, callback) {
             return;
         }
 
-        var result;
-
         Q()
         .then(function() {
             return callback.call(that);
