@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-var phantom = require("./../../src/test/node-phantom-shim");
+var phantom = require("cauldron").phantom;
 
 phantom.create()
 .then(function(ph) {

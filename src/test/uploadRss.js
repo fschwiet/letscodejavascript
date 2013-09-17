@@ -6,7 +6,7 @@ var config = require("../server/config.js");
 
 var waitUntil = require("cauldron").waitUntil;
 var testData = require("./test-data.js");
-var assertPage = require("./assertPage.js");
+var assertPage = require("cauldron").assertPage;
 
 module.exports = function(page, options) {
 

@@ -2,7 +2,7 @@
 var path = require('path');
 
 var NodeunitBuilder = require("./nodeunit-builder.js");
-var phantom = require("./node-phantom-shim.js");
+var phantom = require("cauldron").phantom;
 
 
 module.exports = NodeunitBuilder.createTestScopeExtender(

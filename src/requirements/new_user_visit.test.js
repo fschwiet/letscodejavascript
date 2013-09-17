@@ -1,6 +1,6 @@
 var config = require("../server/config.js");
 var setup = require("../test/setup.js");
-var assertPage = require("../test/assertPage.js");
+var assertPage = require("cauldron").assertPage;
 var assert = require("assert");
 
 var waitUntil = require("cauldron").waitUntil;
