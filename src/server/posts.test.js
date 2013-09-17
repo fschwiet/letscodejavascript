@@ -8,7 +8,7 @@ var dataUserPostsRead = require("../server/data/userPostsRead.js");
 var posts = require("../server/posts.js");
 var users = require("../server/data/users.js");
 var setup = require("../test/setup.js");
-var shouldFail = require("../test/should-fail.js");
+var shouldFail = require("cauldron").shouldFail;
 
 var testWithRssOnly = setup.given3rdPartyRssServer(exports);
 

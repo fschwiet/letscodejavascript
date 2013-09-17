@@ -5,7 +5,7 @@ var setup = require("../test/setup");
 var config = require("../server/config.js");
 var waitUntil = require("cauldron").waitUntil;
 
-var testBlock = require("../test/using-phantom-page.js")(setup.whenRunningTheServer(exports));
+var testBlock = setup.usingPhantomPage(setup.whenRunningTheServer(exports));
 
 setup.qtest(testBlock, "can load about page", function() {
 

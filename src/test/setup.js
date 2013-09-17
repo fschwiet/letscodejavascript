@@ -63,7 +63,7 @@ exports.givenSmtpServer = NodeunitBuilder.createTestScopeExtender(
         done();
     });
 
-exports.usingPhantomPage = require("./using-phantom-page.js");
+exports.usingPhantomPage = require("cauldron").usingPhantomPage;
 
 
 exports.given3rdPartyRssServer = NodeunitBuilder.createTestScopeExtender(
