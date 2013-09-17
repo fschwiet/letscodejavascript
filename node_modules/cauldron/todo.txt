@@ -1,0 +1,10 @@
+node-phantom-shim.test.slow.js needs:
+    config.js 
+        config.get("server_port");
+        config.urlFor()  (for addresses of test server)
+    setup.js
+        setup.usingPhantomPage
+        setup.qtest
+        setup.shouldFail
+
+
