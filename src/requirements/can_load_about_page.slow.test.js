@@ -5,7 +5,7 @@ var setup = require("../test/setup");
 var config = require("../server/config.js");
 var waitUntil = require("../test/waitUntil");
 
-var testBlock = setup.usingPhantomPage(setup.whenRunningTheServer(exports));
+var testBlock = require("./using-phantom-page.js")(setup.whenRunningTheServer(exports));
 
 setup.qtest(testBlock, "can load about page", function() {
 

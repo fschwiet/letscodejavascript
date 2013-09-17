@@ -11,8 +11,6 @@ var uuid = require("node-uuid");
 var config = require("./../server/config.js");
 var database = require("../server/database.js");
 
-var phantom = require("./node-phantom-shim.js");
-
 var NodeunitBuilder = require("./nodeunit-builder.js");
 
 
@@ -73,57 +71,6 @@ exports.qtest = function(context, name, testImplementation) {
     };
 };
 
-exports.usingPhantomPage = NodeunitBuilder.createTestScopeExtender(
-    "using phantom page",
-    function(done) {
-
-        var that = this;
-
-        phantom
-            .create()
-            .then(function(phantom) {
-
-                phantomRef = phantom;
-
-                return phantom.createPage()
-                    .then(function(page) {
-                        that.page = page;
-
-                        page.onConsoleMessage = function(message) {
-                            console.log("phantomsjs console.log:", message);
-                        };
-
-                        page.onError = function(message) {
-                            console.log("phantomjs error:", message);
-                        };
-    
-                        that.promiseErrorHandlers = that.promiseErrorHandlers || [];
-                        that.promiseErrorHandlers.push(function() {
-                            var screenshotPath = path.resolve(".", "test-screenshot.jpg");
-                            return that.page.render(screenshotPath)
-                            .then(function(){
-                                console.log("wrote screenshot to", screenshotPath);
-                            }, function(renderError) {
-                                console.log ("error writing screenshot:", renderError);
-                            });
-                        });
-                    });
-            })
-            .then(function() {
-                done();
-            }, function(err) {
-                done(err);
-            });
-    },
-    function(done) {
-
-        if (typeof phantomRef !== "undefined") {
-            phantomRef.exit();
-        }
-
-        done();
-    });
-
 
 var server = require("../server/server.js");
 
@@ -167,6 +114,8 @@ exports.givenSmtpServer = NodeunitBuilder.createTestScopeExtender(
         smtpServer.stop();
         done();
     });
+
+exports.usingPhantomPage = require("./using-phantom-page.js");
 
 
 exports.given3rdPartyRssServer = NodeunitBuilder.createTestScopeExtender(

@@ -50,7 +50,7 @@ withServer.tearDown = function(callback) {
     }
 };
 
-var testBlock = setup.usingPhantomPage(withServer);
+var testBlock = require("./using-phantom-page.js")(withServer);
 var clickElement = new NodeunitBuilder(testBlock, "using clickElement");
 
 testBlock.test("should pass arguments to evaluate correctly", function() {
