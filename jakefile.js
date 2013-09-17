@@ -80,10 +80,7 @@ task("test", ["testClient", "testRemaining", "testSmokeAsRegularTest", "testSlow
 
 task("testClient", function() {
 
-    promiseJake(karma.runTests(path.resolve("./build/karma/karma.conf.js")));
-
-}, {
-    async: true
+    return karma.runTests(path.resolve("./build/karma/karma.conf.js"));
 });
 
 function runTestsWithNodeunit(testList) {
@@ -270,7 +267,7 @@ task("deployToIIS", ["verifyEmptyGitStatus", "testForRelease"], function() {
 
             console.log("Deploying to " + deployPath);
 
-            promiseJake(gitCloneTo(deployPath)
+            return gitCloneTo(deployPath)
                 .then(function() {
                         return Q.nbind(fs.readFile)(productionConfig, {
                                 encoding: "utf8"
@@ -351,11 +348,9 @@ task("deployToIIS", ["verifyEmptyGitStatus", "testForRelease"], function() {
                             })
                             .then(assertExecFileSucceeded)
                             .then(complete);
-                    }));
+                    });
         }
     });
-}, {
-    async: true
 });
 
 function assertExecFileSucceeded(execFileResults) {
@@ -461,9 +456,7 @@ task("runMigrations", ["lint"], function() {
 
     var extraParams = ["up"];
 
-    promiseJake(runMigrations(["up"]));
-}, {
-    async: true
+    return runMigrations(["up"]);
 });
 
 desc("Reverts 1 database migrations");
@@ -471,9 +464,7 @@ task("runOneMigrationDown", function() {
 
     var extraParams = ["up"];
 
-    promiseJake(runMigrations(["down", "--count", "1"]));
-}, {
-    async: true
+    return runMigrations(["down", "--count", "1"]);
 });
 
 function runMigrations(parameters) {
@@ -514,12 +505,3 @@ function listNonImportedFiles() {
     return list;
 }
 
-function promiseJake(promise) {
-    return promise.then(function() {
-        complete();
-    }, function(err) {
-        setTimeout(function() {
-            fail(err);
-        }, 0);
-    });
-}
