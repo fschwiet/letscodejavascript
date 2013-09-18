@@ -220,6 +220,35 @@ task("testForRelease", ["default", "prepareTempDirectory"], function() {
 });
 
 
+function getGitCurrentCommit() {
+
+    return Q()
+    .then(function() {
+        return Q.nfcall(childProcess.exec,"git rev-parse HEAD");
+    })
+    .then(function(revParseResults) {
+
+        var stdout = revParseResults[0];
+        var stderr = revParseResults[1];
+
+        return stdout.toString().trim();
+    });
+}
+
+function getAvailableDirectory(baseDirectory) {
+
+    var index = 0;
+    var result = null;
+
+    do {
+        ++index;
+        result = baseDirectory + "_" + index;
+    } while (fs.existsSync(result));
+
+    return result;
+}
+
+
 desc("Deploys to IIS after checking smoke tests.");
 task("deployToIIS", ["verifyEmptyGitStatus", "testForRelease"], function() {
 
@@ -240,34 +269,15 @@ task("deployToIIS", ["verifyEmptyGitStatus", "testForRelease"], function() {
         fail("Deploying to a full directory.  Please clean up " + deployRoot + " first.");
     }
 
-    return Q()
-    .then(function() {
-        return Q.nfcall(childProcess.exec,"git rev-parse HEAD");
-    })
-    .then(function(revParseResults) {
+    return getGitCurrentCommit()
+    .then(function(id) {
 
-        var stdout = revParseResults[0];
-        var stderr = revParseResults[1];
+        var deployPath = getAvailableDirectory(path.resolve(deployRoot, id));
+        var tempPath = deployPath + "_temp";
 
-        var id = stdout.toString().trim();
-
-        var index = 0;
-        var deployPath = null;
-        var tempPath = null;
-
-        do {
-            ++index;
-            deployPath = path.resolve(deployRoot, id + "_" + index);
-            tempPath = path.resolve(deployRoot, id + "_" + index + "_temp");
-        } while (fs.existsSync(deployPath));
-
-        fs.mkdirsSync("c:/temp/fivefive/fourfour/three");
-
-        console.log("creating directoriies");
         fs.mkdirsSync(path.resolve(tempPath, "uploads"));
         fs.mkdirsSync(path.resolve(tempPath, "logs"));
 
-        console.log("done creating");
         console.log("Deploying to " + deployPath);
 
         return gitCloneTo(deployPath)
