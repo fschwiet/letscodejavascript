@@ -225,8 +225,6 @@ task("deployToIIS", ["verifyEmptyGitStatus", "testForRelease"], function() {
 
     var productionConfig = nconf.get("deployment_configFile");
     var deployRoot = nconf.get("deployment_basePath");
-    var smoketest_hostname = nconf.get("server_hostname");
-    var smoketest_port = nconf.get("deployment_smoketestPort");
 
     if (!fs.existsSync(productionConfig)) {
         fail("Could not find file production.config.json, please create before deploying.  Consider using sample.config.json as a starting point.");
@@ -242,126 +240,134 @@ task("deployToIIS", ["verifyEmptyGitStatus", "testForRelease"], function() {
         fail("Deploying to a full directory.  Please clean up " + deployRoot + " first.");
     }
 
+    return Q()
+    .then(function() {
+        return Q.nfcall(childProcess.exec,"git rev-parse HEAD");
+    })
+    .then(function(revParseResults) {
 
-    childProcess.exec("git rev-parse HEAD", function(error, stdout, stderr) {
+        var stdout = revParseResults[0];
+        var stderr = revParseResults[1];
 
-        if (error !== null) {
-            fail(error);
+        var id = stdout.toString().trim();
 
-        } else {
-            var id = stdout.toString().trim();
+        var index = 0;
+        var deployPath = null;
+        var tempPath = null;
 
-            var index = 0;
-            var deployPath = null;
-            var tempPath = null;
+        do {
+            ++index;
+            deployPath = path.resolve(deployRoot, id + "_" + index);
+            tempPath = path.resolve(deployRoot, id + "_" + index + "_temp");
+        } while (fs.existsSync(deployPath));
 
-            do {
-                ++index;
-                deployPath = path.resolve(deployRoot, id + "_" + index);
-                tempPath = path.resolve(deployRoot, id + "_" + index + "_temp");
-            } while (fs.existsSync(deployPath));
+        fs.mkdirsSync("c:/temp/fivefive/fourfour/three");
 
-            fs.mkdirsSync(path.resolve(tempPath, "uploads"));
-            fs.mkdirsSync(path.resolve(tempPath, "logs"));
+        console.log("creating directoriies");
+        fs.mkdirsSync(path.resolve(tempPath, "uploads"));
+        fs.mkdirsSync(path.resolve(tempPath, "logs"));
 
-            console.log("Deploying to " + deployPath);
+        console.log("done creating");
+        console.log("Deploying to " + deployPath);
 
-            return gitCloneTo(deployPath)
-                .then(function() {
-                        return Q.nbind(fs.readFile)(productionConfig, {
-                                encoding: "utf8"
-                            });
-                    })
-                .then(function(configValues) {
+        return gitCloneTo(deployPath)
+            .then(function() {
+                    return Q.nbind(fs.readFile)(productionConfig, {
+                            encoding: "utf8"
+                        });
+                })
+            .then(function(configValues) {
 
-                        try {
-                            configValues = JSON.parse(configValues);
-                        } catch (err) {
-                            throw new Error("Error parsing " + productionConfig + ": " + err.toString());
+                    try {
+                        configValues = JSON.parse(configValues);
+                    } catch (err) {
+                        throw new Error("Error parsing " + productionConfig + ": " + err.toString());
+                    }
+
+                    function getProductionConfig(name) {
+                        if (!(name in configValues)) {
+                            throw new Error("Production configuration is missing setting " + name);
                         }
 
-                        function getProductionConfig(name) {
-                            if (!(name in configValues)) {
-                                throw new Error("Production configuration is missing setting " + name);
-                            }
+                        return configValues[name];
+                    }
 
-                            return configValues[name];
-                        }
+                    var deploymentName = getProductionConfig("server_friendlyName");
+                    var smoketest_hostname = getProductionConfig("server_hostname");
+                    var smoketest_port = nconf.get("deployment_smoketestPort");
+                    var final_hostname = getProductionConfig("server_hostname");
+                    var final_port = getProductionConfig("server_port");
 
-                        var deploymentName = getProductionConfig("server_friendlyName");
-                        var final_hostname = getProductionConfig("server_hostname");
-                        var final_port = getProductionConfig("server_port");
+                    configValues.server_tempPath = tempPath;
+                    configValues.server_port = smoketest_port;
 
-                        configValues.server_tempPath = tempPath;
-                        configValues.server_port = smoketest_port;
+                    if ((configValues.server_sessionKey || "").length < 15) {
 
-                        if ((configValues.server_sessionKey || "").length < 15) {
+                        throw new Error("Configuration should contain a good server_sessionKey");
+                    }
 
-                            throw new Error("Configuration should contain a good server_sessionKey");
-                        }
+                    return Q.nbind(fs.writeFile)(path.resolve(deployPath, "config.json"), JSON.stringify(configValues, null, "    "))
+                        .then(function() {
 
-                        return Q.nbind(fs.writeFile)(path.resolve(deployPath, "config.json"), JSON.stringify(configValues, null, "    "))
-                            .then(function() {
+                            console.log("running database migrations");
+                            return spawnProcess("migration task", "node", ["./node_modules/jake/bin/cli.js", "runMigrations"], {
+                                    cwd: deployPath
+                                });
+                        })
+                        .then(function() {
+                            console.log("building client script bundle");
+                            return spawnProcess("migration task", "node", ["./node_modules/jake/bin/cli.js", "buildClientBundle"], {
+                                    cwd: deployPath
+                                });
+                        })
+                        .then(function() {
+                            var iisPath = path.join(deployPath, "src/iis");
+                            var iisInstallArgs = ["-noprofile", "-file", "./src/iis/install.ps1", deploymentName + " (smoke)", iisPath, smoketest_hostname, smoketest_port, tempPath];
 
-                                console.log("running database migrations");
-                                return spawnProcess("migration task", "node", ["./node_modules/jake/bin/cli.js", "runMigrations"], {
-                                        cwd: deployPath
-                                    });
-                            })
-                            .then(function() {
-                                console.log("building client script bundle");
-                                return spawnProcess("migration task", "node", ["./node_modules/jake/bin/cli.js", "buildClientBundle"], {
-                                        cwd: deployPath
-                                    });
-                            })
-                            .then(function() {
-                                var iisPath = path.join(deployPath, "src/iis");
-                                var iisInstallArgs = ["-noprofile", "-file", "./src/iis/install.ps1", deploymentName + " (smoke)", iisPath, smoketest_hostname, smoketest_port, tempPath];
+                            console.log("calling execFile on ./src/iis/install.ps1", iisInstallArgs);
 
-                                console.log("calling execFile on ./src/iis/install.ps1", iisInstallArgs);
+                            return Q.nbind(childProcess.execFile)("powershell", iisInstallArgs, {
+                                    env: process.env
+                                });
+                        })
+                        .then(assertExecFileSucceeded)
+                        .then(function() {
 
-                                return Q.nbind(childProcess.execFile)("powershell", iisInstallArgs, {
-                                        env: process.env
-                                    });
-                            })
-                            .then(assertExecFileSucceeded)
-                            .then(function() {
+                            console.log("starting smoke tests");
+                            return spawnProcess("smoke test", "node", ["./node_modules/jake/bin/cli.js", "testSmoke"], {
+                                    cwd: deployPath
+                                });
+                        })
+                        .then(function() {
+                            configValues.server_port = final_port;
 
-                                console.log("starting smoke tests");
-                                return spawnProcess("smoke test", "node", ["./node_modules/jake/bin/cli.js", "testSmoke"], {
-                                        cwd: deployPath
-                                    });
-                            })
-                            .then(function() {
-                                configValues.server_port = final_port;
+                            return Q.nbind(fs.writeFile)(path.resolve(deployPath, "config.json"), JSON.stringify(configValues, null, "    "));
+                        })
+                        .then(function() {
+                            var iisPath = path.join(deployPath, "src/iis");
+                            var iisInstallArgs = ["-noprofile", "-file", "./src/iis/install.ps1", deploymentName, iisPath, final_hostname, final_port, tempPath];
 
-                                return Q.nbind(fs.writeFile)(path.resolve(deployPath, "config.json"), JSON.stringify(configValues, null, "    "));
-                            })
-                            .then(function() {
-                                var iisPath = path.join(deployPath, "src/iis");
-                                var iisInstallArgs = ["-noprofile", "-file", "./src/iis/install.ps1", deploymentName, iisPath, final_hostname, final_port, tempPath];
+                            console.log("calling execFile on ./src/iis/install.ps1", iisInstallArgs);
 
-                                console.log("calling execFile on ./src/iis/install.ps1", iisInstallArgs);
+                            return Q.nbind(childProcess.execFile)("powershell", iisInstallArgs, {
+                                    env: process.env
+                                });
+                        })
+                        .then(assertExecFileSucceeded)
+                        .then(function() {
 
-                                return Q.nbind(childProcess.execFile)("powershell", iisInstallArgs, {
-                                        env: process.env
-                                    });
-                            })
-                            .then(assertExecFileSucceeded)
-                            .then(function() {
+                            //  sad workaround:  the iis-hosted node application doesn't recognize the configuration change
+                            //  until after iisreset (the configuration is written before the iis site is created, so this seems
+                            //  like a iis, iisnode or carbon issue)
 
-                                //  sad workaround:  the iis-hosted node application doesn't recognize the configuration change
-                                //  until after iisreset (the configuration is written before the iis site is created, so this seems
-                                //  like a iis, iisnode or carbon issue)
+                            console.log("running iisreset");
 
-                                console.log("running iisreset");
+                            return Q.nbind(childProcess.execFile)("iisreset");
+                        })
+                        .then(assertExecFileSucceeded)
+                        .then(complete);
+                });
 
-                                return Q.nbind(childProcess.execFile)("iisreset");
-                            })
-                            .then(assertExecFileSucceeded)
-                            .then(complete);
-                    });
-        }
     });
 });
 
