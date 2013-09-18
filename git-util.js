@@ -1,6 +1,8 @@
 
 var childProcess = require("child_process");
+var fs = require("fs");
 var path = require("path");
+var Q = require("q");
 
 var spawnProcess = require("./src/test/spawn-process.js");
 

@@ -235,9 +235,12 @@ task("deployToIIS", ["verifyEmptyGitStatus", "testForRelease"], function() {
     return gitUtil.getGitCurrentCommit()
     .then(function(id) {
 
+        console.log("deploying git commit", id);
+
         var deployPath = gitUtil.getAvailableDirectory(path.resolve(deployRoot, id));
         var tempPath = deployPath + "_temp";
 
+        fs.mkdirsSync(deployPath);
         fs.mkdirsSync(path.resolve(tempPath, "uploads"));
         fs.mkdirsSync(path.resolve(tempPath, "logs"));
 
