@@ -1,7 +1,8 @@
+var childProcess = require("child_process");
 var fs = require("fs");
 var assert = require("assert");
-var spawnProcess = require("./spawn-process");
 var config = require("../server/config.js");
+var util = require("util");
 
 var SCRIPT_NAME = "src/iis/iis_server.js";
 
@@ -13,7 +14,7 @@ exports.startServerLikeIIS = function(callback) {
     var env = JSON.parse(JSON.stringify(process.env));
     env.PORT = config.get("server_port");
 
-    server = spawnProcess.leftRunning("iis_server", "node", [SCRIPT_NAME], {
+    server = spawnOpenProcess("iis_server", "node", [SCRIPT_NAME], {
             env: env
         });
 
@@ -35,3 +36,30 @@ exports.stopServer = function(callback) {
         callback();
     }
 };
+
+function spawnOpenProcess(name, program, args, options) {
+
+    console.log(util.format("running %s as %s %s", name, program, args.join(" ")));
+
+    var result = childProcess.spawn(program, args, options);
+
+    result.stdout.setEncoding('utf8');
+
+    result.stderr.on('data', function(data) {
+        data.toString().split("\n").forEach(function(line) {
+            console.log(name + " stderr: " + line);
+        });
+    });
+
+    result.stdout.on('data', function(data) {
+        data.toString().split("\n").forEach(function(line) {
+            console.log(name + " stdout: " + line);
+        });
+    });
+
+    result.on('close', function(code) {
+        console.log(util.format("%s finished with exit code %s", name, code));
+    });
+
+    return result;
+}
