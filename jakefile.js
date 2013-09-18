@@ -223,11 +223,10 @@ task("testForRelease", ["default", "prepareTempDirectory"], function() {
 desc("Deploys to IIS after checking smoke tests.");
 task("deployToIIS", ["verifyEmptyGitStatus", "testForRelease"], function() {
 
-    var deploymentName = nconf.get("server_friendlyName");
     var productionConfig = nconf.get("deployment_configFile");
     var deployRoot = nconf.get("deployment_basePath");
+    var smoketest_hostname = nconf.get("server_hostname");
     var smoketest_port = nconf.get("deployment_smoketestPort");
-    var final_port = nconf.get("deployment_port");
 
     if (!fs.existsSync(productionConfig)) {
         fail("Could not find file production.config.json, please create before deploying.  Consider using sample.config.json as a starting point.");
@@ -274,11 +273,24 @@ task("deployToIIS", ["verifyEmptyGitStatus", "testForRelease"], function() {
                             });
                     })
                 .then(function(configValues) {
+
                         try {
                             configValues = JSON.parse(configValues);
                         } catch (err) {
                             throw new Error("Error parsing " + productionConfig + ": " + err.toString());
                         }
+
+                        function getProductionConfig(name) {
+                            if (!(name in configValues)) {
+                                throw new Error("Production configuration is missing setting " + name);
+                            }
+
+                            return configValues[name];
+                        }
+
+                        var deploymentName = getProductionConfig("server_friendlyName");
+                        var final_hostname = getProductionConfig("server_hostname");
+                        var final_port = getProductionConfig("server_port");
 
                         configValues.server_tempPath = tempPath;
                         configValues.server_port = smoketest_port;
@@ -304,7 +316,7 @@ task("deployToIIS", ["verifyEmptyGitStatus", "testForRelease"], function() {
                             })
                             .then(function() {
                                 var iisPath = path.join(deployPath, "src/iis");
-                                var iisInstallArgs = ["-noprofile", "-file", "./src/iis/install.ps1", deploymentName + " (smoke)", iisPath, smoketest_port, tempPath];
+                                var iisInstallArgs = ["-noprofile", "-file", "./src/iis/install.ps1", deploymentName + " (smoke)", iisPath, smoketest_hostname, smoketest_port, tempPath];
 
                                 console.log("calling execFile on ./src/iis/install.ps1", iisInstallArgs);
 
@@ -327,7 +339,7 @@ task("deployToIIS", ["verifyEmptyGitStatus", "testForRelease"], function() {
                             })
                             .then(function() {
                                 var iisPath = path.join(deployPath, "src/iis");
-                                var iisInstallArgs = ["-noprofile", "-file", "./src/iis/install.ps1", deploymentName, iisPath, final_port, tempPath];
+                                var iisInstallArgs = ["-noprofile", "-file", "./src/iis/install.ps1", deploymentName, iisPath, final_hostname, final_port, tempPath];
 
                                 console.log("calling execFile on ./src/iis/install.ps1", iisInstallArgs);
 

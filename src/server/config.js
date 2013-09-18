@@ -25,7 +25,6 @@ function getDefaults() {
         "googleTest_password": null,
 
         "deployment_configFile": "production.config.json",
-        "deployment_port": 80,
         "deployment_smoketestPort": 8082,
         "deployment_basePath": "c:/inetpub/letscodejavascript",
 
