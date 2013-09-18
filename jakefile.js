@@ -186,29 +186,15 @@ task("testForRelease", ["default", "prepareTempDirectory"], function() {
 
     fs.mkdirSync("./temp/workingDirectory");
 
-    gitUtil.gitCloneTo(workingDirectory)
-        .then(function() {
-
-            if (fs.existsSync("./config.json")) {
-                return Q.nbind(fs.copy)("./config.json", path.resolve(workingDirectory, "config.json"));
-            }
-        })
-        .then(function() {
-            return spawnProcess("jake", "node", [path.resolve(workingDirectory, ".\\node_modules\\jake\\bin\\cli.js"), "default"], {
-                    cwd: workingDirectory,
-                });
-        })
-        .then(function() {
-            console.log("success!");
-            complete();
-        }, function(reason) {
-            console.log("failure!");
-            console.log("calling fail with parameter" + reason);
-            fail(reason);
-        });
-
-}, {
-    async: true
+    return gitUtil.gitCloneTo(workingDirectory)
+    .then(function() {
+        return Q.nbind(fs.copy)("./config.json", path.resolve(workingDirectory, "config.json"));
+    })
+    .then(function() {
+        return spawnProcess("jake", "node", [path.resolve(workingDirectory, ".\\node_modules\\jake\\bin\\cli.js"), "default"], {
+                cwd: workingDirectory,
+            });
+    });
 });
 
 
