@@ -16,6 +16,7 @@ var nodeVersion = new(require("node-version").version)();
 var util = require("util");
 var runServer = require("./src/test/runServer.js");
 var beautify = require('js-beautify');
+var gitUtil = require("./git-util.js");
 
 var jadePreprocessor = require("./build/karma/jadePreprocessor.js");
 
@@ -173,15 +174,6 @@ task("createTestDatabase", function() {
 
 task("prepareTestDatabase", ["createTestDatabase", "runMigrations"]);
 
-function gitCloneTo(workingDirectory) {
-    return spawnProcess("git clone", "git", ["clone", "--quiet", "--no-hardlinks", ".", workingDirectory])
-        .then(function() {
-            return spawnProcess("npm build", "node", [path.resolve(workingDirectory, "./node_modules/npm/cli.js"), "rebuild"], {
-                    cwd: workingDirectory,
-                });
-        });
-}
-
 
 //  The dependency on default is only there to be sure karma client and server
 //  are running from our local directory, so it doesn't get started from the
@@ -194,7 +186,7 @@ task("testForRelease", ["default", "prepareTempDirectory"], function() {
 
     fs.mkdirSync("./temp/workingDirectory");
 
-    gitCloneTo(workingDirectory)
+    gitUtil.gitCloneTo(workingDirectory)
         .then(function() {
 
             if (fs.existsSync("./config.json")) {
@@ -220,35 +212,6 @@ task("testForRelease", ["default", "prepareTempDirectory"], function() {
 });
 
 
-function getGitCurrentCommit() {
-
-    return Q()
-    .then(function() {
-        return Q.nfcall(childProcess.exec,"git rev-parse HEAD");
-    })
-    .then(function(revParseResults) {
-
-        var stdout = revParseResults[0];
-        var stderr = revParseResults[1];
-
-        return stdout.toString().trim();
-    });
-}
-
-function getAvailableDirectory(baseDirectory) {
-
-    var index = 0;
-    var result = null;
-
-    do {
-        ++index;
-        result = baseDirectory + "_" + index;
-    } while (fs.existsSync(result));
-
-    return result;
-}
-
-
 desc("Deploys to IIS after checking smoke tests.");
 task("deployToIIS", ["verifyEmptyGitStatus", "testForRelease"], function() {
 
@@ -269,10 +232,10 @@ task("deployToIIS", ["verifyEmptyGitStatus", "testForRelease"], function() {
         fail("Deploying to a full directory.  Please clean up " + deployRoot + " first.");
     }
 
-    return getGitCurrentCommit()
+    return gitUtil.getGitCurrentCommit()
     .then(function(id) {
 
-        var deployPath = getAvailableDirectory(path.resolve(deployRoot, id));
+        var deployPath = gitUtil.getAvailableDirectory(path.resolve(deployRoot, id));
         var tempPath = deployPath + "_temp";
 
         fs.mkdirsSync(path.resolve(tempPath, "uploads"));
@@ -280,7 +243,7 @@ task("deployToIIS", ["verifyEmptyGitStatus", "testForRelease"], function() {
 
         console.log("Deploying to " + deployPath);
 
-        return gitCloneTo(deployPath)
+        return gitUtil.gitCloneTo(deployPath)
             .then(function() {
                     return Q.nbind(fs.readFile)(productionConfig, {
                             encoding: "utf8"
