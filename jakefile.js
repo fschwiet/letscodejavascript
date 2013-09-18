@@ -7,7 +7,6 @@ var path = require("path");
 var find = require("find");
 var fs = require('fs-extra');
 var rimraf = require("rimraf");
-var spawnProcess = require("./src/test/spawn-process.js");
 var childProcess = require("child_process");
 var nconf = require("./src/server/config.js");
 var Q = require("q");
@@ -16,7 +15,9 @@ var nodeVersion = new(require("node-version").version)();
 var util = require("util");
 var runServer = require("./src/test/runServer.js");
 var beautify = require('js-beautify');
-var gitUtil = require("./git-util.js");
+
+var spawnProcess = require("cauldron").spawnProcess;
+var gitUtil = require("cauldron").gitUtil;
 
 var jadePreprocessor = require("./build/karma/jadePreprocessor.js");
 
@@ -183,7 +184,6 @@ desc("test all the things");
 task("testForRelease", ["default", "prepareTempDirectory"], function() {
 
     var workingDirectory = path.resolve(".\\temp\\workingDirectory");
-
     fs.mkdirSync("./temp/workingDirectory");
 
     return gitUtil.gitCloneTo(workingDirectory)
@@ -191,9 +191,7 @@ task("testForRelease", ["default", "prepareTempDirectory"], function() {
         return Q.nbind(fs.copy)("./config.json", path.resolve(workingDirectory, "config.json"));
     })
     .then(function() {
-        return spawnProcess("jake", "node", [path.resolve(workingDirectory, ".\\node_modules\\jake\\bin\\cli.js"), "default"], {
-                cwd: workingDirectory,
-            });
+        return spawnProcess("node", [path.resolve(workingDirectory, ".\\node_modules\\jake\\bin\\cli.js"), "default"], {cwd: workingDirectory});
     });
 });
 
@@ -272,13 +270,13 @@ task("deployToIIS", ["verifyEmptyGitStatus", "testForRelease"], function() {
                         .then(function() {
 
                             console.log("running database migrations");
-                            return spawnProcess("migration task", "node", ["./node_modules/jake/bin/cli.js", "runMigrations"], {
+                            return spawnProcess("node", ["./node_modules/jake/bin/cli.js", "runMigrations"], {
                                     cwd: deployPath
                                 });
                         })
                         .then(function() {
                             console.log("building client script bundle");
-                            return spawnProcess("migration task", "node", ["./node_modules/jake/bin/cli.js", "buildClientBundle"], {
+                            return spawnProcess("node", ["./node_modules/jake/bin/cli.js", "buildClientBundle"], {
                                     cwd: deployPath
                                 });
                         })
@@ -296,7 +294,7 @@ task("deployToIIS", ["verifyEmptyGitStatus", "testForRelease"], function() {
                         .then(function() {
 
                             console.log("starting smoke tests");
-                            return spawnProcess("smoke test", "node", ["./node_modules/jake/bin/cli.js", "testSmoke"], {
+                            return spawnProcess("node", ["./node_modules/jake/bin/cli.js", "testSmoke"], {
                                     cwd: deployPath
                                 });
                         })
