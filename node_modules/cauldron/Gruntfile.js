@@ -1,3 +1,7 @@
+
+//  Just making sure this loads
+require("./index.js");
+
 module.exports = function(grunt) {
 
     grunt.initConfig({

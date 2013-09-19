@@ -60,7 +60,7 @@ function ensureTestDatabaseIsClean(callback) {
             callback(err);
         });
 
-    connection.end();
+    connection.release();
 }
 
 
@@ -90,7 +90,7 @@ function emptyDatabase(callback) {
             return remainingWork.reduce(Q.when, Q());
         })
         .then(function() {
-            connection.end();
+            connection.release();
         })
         .then(callback, callback);
 }
@@ -133,7 +133,7 @@ function useConnection(callback) {
     var connection = getConnection();
 
     callback(connection, function() {
-        connection.end();
+        connection.release();
     });
 }
 
