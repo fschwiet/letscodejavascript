@@ -37,7 +37,7 @@ function isDatabaseProduction() {
 
 function assertDatabaseIsNotProduction(name) {
 
-    if (isDatabaseProduction !== false) {
+    if (isDatabaseProduction() !== false) {
         throw new Error("Attempted to call " + name + " against a database is production environment.");
     }
 }
