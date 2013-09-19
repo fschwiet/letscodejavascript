@@ -103,16 +103,6 @@ exports.getStatus = function(callback) {
     });
 };
 
-/*
-
-    option configUpdater, might use:
-
-        function(config) {
-            config.debug = true;
-        }
-
-*/
-
 function getConnection(configUpdater) {
 
     var config = getConnectionInfo(true);
@@ -143,16 +133,18 @@ exports.useConnection = useConnection;
 
 function runMigrations(tempPath, parameters) {
 
+    var connectionInfo = getConnectionInfo(true);
+
     var databaseMigrationConfig = path.resolve(tempPath, "database.json");
 
     fs.writeFileSync(databaseMigrationConfig, JSON.stringify({
                 "db": {
                     "driver": "mysql",
-                    "user": nconf.get("database_user"),
-                    "password": nconf.get("database_password"),
-                    "host": nconf.get("database_hostname"),
-                    "port": nconf.get("database_port"),
-                    "database": nconf.get("database_name")
+                    "user": connectionInfo.user,
+                    "password": connectionInfo.password,
+                    "host": connectionInfo.host,
+                    "port": connectionInfo.port,
+                    "database": connectionInfo.database
                 }
             }, null, "    "));
 
