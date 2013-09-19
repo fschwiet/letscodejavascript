@@ -28,7 +28,7 @@ exports.loadPostsForUser = function(userId) {
             });
         })
         .fin(function() {
-            connection.end();
+            connection.release();
         });
     });
 };

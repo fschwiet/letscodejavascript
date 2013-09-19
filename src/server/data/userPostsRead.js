@@ -25,7 +25,7 @@ exports.markPostAsRead = function(userId, url) {
             // prevent the result from reaching the caller
         })
         .fin(function() {
-            connection.end();
+            connection.release();
         });
     });
 };
@@ -40,7 +40,7 @@ exports.markPostAsUnread = function(userId, url) {
             // prevent the result from reaching the caller
         })
         .fin(function() {
-            connection.end();
+            connection.release();
         });
     });
 };

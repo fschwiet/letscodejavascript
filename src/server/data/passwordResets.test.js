@@ -160,7 +160,7 @@ setup.qtest(exports, "should only honor password reset guids for 2 hours", funct
             .then(function(connection) {
                 return Q.ninvoke(connection, "query", "UPDATE passwordResets SET dateCreated=DATE_ADD(dateCreated, INTERVAL -2 HOUR)")
                 .fin(function() {
-                    connection.end();
+                    connection.release();
                 });
             })
             .then(function() {

@@ -31,7 +31,7 @@ setup.qtest(exports, "markPostAsRead shouldn't insert duplicates", function() {
             })
             .fin(function() {
 
-                connection.end();
+                connection.release();
             });                
         });
     });

@@ -52,7 +52,7 @@ exports.findOrCreateUserByGoogleIdentifier = function(identifier, profile, callb
             }
         })
         .fin(function() {
-            connection.end();
+            connection.release();
         });
     })
     .fail(function(err) {
@@ -99,7 +99,7 @@ exports.createLocalUser = function(email, friendlyName, password) {
                 });
             })
             .fin(function() {
-                connection.end();
+                connection.release();
             });
         });
     });
@@ -136,7 +136,7 @@ exports.findUserByUsernameOrEmail = function(usernameOrEmail, handler) {
             return handler({ id : result.userId, friendlyName : result.friendlyName, email: result.email }, result.passwordHash);
         })
         .fin(function() {
-            connection.end();
+            connection.release();
         });
     });
 };
@@ -174,7 +174,7 @@ exports.updateUserPassword = function(userId, newPassword) {
                 return queryResults[0].affectedRows > 0;
             })
             .fin(function() {
-                connection.end();
+                connection.release();
             });
         });
     });

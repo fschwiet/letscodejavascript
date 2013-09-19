@@ -28,7 +28,7 @@ exports.loadSubscriptions = function(userId, time) {
             return results[0];
         })
         .fin(function() {
-            connection.end();
+            connection.release();
         });
     });
 };
@@ -39,7 +39,7 @@ exports.saveSubscriptions = function(userId, subscriptions) {
     .then(function(connection){
         return saveSubscriptionsInternal(connection, userId, subscriptions)
         .fin(function() {
-            connection.end();
+            connection.release();
         });
     });
 };
@@ -82,7 +82,7 @@ exports.unsubscribe = function(userId, rssUrl) {
     .then(function(connection){
         return Q.npost(connection, "query", ["DELETE FROM subscriptions WHERE rssUrl = ? AND userId = ?", [rssUrl, userId]])
             .fin(function() {
-                connection.end();
+                connection.release();
             });
     });
 };

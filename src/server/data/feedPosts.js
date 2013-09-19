@@ -58,7 +58,7 @@ exports.writePostsToDatabase = function(rssUrl, posts) {
                         postRecord.rssUrlHash
                     ])
                 .fin(function() {
-                    connection.end();
+                    connection.release();
                 });
             });
         };
@@ -95,7 +95,7 @@ exports.loadPostsFromDatabase = function(rssUrl, userId) {
             });
         })
         .fin(function() {
-            connection.end();
+            connection.release();
         });
     });
 };

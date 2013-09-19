@@ -27,7 +27,7 @@ exports.requestResetId = function(userId) {
             return newId;
         })
         .fin(function() {
-            connection.end();
+            connection.release();
         });     
     });
 };
@@ -47,7 +47,7 @@ exports.useResetId = function(resetId, newPassword) {
 
             return Q.ninvoke(connection, "query", "DELETE FROM passwordResets WHERE uuid = ?", [resetId])
             .fin(function() {
-                connection.end();
+                connection.release();
             })            
             .then(function() {
                 return users.updateUserPassword(userId, newPassword);

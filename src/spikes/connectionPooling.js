@@ -59,7 +59,7 @@ Q()
         console.log("firstResult", results[0]);
     })
     .fin(function() {
-        connection.end();
+        connection.release();
     });
 })
 .then(function() {
@@ -75,7 +75,7 @@ Q()
         console.log("secondResult", results[0]);
     })
     .fin(function() {
-        connection2.end();
+        connection2.release();
     });
 
 })

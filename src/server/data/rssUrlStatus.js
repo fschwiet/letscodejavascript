@@ -38,7 +38,7 @@ exports.checkIfUrlNeedsUpdate = function(rssUrl, time) {
             return result[0][0].needUpdate > 0;
         })
         .fin(function() {
-            connection.end();
+            connection.release();
         });
     });
 };
@@ -63,7 +63,7 @@ exports.writeRssUrlStatus = function(rssUrl, status, time) {
         return Q.ninvoke(connection, "query",
             "INSERT INTO rssUrlStatus SET ? ON DUPLICATE KEY UPDATE ?", [newRow, updateRow])
             .fin(function() {
-                connection.end();
+                connection.release();
             });
     });
 };
