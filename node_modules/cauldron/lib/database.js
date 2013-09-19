@@ -54,8 +54,10 @@ function ensureTestDatabaseIsClean(callback) {
 
     connection.connect();
 
+    var databaseName = module.exports.getConnectionInfo(true).database;
+
     connection.query(
-        "DROP DATABASE IF EXISTS testtemp; CREATE DATABASE testtemp;", function(err, rows, fields) {
+        "DROP DATABASE IF EXISTS " + databaseName + "; CREATE DATABASE " + databaseName + ";", function(err, rows, fields) {
             callback(err);
         });
 
