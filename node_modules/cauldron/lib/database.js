@@ -21,7 +21,6 @@ module.exports = {
     getStatus: getStatus,
     getPooledConnection: getPooledConnection,
     getConnection: getConnection,
-    useConnection: useConnection,
     runMigrations: runMigrations
 };
 
@@ -60,7 +59,7 @@ function ensureTestDatabaseIsClean(callback) {
             callback(err);
         });
 
-    connection.release();
+    connection.end();
 }
 
 
@@ -90,7 +89,7 @@ function emptyDatabase(callback) {
             return remainingWork.reduce(Q.when, Q());
         })
         .then(function() {
-            connection.release();
+            connection.end();
         })
         .then(callback, callback);
 }
@@ -133,7 +132,7 @@ function useConnection(callback) {
     var connection = getConnection();
 
     callback(connection, function() {
-        connection.release();
+        connection.end();
     });
 }
 
