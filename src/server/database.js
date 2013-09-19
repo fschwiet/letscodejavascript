@@ -1,7 +1,7 @@
 
 var config = require("./config.js");
 
-module.exports = require("./ex-database.js");
+module.exports = require("cauldron").database;
 
 module.exports.getConnectionInfo = function(includeDatabasename) {
 
