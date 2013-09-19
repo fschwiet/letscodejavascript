@@ -11,8 +11,6 @@ poolConfig.connectionLimit = 70; // 100 is the default connection limit for MySQ
 
 var pool = mysql.createPool(poolConfig);
 
-exports.getPooledConnection = Q.nbind(pool.getConnection, pool);
-
 function getConnectionInfo(includeDatabasename) {
 
     var connectionInfo = {
@@ -31,14 +29,21 @@ function getConnectionInfo(includeDatabasename) {
     return connectionInfo;
 }
 
+
+function isDatabaseProduction() {
+    return nconf.get("isProduction");
+}
+
+
 function assertDatabaseIsNotProduction(name) {
 
-    if (nconf.get("isProduction") !== false) {
+    if (isDatabaseProduction !== false) {
         throw new Error("Attempted to call " + name + " against a database is production environment.");
     }
 }
 
-exports.ensureTestDatabaseIsClean = function(callback) {
+
+function ensureTestDatabaseIsClean(callback) {
 
     assertDatabaseIsNotProduction("ensureTestDatabaseIsClean");
 
@@ -52,9 +57,10 @@ exports.ensureTestDatabaseIsClean = function(callback) {
         });
 
     connection.end();
-};
+}
 
-exports.emptyDatabase = function(callback) {
+
+function emptyDatabase(callback) {
 
     assertDatabaseIsNotProduction("emptyDatabase");
 
@@ -86,7 +92,7 @@ exports.emptyDatabase = function(callback) {
 };
 
 
-exports.getStatus = function(callback) {
+function getStatus(callback) {
 
     useConnection(function(connection, done) {
 
@@ -118,8 +124,6 @@ function getConnection(configUpdater) {
     return connection;
 }
 
-exports.getConnection = getConnection;
-
 function useConnection(callback) {
 
     var connection = getConnection();
@@ -129,7 +133,6 @@ function useConnection(callback) {
     });
 }
 
-exports.useConnection = useConnection;
 
 function runMigrations(tempPath, parameters) {
 
@@ -161,5 +164,12 @@ function runMigrations(tempPath, parameters) {
     });
 }
 
-exports.runMigrations = runMigrations;
-
+module.exports = {
+    ensureTestDatabaseIsClean: ensureTestDatabaseIsClean,
+    emptyDatabase: emptyDatabase,
+    getStatus: getStatus,
+    getPooledConnection: Q.nbind(pool.getConnection, pool),
+    getConnection: getConnection,
+    useConnection: useConnection,
+    runMigrations: runMigrations
+};
