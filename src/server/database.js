@@ -89,7 +89,7 @@ function emptyDatabase(callback) {
             connection.end();
         })
         .then(callback, callback);
-};
+}
 
 
 function getStatus(callback) {
@@ -107,7 +107,7 @@ function getStatus(callback) {
             done();
         });
     });
-};
+}
 
 function getConnection(configUpdater) {
 
