@@ -432,13 +432,13 @@ task("removeClientBundle", function() {
 desc("Run database migrations");
 task("runMigrations", ["lint"], function() {
 
-    return database.runMigrations(nconf.tempPathFor("."), ["up"]);
+    return database.runMigrations(nconf.tempPathFor("."), "./src/migrations", ["up"]);
 });
 
 desc("Reverts 1 database migrations");
 task("runOneMigrationDown", function() {
 
-    return database.runMigrations(nconf.tempPathFor("."), ["down", "--count", "1"]);
+    return database.runMigrations(nconf.tempPathFor("."), "./src/migrations", ["down", "--count", "1"]);
 });
 
 function listNonImportedFiles() {

@@ -137,7 +137,7 @@ function useConnection(callback) {
 }
 
 
-function runMigrations(tempPath, parameters) {
+function runMigrations(tempPath, migrationsPath, parameters) {
 
     var connectionInfo = module.exports.getConnectionInfo(true);
 
@@ -157,7 +157,7 @@ function runMigrations(tempPath, parameters) {
     var builtParameters = ["./node_modules/db-migrate/bin/db-migrate"];
 
     builtParameters = builtParameters.concat.apply(builtParameters, parameters);
-    builtParameters = builtParameters.concat.apply(builtParameters, ["--config", databaseMigrationConfig, "--env=db", "--migrations-dir", "./src/migrations"]);
+    builtParameters = builtParameters.concat.apply(builtParameters, ["--config", databaseMigrationConfig, "--env=db", "--migrations-dir", migrationsPath]);
 
     return spawnProcess("node", builtParameters, {
         env: process.env
