@@ -3,7 +3,7 @@
 
     var assert = require("assert");
     var Q = require("q");
-    var waitUntil = require("./waitUntil.js");
+    var waitUntil = require("./wait-until.js");
     var shouldFail = require("./should-fail.js");
 
     var NodeunitBuilder = require("./nodeunit-builder.js");

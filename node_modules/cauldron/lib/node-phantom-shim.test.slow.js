@@ -2,8 +2,8 @@ var assert = require("assert");
 var express = require("express");
 var http = require('http');
 var Q = require("q");
-var waitUntil = require("./waitUntil.js");
-var assertPage = require("./assertPage.js");
+var waitUntil = require("./wait-until.js");
+var assertPage = require("./assert-page.js");
 var urlParser = require("url");
 
 var NodeunitBuilder = require("./nodeunit-builder.js");
