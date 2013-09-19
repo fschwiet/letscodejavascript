@@ -1,7 +1,10 @@
+var fs = require("fs");
 var mysql = require('mysql');
+var path = require("path");
 var Q = require("q");
 
 var nconf = require('./config.js');
+var spawnProcess = require('cauldron').spawnProcess;
 
 var poolConfig = getConnectionInfo(true);
 poolConfig.connectionLimit = 70; // 100 is the default connection limit for MySQL.  Using <100 since not everyone uses the pool.
@@ -137,4 +140,34 @@ function useConnection(callback) {
 }
 
 exports.useConnection = useConnection;
+
+function runMigrations(tempPath, parameters) {
+
+    var databaseMigrationConfig = path.resolve(tempPath, "database.json");
+
+    fs.writeFileSync(databaseMigrationConfig, JSON.stringify({
+                "db": {
+                    "driver": "mysql",
+                    "user": nconf.get("database_user"),
+                    "password": nconf.get("database_password"),
+                    "host": nconf.get("database_hostname"),
+                    "port": nconf.get("database_port"),
+                    "database": nconf.get("database_name")
+                }
+            }, null, "    "));
+
+    var builtParameters = ["./node_modules/db-migrate/bin/db-migrate"];
+
+    builtParameters = builtParameters.concat.apply(builtParameters, parameters);
+    builtParameters = builtParameters.concat.apply(builtParameters, ["--config", databaseMigrationConfig, "--env=db", "--migrations-dir", "./src/migrations"]);
+
+    return spawnProcess("node", builtParameters, {
+        env: process.env
+    })
+    .then(function() {
+        fs.unlinkSync(databaseMigrationConfig);
+    });
+}
+
+exports.runMigrations = runMigrations;
 

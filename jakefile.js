@@ -432,47 +432,14 @@ task("removeClientBundle", function() {
 desc("Run database migrations");
 task("runMigrations", ["lint"], function() {
 
-    var extraParams = ["up"];
-
-    return runMigrations(["up"]);
+    return database.runMigrations(nconf.tempPathFor("."), ["up"]);
 });
 
 desc("Reverts 1 database migrations");
 task("runOneMigrationDown", function() {
 
-    var extraParams = ["up"];
-
-    return runMigrations(["down", "--count", "1"]);
+    return database.runMigrations(nconf.tempPathFor("."), ["down", "--count", "1"]);
 });
-
-function runMigrations(parameters) {
-
-    var databaseMigrationConfig = nconf.tempPathFor("database.json");
-
-    fs.writeFileSync(databaseMigrationConfig, JSON.stringify({
-                "db": {
-                    "driver": "mysql",
-                    "user": nconf.get("database_user"),
-                    "password": nconf.get("database_password"),
-                    "host": nconf.get("database_hostname"),
-                    "port": nconf.get("database_port"),
-                    "database": nconf.get("database_name")
-                }
-            }, null, "    "));
-
-    var builtParameters = ["./node_modules/db-migrate/bin/db-migrate"];
-
-    builtParameters = builtParameters.concat.apply(builtParameters, parameters);
-    builtParameters = builtParameters.concat.apply(builtParameters, ["--config", databaseMigrationConfig, "--env=db", "--migrations-dir", "./src/migrations"]);
-
-    return Q.nbind(childProcess.execFile)("node", builtParameters, {
-            env: process.env
-        })
-        .then(assertExecFileSucceeded)
-        .then(function() {
-            fs.unlinkSync(databaseMigrationConfig);
-        });
-}
 
 function listNonImportedFiles() {
     var list = new jake.FileList();
