@@ -343,21 +343,27 @@ function assertExecFileSucceeded(execFileResults) {
     }
 }
 
-desc("Verifies there are no uncommitted changes");
-task("verifyEmptyGitStatus", function() {
-    childProcess.exec("git status --porcelain", function(error, stdout, stderror) {
-        if (error !== null) {
-            fail("unable to verify no uncommitted changes -- " + error.toString());
-        } else if (stdout.trim().length > 0) {
-            fail("Working tree is not empty, git status was:\n" + stdout);
-        } else if (stderror.trim().length > 0) {
-            fail("Error verifying working tree is empty, error output was:\n" + stderror);
-        } else {
-            complete();
+
+
+function verifyEmptyGitStatus() {
+
+    return Q.nfcall(childProcess.exec, "git status --porcelain")
+    .then(function(results){
+        var stdout = results[0];
+        var stderr = results[1];
+
+        if (stdout.trim().length > 0) {
+            throw new Error("Working tree is not empty, git status was:\n" + stdout);
+        } else if (stderr.trim().length > 0) {
+            throw new Error("Error verifying working tree is empty, error output was:\n" + stderr);
         }
     });
-}, {
-    async: true
+}
+
+desc("Verifies there are no uncommitted changes");
+task("verifyEmptyGitStatus", function() {
+
+    return verifyEmptyGitStatus();
 });
 
 desc("Verify node version.");
