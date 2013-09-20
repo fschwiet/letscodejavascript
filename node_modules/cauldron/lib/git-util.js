@@ -44,9 +44,25 @@ function gitCloneTo(workingDirectory) {
         });
 }
 
+function verifyEmptyGitStatus() {
+
+    return Q.nfcall(childProcess.exec, "git status --porcelain")
+    .then(function(results){
+        var stdout = results[0];
+        var stderr = results[1];
+
+        if (stdout.trim().length > 0) {
+            throw new Error("Working tree is not empty, git status was:\n" + stdout);
+        } else if (stderr.trim().length > 0) {
+            throw new Error("Error verifying working tree is empty, error output was:\n" + stderr);
+        }
+    });
+}
+
 
 module.exports = {
     getGitCurrentCommit : getGitCurrentCommit,
     getAvailableDirectory: getAvailableDirectory,
-    gitCloneTo: gitCloneTo
+    gitCloneTo: gitCloneTo,
+    verifyEmptyGitStatus: verifyEmptyGitStatus
 };
