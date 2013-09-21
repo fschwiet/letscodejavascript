@@ -1,5 +1,7 @@
 
 TODO
+  
+  client side tests were stalling on firefox or something?
 
   status page should indicate if email settings are working
      - watch http://stackoverflow.com/questions/18774630/how-can-i-validate-smtp-hostname-port-username-password-is-working-on-node-js

@@ -2,7 +2,7 @@ var Q = require("q");
 var dbm = require('db-migrate');
 var type = dbm.dataType;
 
-var utils = require("./utils/utils.js");
+var utils = require("cauldron").sqlExpressions;
 
 exports.up = function(db, callback) {
 

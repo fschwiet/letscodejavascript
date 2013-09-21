@@ -3,7 +3,7 @@ var type = dbm.dataType;
 
 var Q = require("q");
 
-var utils = require("./utils/utils.js");
+var utils = require("cauldron").sqlExpressions;
 
 exports.up = function(db, callback) {
 
