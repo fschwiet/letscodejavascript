@@ -6,17 +6,20 @@ var Q = require("q");
 var uuid = require("node-uuid");
 var _ = require("underscore");
 
-var setup = require("../../test/setup.js");
-
 var users = require("./users.js");
 var dataSubscriptions = require("./subscriptions.js");
 var dataFeedPosts = require("./feedPosts.js");
 var dataUserPostsRead = require("./userPostsRead.js");
 var dataJoin = require("./join.js");
 
+var setup = require("../../test/setup.js");
+
 var findOrCreateUserByGoogleIdentifier = Q.nbind(users.findOrCreateUserByGoogleIdentifier);
 
-setup.qtest(exports, "Can load stored posts for a user", function() {
+var NodeunitBuilder = require("cauldron").nodeunit;
+var scope = new NodeunitBuilder(exports, "meh");
+
+scope.test("Can load stored posts for a user", function() {
 
     var rssUrl = "http://join.someserver.com/" + uuid.v4();
     var secondPostUrl = "http://secondPost/";

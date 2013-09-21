@@ -4,14 +4,15 @@ var expect = require("expect.js");
 var Q = require("q");
 var uuid = require("node-uuid");
 
-var setup = require("../../test/setup.js");
-
 var database = require("../database.js");
 var dataRssUrlStatus = require("./rssUrlStatus.js");
 var passwordResets = require("./passwordResets.js");
 var users = require("./users.js");
 
-setup.qtest(exports, "Should be able to generate and use a reset guid", function() {
+var NodeunitBuilder = require("cauldron").nodeunit;
+var scope = new NodeunitBuilder(exports, "meh");
+
+scope.test("Should be able to generate and use a reset guid", function() {
 
     var email = "someEmail" + uuid() + "@server.com";
     var username = "someUser" + uuid();
@@ -49,7 +50,7 @@ setup.qtest(exports, "Should be able to generate and use a reset guid", function
     });
 });
 
-setup.qtest(exports, "Should ignore invalid guids", function() {
+scope.test("Should ignore invalid guids", function() {
 
     var email = "someEmail" + uuid() + "@server.com";
     var username = "someUser" + uuid();
@@ -81,7 +82,7 @@ setup.qtest(exports, "Should ignore invalid guids", function() {
     });
 });
 
-setup.qtest(exports, "should limit the number of password reset guids per user", function() {
+scope.test("should limit the number of password reset guids per user", function() {
 
     var email = "someEmail" + uuid() + "@server.com";
     var username = "someUser" + uuid();
@@ -138,7 +139,7 @@ setup.qtest(exports, "should limit the number of password reset guids per user",
 });
 
 
-setup.qtest(exports, "should only honor password reset guids for 2 hours", function() {
+scope.test("should only honor password reset guids for 2 hours", function() {
 
     var email = "someEmail" + uuid() + "@server.com";
     var username = "someUser" + uuid();
@@ -174,7 +175,7 @@ setup.qtest(exports, "should only honor password reset guids for 2 hours", funct
 });
 
 
-setup.qtest(exports, "should only honor each password reset guid once", function() {
+scope.test("should only honor each password reset guid once", function() {
 
     var email = "someEmail" + uuid() + "@server.com";
     var username = "someUser" + uuid();

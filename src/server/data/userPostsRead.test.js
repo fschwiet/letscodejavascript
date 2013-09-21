@@ -8,11 +8,12 @@ var dataUserPostsRead = require("./userPostsRead.js");
 var users = require("./users.js");
 
 var setup = require("../../test/setup.js");
-
-
 var findOrCreateUserByGoogleIdentifier = Q.nbind(users.findOrCreateUserByGoogleIdentifier);
 
-setup.qtest(exports, "markPostAsRead shouldn't insert duplicates", function() {
+var NodeunitBuilder = require("cauldron").nodeunit;
+var scope = new NodeunitBuilder(exports, "meh");
+
+scope.test("markPostAsRead shouldn't insert duplicates", function() {
 
     return findOrCreateUserByGoogleIdentifier(uuid(), setup.getGoogleProfile("Other"))
     .then(function(user) {

@@ -2,13 +2,14 @@
 var assert = require("assert");
 var Q = require("q");
 
-var setup = require("../../test/setup.js");
-
 var database = require("../database.js");
 var dataRssUrlStatus = require("./rssUrlStatus.js");
 
 
-setup.qtest(exports, "Should be able to save status", function() {
+var NodeunitBuilder = require("cauldron").nodeunit;
+var scope = new NodeunitBuilder(exports, "meh");
+
+scope.test("Should be able to save status", function() {
 
     var rssUrl = "http://someserver.com/rss";
     var otherUrl = "http://someserver.com/other";
