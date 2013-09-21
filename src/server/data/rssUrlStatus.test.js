@@ -37,7 +37,7 @@ setup.qtest(exports, "Should be able to save status", function() {
         assert.equal(result, false, "After an hour, the url does not need an update");
     })
     .then(function() {
-        return dataRssUrlStatus.checkIfUrlNeedsUpdate(rssUrl, new Date(originTime.getTime() + 2 * 60 * 60 * 1000));
+        return dataRssUrlStatus.checkIfUrlNeedsUpdate(rssUrl, new Date(originTime.getTime() + 3 * 60 * 60 * 1000));
     })
     .then(function(result){
         assert.equal(result, true, "After three hours, the url needs an update");
