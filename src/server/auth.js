@@ -167,7 +167,7 @@ exports.addToExpress = function(port, app) {
             var errorString = err.toString();
             if (errorString.indexOf("ER_DUP_ENTRY") > -1) {
 
-                if (errorString.indexOf("friendlyName") > -1) {
+                if (errorString.indexOf("idx_userspasswords_username") > -1) {
                     handleUserError("That username has already been registered on this system.");
                 } else if (errorString.indexOf("PRIMARY") > -1) {
                     handleUserError("That email has already been registered on this system.");

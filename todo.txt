@@ -1,15 +1,6 @@
 
 TODO
 
-  unique constraint on user.friendlyName is problematic because a google user might have the same "friendly name" name as someone else
-    - migration:
-      - migration: add column userPasswords.username and copy values
-      - add unique constraint
-      - remove unique constraint on column users.friendlyName
-      - modify code to read/write that column
-        - update data/users.js and data/userPasswords.js
-
-
   status page should indicate if email settings are working
      - watch http://stackoverflow.com/questions/18774630/how-can-i-validate-smtp-hostname-port-username-password-is-working-on-node-js
 

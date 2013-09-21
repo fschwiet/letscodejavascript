@@ -84,6 +84,7 @@ exports.createLocalUser = function(email, friendlyName, password) {
 
                 return Q.ninvoke(connection, "query", "INSERT INTO userPasswords SET ?", {
                     email: email,
+                    username: friendlyName,
                     userId: userId,
                     passwordHash: passwordHash
                 });
@@ -123,8 +124,7 @@ exports.findUserByUsernameOrEmail = function(usernameOrEmail, handler) {
             "SELECT UP.userId, U.friendlyName, UP.email, UP.passwordHash " +
             "FROM userPasswords UP " +
             "JOIN users U ON U.id = UP.userId " +
-            "LEFT JOIN userPasswords ambiguous ON ambiguous.email = U.friendlyName " +
-            "WHERE UP.email = ? OR (U.friendlyName = ? AND ambiguous.userId IS NULL) ", [usernameOrEmail,usernameOrEmail])
+            "WHERE UP.email = ? OR up.username =? ", [usernameOrEmail,usernameOrEmail])
         .then(function(results) {
 
             if (results[0].length === 0) {
