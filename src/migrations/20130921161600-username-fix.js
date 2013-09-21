@@ -31,5 +31,9 @@ exports.down = function(db, callback) {
     .then(function() {
         return runSql("ALTER TABLE userpasswords DROP COLUMN username");
     })
-    .then(callback, callback);
+    .then(function() {
+        callback();
+    }, function(err) {
+        callback(err);
+    });
 };
