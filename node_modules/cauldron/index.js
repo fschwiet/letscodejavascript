@@ -1,6 +1,7 @@
 
 module.exports = {
     assertPage: require("./lib/assert-page.js"),
+    copyModifiedJson: require("./lib/copy-modified-json.js"),
     database: require("./lib/database.js"),
     gitUtil: require("./lib/git-util.js"),
     nodeunit: require("./lib/nodeunit-builder.js"),
