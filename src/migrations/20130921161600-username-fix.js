@@ -16,7 +16,11 @@ exports.up = function(db, callback) {
                       "JOIN USERS U ON U.id = UP.userId " +
                       "SET UP.username = u.friendlyName ");
     })
-    .then(callback, callback);
+    .then(function() {
+        callback();
+    }, function(err) {
+        callback(err);
+    });
 };
 
 exports.down = function(db, callback) {
