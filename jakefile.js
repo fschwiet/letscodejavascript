@@ -8,7 +8,7 @@ var find = require("find");
 var fs = require('fs-extra');
 var rimraf = require("rimraf");
 var childProcess = require("child_process");
-var nconf = require("./src/server/config.js");
+var config = require("./src/server/config.js");
 var Q = require("q");
 var request = require("request");
 var nodeVersion = new(require("node-version").version)();
@@ -16,8 +16,9 @@ var util = require("util");
 var runServer = require("./src/test/runServer.js");
 var beautify = require('js-beautify');
 
-var spawnProcess = require("cauldron").spawnProcess;
+var copyModifiedJson = require("cauldron").copyModifiedJson;
 var gitUtil = require("cauldron").gitUtil;
+var spawnProcess = require("cauldron").spawnProcess;
 
 var jadePreprocessor = require("./build/karma/jadePreprocessor.js");
 
@@ -72,7 +73,7 @@ task("beautify", ["verifyEmptyGitStatus"], function() {
 desc("write sample config file");
 task("writeSampleConfig", function() {
 
-    var defaults = nconf.getDefaults();
+    var defaults = config.getDefaults();
 
     fs.writeFileSync("./sample.config.json", JSON.stringify(defaults, null, "    "));
 });
@@ -159,8 +160,8 @@ task("prepareTempDirectory", function() {
         fail("Unable to clear temp directory");
     }
 
-    fs.mkdirsSync(nconf.tempPathForUploads());
-    fs.mkdirsSync(nconf.tempPathForLogs());
+    fs.mkdirsSync(config.tempPathForUploads());
+    fs.mkdirsSync(config.tempPathForLogs());
 });
 
 task("createTestDatabase", function() {
@@ -183,12 +184,20 @@ task("prepareTestDatabase", ["createTestDatabase", "runMigrations"]);
 desc("test all the things");
 task("testForRelease", ["default", "prepareTempDirectory"], function() {
 
-    var workingDirectory = path.resolve(".\\temp\\workingDirectory");
-    fs.mkdirSync("./temp/workingDirectory");
+    var workingDirectory = config.tempPathFor("testForRelease");
+    var tempDirectory = config.tempPathFor("testForRelease.temp");
+
+    fs.removeSync(workingDirectory);
+    fs.mkdirSync(workingDirectory);
+
+    fs.removeSync(tempDirectory);
+    fs.mkdirSync(tempDirectory);
 
     return gitUtil.gitCloneTo(workingDirectory)
     .then(function() {
-        return Q.nbind(fs.copy)("./config.json", path.resolve(workingDirectory, "config.json"));
+        return copyModifiedJson("./config.json", path.resolve(workingDirectory, "config.json"), function(configValues) {
+            configValues.server_tempPath = tempDirectory;
+        });
     })
     .then(function() {
         return spawnProcess("node", [path.resolve(workingDirectory, ".\\node_modules\\jake\\bin\\cli.js"), "default"], {cwd: workingDirectory});
@@ -199,8 +208,8 @@ task("testForRelease", ["default", "prepareTempDirectory"], function() {
 desc("Deploys to IIS after checking smoke tests.");
 task("deployToIIS", ["verifyEmptyGitStatus", "testForRelease"], function() {
 
-    var productionConfig = nconf.get("deployment_configFile");
-    var deployRoot = nconf.get("deployment_basePath");
+    var productionConfig = config.get("deployment_configFile");
+    var deployRoot = config.get("deployment_basePath");
 
     if (!fs.existsSync(productionConfig)) {
         fail("Could not find file production.config.json, please create before deploying.  Consider using sample.config.json as a starting point.");
@@ -254,7 +263,7 @@ task("deployToIIS", ["verifyEmptyGitStatus", "testForRelease"], function() {
 
                     var deploymentName = getProductionConfig("server_friendlyName");
                     var smoketest_hostname = getProductionConfig("server_hostname");
-                    var smoketest_port = nconf.get("deployment_smoketestPort");
+                    var smoketest_port = config.get("deployment_smoketestPort");
                     var final_hostname = getProductionConfig("server_hostname");
                     var final_port = getProductionConfig("server_port");
 
@@ -314,17 +323,6 @@ task("deployToIIS", ["verifyEmptyGitStatus", "testForRelease"], function() {
                                 });
                         })
                         .then(assertExecFileSucceeded)
-                        .then(function() {
-
-                            //  sad workaround:  the iis-hosted node application doesn't recognize the configuration change
-                            //  until after iisreset (the configuration is written before the iis site is created, so this seems
-                            //  like a iis, iisnode or carbon issue)
-
-                            console.log("running iisreset");
-
-                            return Q.nbind(childProcess.execFile)("iisreset");
-                        })
-                        .then(assertExecFileSucceeded)
                         .then(complete);
                 });
 
@@ -365,7 +363,7 @@ task("verifyNodeVersion", function() {
 
 desc("Run the server locally");
 task("runServer", ["compileJadeViews"], function() {
-    var port = nconf.get("server_port");
+    var port = config.get("server_port");
     console.log("running the server on", port);
     var server = require("./src/server/server.js");
     server.start(port);
@@ -422,13 +420,13 @@ task("removeClientBundle", function() {
 desc("Run database migrations");
 task("runMigrations", ["lint"], function() {
 
-    return database.runMigrations(nconf.tempPathFor("."), "./src/migrations", ["up"]);
+    return database.runMigrations(config.tempPathFor("."), "./src/migrations", ["up"]);
 });
 
 desc("Reverts 1 database migrations");
 task("runOneMigrationDown", function() {
 
-    return database.runMigrations(nconf.tempPathFor("."), "./src/migrations", ["down", "--count", "1"]);
+    return database.runMigrations(config.tempPathFor("."), "./src/migrations", ["down", "--count", "1"]);
 });
 
 function listNonImportedFiles() {
