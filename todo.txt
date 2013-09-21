@@ -15,12 +15,6 @@ TODO
 
       
 
-  split phantom-shim to another project
-    could get rid of phantom-shim's promisify if:
-      - page.evaluate could be wrapped in a way that Q util functions can wrap that wrapper
-      - Q handles inline exceptions as desired
-      - onError can be monitored with before/after handling for each async call
-
 
   info notification on /feeds should have better layout
 
@@ -50,7 +44,7 @@ GOAL:
   reduce personal information requested from google (only using email, displayName)
     
 LATER:
-    allow users to add a feed
+    allow users to add a feed by non-RSS url
 
     log at info level if an rss feed can't be loaded?  (maybe this should be a feed status)
 
@@ -59,8 +53,6 @@ LATER:
 
 MUCH LATER:
     should I publish the jade preprocessor for karma?
-
-    should I build runtime.js as part of the build in case jade is updated?
 
 
 HMMM
