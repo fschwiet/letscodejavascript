@@ -9,17 +9,12 @@ exports.up = function(db, callback) {
 
     Q()
     .then(function() {
-        console.log(1);
         return runSql("ALTER TABLE userpasswords ADD COLUMN username VARCHAR(64)");
     })
     .then(function() {
-        console.log(2);
         return runSql("UPDATE userPasswords UP " +
                       "JOIN USERS U ON U.id = UP.userId " +
                       "SET UP.username = u.friendlyName ");
-    })
-    .then(function() {
-        console.log(3);
     })
     .then(callback, callback);
 };
