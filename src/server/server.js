@@ -33,12 +33,13 @@
                     uploadDir: config.tempPathForUploads()
                 }));
         app.use(express.cookieParser());
-        app.set('views', __dirname + '/views');
-        app.set('view engine', 'jade');
-
         app.use(express.cookieSession({
                     secret: config.get("server_sessionKey")
                 }));
+
+        app.set('views', __dirname + '/views');
+        app.set('view engine', 'jade');
+
 
         app.use(connectFlash());
 
