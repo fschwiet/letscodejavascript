@@ -38,7 +38,7 @@ function doLoginFromPage(page, url) {
     });
 }
 
-setup.qtest(context, "should show user message for invalid username/password", function() {
+context.test("should show user message for invalid username/password", function() {
 
     var page = this.page;
 
@@ -58,7 +58,7 @@ setup.qtest(context, "should show user message for invalid username/password", f
 
 function check_login_from(startPage) {
 
-    setup.qtest(context, "can log in with local account from " + startPage, function() {
+    context.test("can log in with local account from " + startPage, function() {
 
         var page = this.page;
 

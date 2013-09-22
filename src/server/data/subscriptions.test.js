@@ -13,11 +13,10 @@ var users = require("./users.js");
 
 var findOrCreateUserByGoogleIdentifier = Q.nbind(users.findOrCreateUserByGoogleIdentifier);
 
-var NodeunitBuilder = require("cauldron").nodeunit;
-var scope = new NodeunitBuilder(exports, "meh");
+var addTest = require("cauldron").nodeunit.addTest;
 
 
-scope.test("loadSubscriptions includes whether the feed status needs updating", function() {
+addTest(exports, "loadSubscriptions includes whether the feed status needs updating", function() {
 
     var originTime = new Date();
     var earlierTime = new Date(originTime.getTime() - 3 * 60 * 60 * 1000);
@@ -68,7 +67,7 @@ scope.test("loadSubscriptions includes whether the feed status needs updating", 
     });
 });
 
-scope.test("saveSubscriptions treats duplicates as updates", function() {
+addTest(exports, "saveSubscriptions treats duplicates as updates", function() {
 
     return findOrCreateUserByGoogleIdentifier(uuid.v4(), setup.getGoogleProfile("Duper"))
         .then(function(user) {
@@ -135,7 +134,7 @@ scope.test("saveSubscriptions treats duplicates as updates", function() {
         });
 });
 
-scope.test("unsubscribe should remove subscriptions", function() {
+addTest(exports, "unsubscribe should remove subscriptions", function() {
 
     return findOrCreateUserByGoogleIdentifier(uuid.v4(), setup.getGoogleProfile("Duper"))
         .then(function(user) {
@@ -185,7 +184,7 @@ scope.test("unsubscribe should remove subscriptions", function() {
         });
 });
 
-scope.test("unsubscribe shouldn't remove other people's subscriptions", function() {
+addTest(exports, "unsubscribe shouldn't remove other people's subscriptions", function() {
 
     var otherUserId;
 

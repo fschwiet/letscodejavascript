@@ -45,7 +45,7 @@ function tryRegistration(page, startPage, email, username, password, retypedPass
 
 function testRegistration(startPage) {
 
-    setup.qtest(context, "should be able to register for an account", function() {
+    context.test("should be able to register for an account", function() {
         
         var page = this.page;
 
@@ -63,7 +63,7 @@ function testRegistration(startPage) {
 testRegistration(config.urlFor("/status"));
 testRegistration(config.urlFor("/feeds"));
 
-setup.qtest(context, "should receive an error message if email is already taken", function() {
+context.test("should receive an error message if email is already taken", function() {
     
     var page = this.page;
 
@@ -91,7 +91,7 @@ setup.qtest(context, "should receive an error message if email is already taken"
     });
 });
 
-setup.qtest(context, "should receive an error message if username is already taken", function() {
+context.test("should receive an error message if username is already taken", function() {
     
     var page = this.page;
 
@@ -120,7 +120,7 @@ setup.qtest(context, "should receive an error message if username is already tak
 });
 
 
-setup.qtest(context, "should receive an error message if password is not retyped correctly", function() {
+context.test("should receive an error message if password is not retyped correctly", function() {
     
     var page = this.page;
 

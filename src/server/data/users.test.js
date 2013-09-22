@@ -7,13 +7,11 @@ var uuid = require("node-uuid");
 var setup = require("../../test/setup.js");
 var users = require("./users.js");
 
-var NodeunitBuilder = new require("cauldron").nodeunit;
-
 var findOrCreateUserByGoogleIdentifier = Q.nbind(users.findOrCreateUserByGoogleIdentifier);
 
-var scope = new NodeunitBuilder(exports, "meh");
+var addTest = require("cauldron").nodeunit.addTest;
 
-scope.test("findOrCreateUserByGoogleIdentifier can save and load users", function() {
+addTest(exports, "findOrCreateUserByGoogleIdentifier can save and load users", function() {
 
     var firstGoogleIdentifier = uuid.v4();
     var firstGoogleProfile = setup.getGoogleProfile("First");
@@ -46,7 +44,7 @@ scope.test("findOrCreateUserByGoogleIdentifier can save and load users", functio
         });
 });
 
-scope.test("createLocalUser reserves a friendlyName and email transactionally", function() {
+addTest(exports, "createLocalUser reserves a friendlyName and email transactionally", function() {
 
     var username = "username" + uuid();
     var email1 = "email1_" + uuid() + "@server.com";
@@ -70,7 +68,7 @@ scope.test("createLocalUser reserves a friendlyName and email transactionally", 
     });
 });
 
-scope.test("findUserByLocalAuth should reject invalid username/password", function() {
+addTest(exports, "findUserByLocalAuth should reject invalid username/password", function() {
 
     return users.findUserByLocalAuth("someUsername", "somePassword")
     .then(function(result) {
@@ -78,7 +76,7 @@ scope.test("findUserByLocalAuth should reject invalid username/password", functi
     });
 });
 
-scope.test("findUserByLocalAuth should load use for valid email/password", function() {
+addTest(exports, "findUserByLocalAuth should load use for valid email/password", function() {
 
     var email = "Someemail" + uuid() +"@value.com";
     var username = "someUsername" + uuid();
@@ -98,7 +96,7 @@ scope.test("findUserByLocalAuth should load use for valid email/password", funct
     });
 });
 
-scope.test("findUserByLocalAuth should load use for valid username/password", function() {
+addTest(exports, "findUserByLocalAuth should load use for valid username/password", function() {
 
     var email = "Someemail" + uuid() + "@value.com";
     var username = "someUsername" + uuid();
@@ -118,7 +116,7 @@ scope.test("findUserByLocalAuth should load use for valid username/password", fu
     });
 });
 
-scope.test("updateUserPassword should change a user's password", function() {
+addTest(exports, "updateUserPassword should change a user's password", function() {
 
     var email = "Someemail" + uuid() + "@value.com";
     var username = "someUsername" + uuid();
@@ -144,7 +142,7 @@ scope.test("updateUserPassword should change a user's password", function() {
     });
 });
 
-scope.test("updateUserPassword should report if the user's local password could not be found", function() {
+addTest(exports, "updateUserPassword should report if the user's local password could not be found", function() {
     return Q()
     .then(function() {
         return users.updateUserPassword(1234345, "Fsdf");

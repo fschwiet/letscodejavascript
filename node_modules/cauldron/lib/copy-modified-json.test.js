@@ -4,12 +4,9 @@ var fs = require('fs');
 var temporary = require("temporary");
 
 var copyModifiedJson = require("./copy-modified-json.js");
-var NodeunitBuilder = require("./nodeunit-builder.js");
+var addTest = require("./nodeunit-builder.js").addTest;
 
-var scope = new NodeunitBuilder(exports, "meh");
-
-
-scope.test("can copy a json file with modifications", function(){
+addTest(exports, "can copy a json file with modifications", function(){
 
 	var originalFile = new temporary.File();
 	var targetPath = originalFile.path + ".modified";

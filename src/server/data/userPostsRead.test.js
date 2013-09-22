@@ -10,10 +10,9 @@ var users = require("./users.js");
 var setup = require("../../test/setup.js");
 var findOrCreateUserByGoogleIdentifier = Q.nbind(users.findOrCreateUserByGoogleIdentifier);
 
-var NodeunitBuilder = require("cauldron").nodeunit;
-var scope = new NodeunitBuilder(exports, "meh");
+var addTest = require("cauldron").nodeunit.addTest;
 
-scope.test("markPostAsRead shouldn't insert duplicates", function() {
+addTest(exports, "markPostAsRead shouldn't insert duplicates", function() {
 
     return findOrCreateUserByGoogleIdentifier(uuid(), setup.getGoogleProfile("Other"))
     .then(function(user) {

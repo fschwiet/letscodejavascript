@@ -5,11 +5,10 @@ var Q = require("q");
 var database = require("../database.js");
 var dataRssUrlStatus = require("./rssUrlStatus.js");
 
+var addTest = require("cauldron").nodeunit.addTest;
 
-var NodeunitBuilder = require("cauldron").nodeunit;
-var scope = new NodeunitBuilder(exports, "meh");
 
-scope.test("Should be able to save status", function() {
+addTest(exports, "Should be able to save status", function() {
 
     var rssUrl = "http://someserver.com/rss";
     var otherUrl = "http://someserver.com/other";

@@ -3,14 +3,8 @@ var path = require('path');
 var Q = require('q');
 
 
-function NodeunitBuilder(outer, name) {
-
-    outer[name] = this;
-}
-
-NodeunitBuilder.prototype.test = function(name, callback) {
-
-    this[name] = function(test) {
+function addTest(scope, name, callback) {
+    scope[name] = function(test) {
 
         var that = this;
 
@@ -35,6 +29,17 @@ NodeunitBuilder.prototype.test = function(name, callback) {
             });
         });
     };    
+}
+
+
+function NodeunitBuilder(outer, name) {
+
+    outer[name] = this;
+}
+
+NodeunitBuilder.prototype.test = function(name, callback) {
+
+    addTest(this,name,callback);
 };
 
 
@@ -52,3 +57,4 @@ function createTestScopeExtender (name, setUp, tearDown) {
 
 module.exports = NodeunitBuilder;
 module.exports.createTestScopeExtender = createTestScopeExtender;
+module.exports.addTest = addTest;

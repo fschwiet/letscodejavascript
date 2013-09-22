@@ -16,10 +16,9 @@ var setup = require("../../test/setup.js");
 
 var findOrCreateUserByGoogleIdentifier = Q.nbind(users.findOrCreateUserByGoogleIdentifier);
 
-var NodeunitBuilder = require("cauldron").nodeunit;
-var scope = new NodeunitBuilder(exports, "meh");
+var addTest = require("cauldron").nodeunit.addTest;
 
-scope.test("Can load stored posts for a user", function() {
+addTest(exports, "Can load stored posts for a user", function() {
 
     var rssUrl = "http://join.someserver.com/" + uuid.v4();
     var secondPostUrl = "http://secondPost/";

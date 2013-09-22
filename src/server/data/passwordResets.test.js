@@ -9,10 +9,9 @@ var dataRssUrlStatus = require("./rssUrlStatus.js");
 var passwordResets = require("./passwordResets.js");
 var users = require("./users.js");
 
-var NodeunitBuilder = require("cauldron").nodeunit;
-var scope = new NodeunitBuilder(exports, "meh");
+var addTest = require("cauldron").nodeunit.addTest;
 
-scope.test("Should be able to generate and use a reset guid", function() {
+addTest(exports, "Should be able to generate and use a reset guid", function() {
 
     var email = "someEmail" + uuid() + "@server.com";
     var username = "someUser" + uuid();
@@ -50,7 +49,7 @@ scope.test("Should be able to generate and use a reset guid", function() {
     });
 });
 
-scope.test("Should ignore invalid guids", function() {
+addTest(exports, "Should ignore invalid guids", function() {
 
     var email = "someEmail" + uuid() + "@server.com";
     var username = "someUser" + uuid();
@@ -82,7 +81,7 @@ scope.test("Should ignore invalid guids", function() {
     });
 });
 
-scope.test("should limit the number of password reset guids per user", function() {
+addTest(exports, "should limit the number of password reset guids per user", function() {
 
     var email = "someEmail" + uuid() + "@server.com";
     var username = "someUser" + uuid();
@@ -139,7 +138,7 @@ scope.test("should limit the number of password reset guids per user", function(
 });
 
 
-scope.test("should only honor password reset guids for 2 hours", function() {
+addTest(exports, "should only honor password reset guids for 2 hours", function() {
 
     var email = "someEmail" + uuid() + "@server.com";
     var username = "someUser" + uuid();
@@ -175,7 +174,7 @@ scope.test("should only honor password reset guids for 2 hours", function() {
 });
 
 
-scope.test("should only honor each password reset guid once", function() {
+addTest(exports, "should only honor each password reset guid once", function() {
 
     var email = "someEmail" + uuid() + "@server.com";
     var username = "someUser" + uuid();

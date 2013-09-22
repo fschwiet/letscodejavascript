@@ -16,7 +16,7 @@ var context = setup.usingPhantomPage(setup.whenRunningTheServer(setup.givenSmtpS
 
 Q.longStackSupport = true;
 
-setup.qtest(context, "User should be able to request a password reset by username", function() {
+context.test("User should be able to request a password reset by username", function() {
 
     var username = "someUsername" + uuid();
     var emailAddress = "someEmail" + uuid() + "@server.com";
@@ -116,7 +116,7 @@ setup.qtest(context, "User should be able to request a password reset by usernam
 });
 
 
-setup.qtest(context, "invalid reset urls should be handled gracefully", function() {
+context.test("invalid reset urls should be handled gracefully", function() {
 
     var page = this.page;
 
@@ -150,7 +150,7 @@ setup.qtest(context, "invalid reset urls should be handled gracefully", function
 });
 
 
-setup.qtest(context, "The user is required to type in their new password twice", function() {
+context.test("The user is required to type in their new password twice", function() {
 
     var page = this.page;
 
