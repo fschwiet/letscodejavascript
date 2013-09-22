@@ -1,7 +1,7 @@
 var assert = require("assert");
 
 var waitUntil = require("cauldron").waitUntil;
-var nconf = require("../server/config.js");
+var config = require("../server/config.js");
 
 waitUntil.defaultWait = 15000;
 
@@ -80,8 +80,8 @@ exports.doLogin = function(page) {
 
 function handleGoogleAuth(page) {
 
-    var googleUsername = nconf.get("googleTest_username");
-    var googlePassword = nconf.get("googleTest_password");
+    var googleUsername = config.get("googleTest_username");
+    var googlePassword = config.get("googleTest_password");
 
     assert.notEqual(googleUsername, null, "A config setting was not found for googleTest_username.");
     assert.notEqual(googlePassword, null, "A config setting was not found for googleTest_password.");
