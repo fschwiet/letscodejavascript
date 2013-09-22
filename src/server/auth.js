@@ -135,7 +135,7 @@ exports.addToExpress = function(port, app) {
 
         try {
             v.check(email, "Email should be a valid email address.").isEmail().len(0,255);
-            v.check(username, "Username should be letters or digits, maybe a '_' or '-' character.  The username should be less than 64 characters.").is(/^[a-z0-9_-]{6,64}$/i);
+            v.check(username, "Username should be letters or digits, maybe a '_' or '-' character.  The username should be less than 64 characters.").is(/^[a-z0-9_\-]{6,64}$/i);
             v.check(password, "Password should be at least 8 characters.").len(8);
         } catch(ignored) {
 
