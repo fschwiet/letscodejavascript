@@ -142,7 +142,7 @@ exports.addToExpress = function(port, app) {
         }
 
         if (haveClientErrors) {
-            res.render("registerPage", modelFor("register", req));
+            res.render("accounts/registerPage", modelFor("register", req));
             return;
         }
 
