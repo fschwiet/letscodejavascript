@@ -112,6 +112,13 @@ exports.given3rdPartyRssServer = NodeunitBuilder.createTestScopeExtender(
             that.rssServer.requestCount++;
         });
 
+        app.get("/html/:rest", function(req,res) {
+
+            var rssUrl = "/rss/" + req.params.rest;
+
+            res.send("<html><body><link id='AtomLink' title'RSS' type='application/rss+xml' rel='alternate' href='" + rssUrl + "'></body><html>");
+        });
+
         app.get("/status", function(req, res) {
             res.send("given3rdPartyRssServer OK");
         });

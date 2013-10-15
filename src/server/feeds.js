@@ -1,19 +1,22 @@
+var endpoint = require('endpoint');
 var fs = require("fs");
+var feedfinder = require("feedfinder");
 var xml2js = require("xml2js");
 var Q = require("q");
+var request = require("request");
 
 var modelFor = require("./modelFor.js");
 var dataSubscriptions = require("./data/subscriptions.js");
 var posts = require("./posts.js");
 
 module.exports = function(app) {
-    app.get("/feeds", handleUploadFromGoogleRequest);
+    app.get("/feeds", handleFeedsRequest);
     app.post("/feeds", handleUploadFromGooglePostRequest);
     app.post("/feeds/subscribe", handleSubscribeRequest);
     app.post("/feeds/unsubscribe", handleUnsubscribe);
 };
 
-function handleUploadFromGoogleRequest(request, response) {
+function handleFeedsRequest(request, response) {
 
     var model = modelFor("Manage your RSS feed subscriptions", request);
 
@@ -92,6 +95,19 @@ function handleSubscribeRequest(request, response, next) {
     var rssUrl = request.body.rssUrl;
 
     posts.loadMeta(rssUrl)
+    .fail(function(err) {
+
+        if (err.message.indexOf('Not a feed') > -1) {
+            return locateFeedWithFeedFinder(rssUrl)
+            .then(function(result) {
+                rssUrl = result.rssUrl;
+                return posts.loadMeta(rssUrl);
+            });
+        }
+        else {
+            throw err;
+        }
+    })
     .then(function(meta) {
 
         return dataSubscriptions.saveSubscriptions(request.user.id, [
@@ -100,14 +116,56 @@ function handleSubscribeRequest(request, response, next) {
                     rssUrl: rssUrl,
                     htmlUrl: meta.feedLink
                 }
-            ]);
-    })
-    .then(function() {
-        response.redirect("/feeds");
+            ])
+            .then(function() {
+                request.flash('info', "You have subscribed to feed '" + meta.feedName + "'.");
+                response.redirect("/feeds");
+            });
     })
     .fail(function(err) {
         next(err);
     });
+}
+
+function locateFeedWithFeedFinder(htmlUrl) {
+    var deferred = Q.defer();
+
+    request(htmlUrl, function(error, response, body) {
+        if (error !== null) {
+            deferred.reject(error);
+        }
+    })
+    .pipe(feedfinder(htmlUrl))
+    .pipe(endpoint({
+            objectMode: true
+        }, function(err, links) {
+
+            if (err !== null) {
+                deferred.reject(err);
+            } else {
+                var results = [];
+                links.forEach(function(link) {
+                    if (link.type == "rss" || link.type == "atom") {
+                        results.push(link.href);
+                    }
+                });
+
+                // returning only the shortest result
+                results = results.sort(function(a, b) {
+                    return a.length - b.length;
+                });
+
+                if (results.length > 0) {
+                    deferred.resolve({
+                            rssUrl: results[0]
+                        });
+                } else {
+                    deferred.reject(new Error("not found"));
+                }
+            }
+        }));
+
+    return deferred.promise;
 }
 
 function handleUnsubscribe(request, response, next) {
