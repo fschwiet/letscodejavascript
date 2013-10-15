@@ -40,7 +40,7 @@ setup.qtest(testBlock, "can upload rss", function() {
         })
         .then(function() {
             return page.evaluate(function(url) {
-                document.querySelector("input[name=rssUrl]").value = url;
+                document.querySelector("input[name=subscribeUrl]").value = url;
             }, siteHtmlUrl);
         })
         .then(function() {

@@ -3,7 +3,7 @@ fieldset
     legend Subscribe to an RSS feed
 fieldset
     form.subscribeForm.input-append(method='post', action='/feeds/subscribe')
-        input(name='rssUrl',type='text')
+        input(name='subscribeUrl',type='text')
         input.btn.btn-primary(type='submit')
 
 - if (rows.length > 0)

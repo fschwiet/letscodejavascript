@@ -92,16 +92,16 @@ function loadSubscriptionsFromGoogleXml(filepath) {
 
 function handleSubscribeRequest(request, response, next) {
 
-    var rssUrl = request.body.rssUrl;
+    var subscribeUrl = request.body.subscribeUrl;
 
-    posts.loadMeta(rssUrl)
+    posts.loadMeta(subscribeUrl)
     .fail(function(err) {
 
         if (err.message.indexOf('Not a feed') > -1) {
-            return locateFeedWithFeedFinder(rssUrl)
+            return locateFeedWithFeedFinder(subscribeUrl)
             .then(function(result) {
-                rssUrl = result.rssUrl;
-                return posts.loadMeta(rssUrl);
+                subscribeUrl = result.rssUrl;
+                return posts.loadMeta(subscribeUrl);
             });
         }
         else {
@@ -113,7 +113,7 @@ function handleSubscribeRequest(request, response, next) {
         return dataSubscriptions.saveSubscriptions(request.user.id, [
                 {
                     name: meta.feedName,
-                    rssUrl: rssUrl,
+                    rssUrl: subscribeUrl,
                     htmlUrl: meta.feedLink
                 }
             ])

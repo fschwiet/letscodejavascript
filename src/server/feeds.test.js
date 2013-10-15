@@ -44,7 +44,7 @@ setup.qtest(context, "Should be able to subscribe to an RSS feed", function() {
     })
     .then(function() {
         return page.evaluate(function(rssUrl) {
-            $("form.subscribeForm input[name=rssUrl]").val(rssUrl);
+            document.querySelector("form.subscribeForm input[name=subscribeUrl]").value = rssUrl;
         }, subscribedUrl);
     })
     .then(function() {
