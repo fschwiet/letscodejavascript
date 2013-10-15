@@ -12,7 +12,7 @@ var testBlock =
                 setup.whenRunningTheServer(
                     setup.givenCleanDatabase(exports))));
 
-setup.qtest(testBlock, "can upload rss", function() {
+setup.qtest(testBlock, "user can trim excess posts", function() {
 
     var that = this;
 
