@@ -94,6 +94,10 @@ function handleSubscribeRequest(request, response, next) {
 
     var subscribeUrl = request.body.subscribeUrl;
 
+    if (subscribeUrl.indexOf("//") == -1) {
+        subscribeUrl = "http://" + subscribeUrl;
+    }
+
     posts.loadMeta(subscribeUrl)
     .fail(function(err) {
 
