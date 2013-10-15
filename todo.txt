@@ -1,6 +1,6 @@
 
 TODO
-  
+
   client side tests were stalling on firefox or something?
 
   status page should indicate if email settings are working
