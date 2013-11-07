@@ -99,3 +99,29 @@ exports.loadPostsFromDatabase = function(rssUrl, userId) {
         });
     });
 };
+
+exports.loadUnreadPostsFromDatabase = function(userId) {
+
+    return Q()
+    .then(function() {
+        return database.getPooledConnection();
+    })
+    .then(function(connection){
+
+        return Q.ninvoke(connection, "query", 
+            "SELECT F.* FROM feedPosts F LEFT JOIN subscriptions S on S.rssUrlHash = F.rssUrlHash AND S.userId = ? ", 
+            [userId])
+        .then(function(result) {
+
+            return result[0].map(function(val) {
+                return {
+                    name: val.postName,
+                    url: val.postUrl
+                };
+            });
+        })
+        .fin(function() {
+            connection.release();
+        });
+    });
+};

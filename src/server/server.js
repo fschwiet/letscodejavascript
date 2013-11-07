@@ -50,6 +50,7 @@
         auth.addToExpress(port, app);
 
         require("./posts.js")(app);
+        require("./downloadAllPosts.js")(app);
         require("./feeds.js")(app);
         require("./trimPosts.js")(app);
 

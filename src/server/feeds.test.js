@@ -7,7 +7,7 @@ var setup = require("../test/setup.js");
 var waitUntil = require("cauldron").waitUntil;
 
 
-var context = setup.usingPhantomPage(setup.whenRunningTheServer(setup.given3rdPartyRssServer(exports)));
+var context = setup.usingPhantomPage(setup.given3rdPartyRssServer(setup.whenRunningTheServer(setup.givenCleanDatabase(exports))));
 
 function getFirstFeed(page){
     return page.evaluate(function() {
