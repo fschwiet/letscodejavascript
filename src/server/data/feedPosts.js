@@ -125,3 +125,30 @@ exports.loadUnreadPostsFromDatabase = function(userId) {
         });
     });
 };
+
+exports.getLastPostDate = function(rssUrl) {
+
+    var rssUrlHash = sha1(rssUrl);
+
+    return Q()
+    .then(function() {
+        return database.getPooledConnection();
+    })
+    .then(function(connection){
+
+        return Q.ninvoke(connection, "query", 
+            "SELECT postDate FROM feedPosts WHERE rssUrlHash = ? ORDER BY postDate DESC LIMIT 0,1", 
+            [rssUrlHash])
+        .then(function(result) {
+
+            if (result[0].length === 0) {
+                return null;
+            } else {
+                return result[0][0].postDate;
+            }
+        })
+        .fin(function() {
+            connection.release();
+        });
+    });
+};
