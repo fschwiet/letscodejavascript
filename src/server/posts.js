@@ -151,11 +151,26 @@ function loadFeedsThroughDatabase(rssUrl, userId, readTime) {
             
             if (result) {
                 
-                return loadFeeds(rssUrl)
-                .then(function(posts){
-                    return dataFeedPosts.writePostsToDatabase(rssUrl, posts)
-                    .then(function() {
-                        return dataRssUrlStatus.writeRssUrlStatus(rssUrl, "ok", readTime);
+                return Q()
+                .then(function() {
+                    return dataFeedPosts.getLastPostDate(rssUrl);
+                })
+                .then(function(previouslyLatestPostDate) {
+                    return loadFeeds(rssUrl)
+                    .then(function(posts){
+
+                        // use the previously observed last post date to filter
+                        // any posts that may look new because their url changed
+                        if (previouslyLatestPostDate !== null) {
+                            posts = posts.filter(function(post) {
+                                return post.postDate >= previouslyLatestPostDate;
+                            });
+                        }
+
+                        return dataFeedPosts.writePostsToDatabase(rssUrl, posts)
+                        .then(function() {
+                            return dataRssUrlStatus.writeRssUrlStatus(rssUrl, "ok", readTime);
+                        });
                     });
                 })
                 .fail(function(err) {
