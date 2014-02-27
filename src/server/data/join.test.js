@@ -32,7 +32,7 @@ context.test("Can load stored posts for a user", function() {
     ];
 
 
-    return findOrCreateUserByGoogleIdentifier(uuid.v4(), setup.getGoogleProfile("Duper"))
+    return findOrCreateUserByGoogleIdentifier(uuid.v4(), setup.getGoogleProfile("someUser"))
     .then(function(user) {
 
         return dataSubscriptions.saveSubscriptions(user.id, [{
@@ -128,6 +128,57 @@ context.test("Only loads posts that have not been read", function() {
             var actualTitles = JSON.stringify(_.pluck(results, "postName"));
 
             assert.equal(actualTitles, expectedTitles);
+        });
+    });
+});
+
+
+context.test("Duplicated posts across feeds are only returned once", function() {
+
+    var rssUrl1 = "http://example.org";
+    var rssUrl2 = "http://example.org/2";
+    var postUrl = "http://firstPost/";
+    var postDate = new Date();
+
+    return findOrCreateUserByGoogleIdentifier(uuid.v4(), setup.getGoogleProfile("repostVictim"))
+    .then(function(user) {
+
+        return dataSubscriptions.saveSubscriptions(user.id, [{
+            name: "a feed",
+            htmlUrl: "http://example.org/html",
+            rssUrl: rssUrl1
+        }])
+        .then(function() {
+
+            return dataSubscriptions.saveSubscriptions(user.id, [{
+                name: "another feed",
+                htmlUrl: "http://example.org/2/html",
+                rssUrl: rssUrl2
+            }]);            
+        })
+        .then(function() {
+            return dataFeedPosts.writePostsToDatabase(rssUrl1, [{
+                feedName : "a feed", 
+                postName : "first post!", 
+                postUrl : postUrl, 
+                postDate : postDate
+            }]);
+        })
+        .then(function() {
+            return dataFeedPosts.writePostsToDatabase(rssUrl2, [{
+                feedName : "another feed", 
+                postName : "second post, read by user", 
+                postUrl : postUrl, 
+                postDate : postDate
+            }]);
+        })
+        .then(function() {
+            return dataJoin.loadPostsForUser(user.id);
+        })
+        .then(function(results) {
+
+            assert.equal(results.length, 1);
+            assert.equal(results[0].postUrl, postUrl);
         });
     });
 });

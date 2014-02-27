@@ -3,6 +3,8 @@ var Q = require("q");
 
 var database = require("../database.js");
 
+var _ = require("lodash");
+
 exports.loadPostsForUser = function(userId) {
 
     return database.getPooledConnection()
@@ -18,7 +20,7 @@ exports.loadPostsForUser = function(userId) {
                 );
         })
         .then(function(results) {
-            return results[0].map(function(value) {
+            var mappedResults = results[0].map(function(value) {
                 return {
                     feedName : value.feedName, 
                     postName : value.postName, 
@@ -26,6 +28,10 @@ exports.loadPostsForUser = function(userId) {
                     postDate : value.postDate
                 };
             });
+
+            mappedResults = _.uniq(mappedResults, function(p) { return p.postUrl; });
+
+            return mappedResults;
         })
         .fin(function() {
             connection.release();
