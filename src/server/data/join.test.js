@@ -16,9 +16,48 @@ var setup = require("../../test/setup.js");
 
 var findOrCreateUserByGoogleIdentifier = Q.nbind(users.findOrCreateUserByGoogleIdentifier);
 
-var addTest = require("cauldron").nodeunit.addTest;
+var context = setup.givenCleanDatabase(exports);
 
-addTest(exports, "Can load stored posts for a user", function() {
+context.test("Can load stored posts for a user", function() {
+
+    var rssUrl = "http://join.someserver.com/" + uuid.v4();
+
+    var allPosts = [
+        {
+            feedName : "a feed", 
+            postName : "first post!", 
+            postUrl : "http://firstPost/", 
+            postDate : new Date()
+        }
+    ];
+
+
+    return findOrCreateUserByGoogleIdentifier(uuid.v4(), setup.getGoogleProfile("Duper"))
+    .then(function(user) {
+
+        return dataSubscriptions.saveSubscriptions(user.id, [{
+            name: "a feed",
+            htmlUrl: rssUrl + "/html",
+            rssUrl: rssUrl
+        }])
+        .then(function() {
+            return dataFeedPosts.writePostsToDatabase(rssUrl, allPosts);
+        })
+        .then(function() {
+            return dataJoin.loadPostsForUser(user.id);
+        })
+        .then(function(results) {
+
+            var expectedTitles = JSON.stringify(_.pluck(allPosts, "postName"));
+            var actualTitles = JSON.stringify(_.pluck(results, "postName"));
+
+            assert.equal(actualTitles, expectedTitles);
+        });
+    });
+});
+
+
+context.test("Only loads posts that have not been read", function() {
 
     var rssUrl = "http://join.someserver.com/" + uuid.v4();
     var secondPostUrl = "http://secondPost/";
@@ -45,7 +84,6 @@ addTest(exports, "Can load stored posts for a user", function() {
             postDate : postDate
         }
     ];
-
 
     return findOrCreateUserByGoogleIdentifier(uuid.v4(), setup.getGoogleProfile("Duper"))
     .then(function(user) {
