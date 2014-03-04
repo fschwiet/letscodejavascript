@@ -71,9 +71,7 @@ exports["Referer url is ignored when it matches the login page"] = function(test
 
 exports["Referer url is ignored when it has an unexpected domain"] = function(test) {
 
-    var expectedReferer = "http://www.cnn.com/";
-
-    var req = getRequestWithReferer(config.urlFor("/login", { someQuery : "value"}), null);
+    var req = getRequestWithReferer("http://www.cnn.com/", null);
 
     auth.handleRefererHeaderUsingLoginPage("/login")(req, null, function() {
 
