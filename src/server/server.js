@@ -54,7 +54,7 @@
         require("./feeds.js")(app);
         require("./trimPosts.js")(app);
 
-        app.get("/", handleHomepageRequest);
+        app.get("/", auth.requireLogin, handleHomepageRequest);
         app.get("/status", handleStatusRequest);
         app.get("/about", handleAboutRequest);
 
@@ -118,7 +118,6 @@
             response.redirect('/login');
             return;
         }
-
 
         dataSubscriptions.loadSubscriptions(request.user.id, new Date())
         .then(function(subscriptions) {

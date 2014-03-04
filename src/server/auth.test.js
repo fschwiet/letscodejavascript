@@ -29,7 +29,7 @@ exports["Referer url defaults to homepage"] = function(test) {
 
 exports["Referer url is typically used"] = function(test) {
 
-    var expectedReferer = "http://www.cnn.com/";
+    var expectedReferer = config.urlFor("/foo");
 
     var req = getRequestWithReferer(expectedReferer);
 
@@ -43,7 +43,7 @@ exports["Referer url is typically used"] = function(test) {
 
 exports["Referer url is ignored when not set"] = function(test) {
 
-    var expectedReferer = "http://www.cnn.com/";
+    var expectedReferer = config.urlFor("/foo");
 
     var req = getRequestWithReferer(null, expectedReferer);
 
@@ -58,6 +58,19 @@ exports["Referer url is ignored when not set"] = function(test) {
 
 exports["Referer url is ignored when it matches the login page"] = function(test) {
 
+    var req = getRequestWithReferer(config.urlFor("/login", { someQuery : "value"}), null);
+
+    auth.handleRefererHeaderUsingLoginPage("/login")(req, null, function() {
+
+        expect(auth.getAfterAuthUrl(req)).to.be('/');
+
+        test.done();
+    });
+};
+
+
+exports["Referer url is ignored when it has an unexpected domain"] = function(test) {
+
     var expectedReferer = "http://www.cnn.com/";
 
     var req = getRequestWithReferer(config.urlFor("/login", { someQuery : "value"}), null);
@@ -69,3 +82,4 @@ exports["Referer url is ignored when it matches the login page"] = function(test
         test.done();
     });
 };
+

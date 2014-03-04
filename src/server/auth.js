@@ -30,7 +30,8 @@ function handleRefererHeaderUsingLoginPage(loginPath) {
 
             var parsedReferer = url.parse(referer);
 
-            if (parsedReferer.pathname != loginPath) {
+            if (parsedReferer.pathname != loginPath &&
+                parsedReferer.hostname.toLowerCase() == config.get('server_hostname').toLowerCase()) {
 
                 req.session.referer = referer;
             }
@@ -301,3 +302,14 @@ exports.addToExpress = function(port, app) {
             passport.authenticate('google', authHandler(req,res,next))(req,res,next);
         });
 };
+
+exports.requireLogin = function(request,response,next) {
+    if (typeof request.user !== "object") {
+        request.session.referer = request.url;
+        request.flash("info", "You need to log in first");
+        response.redirect("/login");
+    } else {
+        next();
+    }
+};
+
