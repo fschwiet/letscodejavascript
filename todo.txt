@@ -1,6 +1,8 @@
 
 TODO
 
+  it would be nice for the homepage to have links to view posts for a particular subscription
+
   client side tests were stalling on firefox or something?
 
   status page should indicate if email settings are working
