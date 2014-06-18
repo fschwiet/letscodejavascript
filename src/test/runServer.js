@@ -26,11 +26,14 @@ exports.startServerLikeIIS = function(callback) {
 };
 
 exports.stopServer = function(callback) {
+
     if (server !== null) {
-        server.on("close", function() {
+        server.on("exit", function() {
             callback();
         });
-        server.kill();
+
+        server.stdin.write("done\n");
+
         server = null;
     } else {
         callback();
