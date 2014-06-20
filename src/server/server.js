@@ -73,20 +73,10 @@
         app.use("/client", express.static(__dirname + './../client/'));
         app.use("/client/views", express.static(__dirname + './../../temp/views'));
 
-        var errorLoggingFile = path.resolve(config.tempPathForLogs(), "errors.json");
-
         var transports = [];
-        transports.push(new winston.transports.File({
-                    filename: errorLoggingFile,
-                    maxsize: 64 * 1024 * 1024,
-                    maxFiles: 20,
-                    json: true
-                }));
 
         if (!config.isProduction) {
-            transports.push(new winston.transports.Console({
-                        json: true
-                    }));
+            transports.push(new winston.transports.Console({json: true}));
         }
 
         app.use(expressWinston.errorLogger({
@@ -176,31 +166,20 @@
         database.getStatus(function(statusString) {
             model.databaseStatus = statusString;
 
-            fs.stat(config.tempPathForUploads(), function(err, stat) {
+            // smelly code is smelly
+            //  
+            var processUid = process.uid;
 
-                // smelly code is smelly
-                //  
-                var processUid = process.uid;
+            if (typeof processUid == 'undefined' && typeof process.getuid == 'function')
+                processUid = process.getuid();                
 
-                if (typeof processUid == 'undefined' && typeof process.getuid == 'function')
-                    processUid = process.getuid();                
+            var processGid = process.gid;
 
-                var processGid = process.gid;
+            if (typeof processGid == 'undefined' && typeof process.getgid == 'function')
+                processGid = process.getgid();
 
-                if (typeof processGid == 'undefined' && typeof process.getgid == 'function')
-                    processGid = process.getgid();
-
-                if (err) {
-                    model.uploadPathStatus = err.toString();
-                } else if (canWrite(processUid === stat.uid, process.gid === stat.gid, stat.mode)) {
-                    model.uploadPathStatus = "writeable";
-                } else {
-                    model.uploadPathStatus = "insufficient permissions";
-                }
-
-                response.render('status', model);
-                response.end();
-            });
+            response.render('status', model);
+            response.end();
         });
     }
 

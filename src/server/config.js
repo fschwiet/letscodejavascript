@@ -17,7 +17,6 @@ function getDefaults() {
         "server_friendlyName": "letscodejavascript",
         "server_port": 8081,
         "server_hostname": "localhost",
-        "server_tempPath": "./temp",
         "server_sessionKey": "foo",
         "isProduction": false,
 
@@ -49,17 +48,6 @@ nconf.urlFor = function(path, query) {
     parts.pathname = path;
     parts.query = query;
     return urlParser.format(parts);
-};
-
-nconf.tempPathFor = function(subpath) {
-    return path.resolve(nconf.get("server_tempPath"), subpath);
-};
-
-nconf.tempPathForLogs = function() {
-    return nconf.tempPathFor("logs");
-};
-nconf.tempPathForUploads = function() {
-    return nconf.tempPathFor("uploads");
 };
 
 module.exports = nconf;

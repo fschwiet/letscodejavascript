@@ -11,6 +11,7 @@ var childProcess = require("child_process");
 var config = require("./src/server/config.js");
 var Q = require("q");
 var request = require("request");
+var os = require("os");
 var nodeVersion = new(require("node-version").version)();
 var util = require("util");
 var runServer = require("./src/test/runServer.js");
@@ -94,7 +95,7 @@ function runTestsWithNodeunit(testList) {
     });
 }
 
-task("commonTestPrequisites", ["lint", "prepareTempDirectory", "prepareTestDatabase", "buildClientBundle"], function() {});
+task("commonTestPrequisites", ["lint", "prepareTestDatabase", "buildClientBundle"], function() {});
 
 task("testSlow", ["commonTestPrequisites"], function() {
 
@@ -151,19 +152,6 @@ task("testRemaining", ["commonTestPrequisites"], function() {
     async: true
 });
 
-task("prepareTempDirectory", function() {
-    var rmTarget = path.resolve("./temp");
-    console.log("using temp directory " + rmTarget);
-    jake.rmRf(rmTarget);
-
-    if (fs.existsSync(rmTarget)) {
-        fail("Unable to clear temp directory");
-    }
-
-    fs.mkdirsSync(config.tempPathForUploads());
-    fs.mkdirsSync(config.tempPathForLogs());
-});
-
 task("createTestDatabase", function() {
 
     database.ensureTestDatabaseIsClean(function(err) {
@@ -182,22 +170,16 @@ task("prepareTestDatabase", ["createTestDatabase", "runMigrations"]);
 //  working directory used during release.
 
 desc("test all the things");
-task("testForRelease", ["default", "prepareTempDirectory"], function() {
+task("testForRelease", ["default"], function() {
 
-    var workingDirectory = config.tempPathFor("testForRelease");
-    var tempDirectory = config.tempPathFor("testForRelease.temp");
+    var workingDirectory = path.join(os.tmpdir(), "letscodejavascript-testForRelease");
 
     fs.removeSync(workingDirectory);
     fs.mkdirSync(workingDirectory);
 
-    fs.removeSync(tempDirectory);
-    fs.mkdirSync(tempDirectory);
-
     return gitUtil.gitCloneTo(workingDirectory)
     .then(function() {
-        return copyModifiedJson("./config.json", path.resolve(workingDirectory, "config.json"), function(configValues) {
-            configValues.server_tempPath = tempDirectory;
-        });
+        fs.copySync("./config.json", path.join(workingDirectory, "config.json"));
     })
     .then(function() {
         return spawnProcess("node", [path.resolve(workingDirectory, ".\\node_modules\\jake\\bin\\cli.js"), "default"], {cwd: workingDirectory});
@@ -231,11 +213,8 @@ task("deployToIIS", ["verifyEmptyGitStatus", "testForRelease"], function() {
         console.log("deploying git commit", id);
 
         var deployPath = gitUtil.getAvailableDirectory(path.resolve(deployRoot, id));
-        var tempPath = deployPath + "_temp";
 
         fs.mkdirsSync(deployPath);
-        fs.mkdirsSync(path.resolve(tempPath, "uploads"));
-        fs.mkdirsSync(path.resolve(tempPath, "logs"));
 
         console.log("Deploying to " + deployPath);
 
@@ -267,7 +246,6 @@ task("deployToIIS", ["verifyEmptyGitStatus", "testForRelease"], function() {
                     var final_hostname = getProductionConfig("server_hostname");
                     var final_port = getProductionConfig("server_port");
 
-                    configValues.server_tempPath = tempPath;
                     configValues.server_port = smoketest_port;
 
                     if ((configValues.server_sessionKey || "").length < 15) {
@@ -291,7 +269,7 @@ task("deployToIIS", ["verifyEmptyGitStatus", "testForRelease"], function() {
                         })
                         .then(function() {
                             var iisPath = path.join(deployPath, "src/iis");
-                            var iisInstallArgs = ["-noprofile", "-file", "./src/iis/install.ps1", deploymentName + " (smoke)", iisPath, smoketest_hostname, smoketest_port, tempPath];
+                            var iisInstallArgs = ["-noprofile", "-file", "./src/iis/install.ps1", deploymentName + " (smoke)", iisPath, smoketest_hostname, smoketest_port];
 
                             console.log("calling execFile on ./src/iis/install.ps1", iisInstallArgs);
 
@@ -314,7 +292,7 @@ task("deployToIIS", ["verifyEmptyGitStatus", "testForRelease"], function() {
                         })
                         .then(function() {
                             var iisPath = path.join(deployPath, "src/iis");
-                            var iisInstallArgs = ["-noprofile", "-file", "./src/iis/install.ps1", deploymentName, iisPath, final_hostname, final_port, tempPath];
+                            var iisInstallArgs = ["-noprofile", "-file", "./src/iis/install.ps1", deploymentName, iisPath, final_hostname, final_port];
 
                             console.log("calling execFile on ./src/iis/install.ps1", iisInstallArgs);
 
@@ -431,13 +409,13 @@ task("removeClientBundle", function() {
 desc("Run database migrations");
 task("runMigrations", ["lint"], function() {
 
-    return database.runMigrations(config.tempPathFor("."), "./src/migrations", ["up"]);
+    return database.runMigrations(os.tmpdir(), "./src/migrations", ["up"]);
 });
 
 desc("Reverts 1 database migrations");
 task("runOneMigrationDown", function() {
 
-    return database.runMigrations(config.tempPathFor("."), "./src/migrations", ["down", "--count", "1"]);
+    return database.runMigrations(os.tmpdir(), "./src/migrations", ["down", "--count", "1"]);
 });
 
 function listNonImportedFiles() {

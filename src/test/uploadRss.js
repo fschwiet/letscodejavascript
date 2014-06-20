@@ -1,4 +1,5 @@
 var fs = require("fs");
+var os = require("os");
 var path = require("path");
 var setDefault = require('set-default');
 
@@ -23,7 +24,7 @@ module.exports = function(page, options) {
             ]
         });
 
-    var tempFile = config.tempPathFor("subscriptions.xml");
+    var tempFile = path.join(os.tmpdir(),"subscriptions.xml");
     fs.writeFileSync(tempFile, testData.load("subscriptions.xml", {
                 feeds: options.feeds
             }));

@@ -7,7 +7,6 @@
 
     function assertStatusIsGood(contents) {
         checkStatus(contents, (/Database status:(.*)/mi), "connected (localhost)");
-        checkStatus(contents, (/Upload path status:(.*)/mi), "writeable");
     }
 
     function checkStatus(contents, expectedPattern, expectedStatus) {

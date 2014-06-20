@@ -1,5 +1,6 @@
 var assert = require("assert");
 var expect = require("expect.js");
+var os = require("os");
 
 var config = require("../server/config.js");
 
@@ -70,7 +71,7 @@ setup.qtest(testBlock, "user can trim excess posts", function() {
             });
         })
         .fail(function(err) {
-            var path = config.tempPathFor("screenshot.png");
+            var path = path.join(os.tmpdir(), "screenshot.png");
             console.log("saving screenshot to " + path);
             page.render(path);
             throw err;
