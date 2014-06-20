@@ -398,14 +398,6 @@ task("buildClientBundle", ["compileJadeViews"], function() {
     async: true
 });
 
-desc("Removes compiled version of client-side script");
-task("removeClientBundle", function() {
-
-    if (fs.existsSync(clientBundle)) {
-        fs.unlinkSync(clientBundle);
-    }
-});
-
 desc("Run database migrations");
 task("runMigrations", ["lint"], function() {
 
