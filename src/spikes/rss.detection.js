@@ -138,22 +138,6 @@ exports["should be able to report failure"] = function(test) {
 };
 
 
-/*
-var feeds = require("./feeds");
-var util = require("util");
-
-exports["export feeds"] = function(test) {
-
-    feeds.loadSubscriptionsFromGoogleXml("C:/Users/user/Downloads/google-reader-subscriptions.xml")
-    .then(function(results) {
-        test.done();
-        results.forEach(function(row) {
-            console.log(util.format("testRssLookup(%s, %s);", JSON.stringify(row.htmlUrl), JSON.stringify(row.rssUrl)));
-        });
-    });
-};
-*/
-
 
 testRssLookup("http://www.codinghorror.com/blog/", "http://feeds.feedburner.com/codinghorror/");
 testRssLookup("http://www.curiousoffice.com", "http://www.curiousoffice.com/feed/");
