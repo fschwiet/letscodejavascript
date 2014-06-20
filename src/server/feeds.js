@@ -36,54 +36,66 @@ function handleFeedsRequest(request, response) {
 
 function handleUploadFromGooglePostRequest(request, response, next) {
 
-    var subscriptionsPath = request.files.subscriptionsXml.path;
+    var subscriptionsXml = null;
 
-    loadSubscriptionsFromGoogleXml(subscriptionsPath)
-        .then(function(rows) {
+    var busboy = new require('busboy')({headers: request.headers});
 
-            dataSubscriptions.saveSubscriptions(request.user.id, rows)
-                .then(function() {
-                    request.flash("info", "Upload complete.  Now just go to the <a href='/'>homepage</a> when you want to read them.");
-                    response.redirect("/feeds");
-                }, function(err) {
-                    next(err);
-                });
+    busboy.on('file', function(fieldname, file, filename, encoding, mimetype) {
+
+        if (fieldname != 'subscriptionsXml') {
+            return;
+        }
+
+        subscriptionsXml = "";
+
+        file.on('data', function(data) {
+            subscriptionsXml = subscriptionsXml += data;
         });
+    });
+
+    busboy.on('finish', function() {
+        loadSubscriptionsFromGoogleXml(subscriptionsXml)
+            .then(function(rows) {
+
+                dataSubscriptions.saveSubscriptions(request.user.id, rows)
+                    .then(function() {
+                        request.flash("info", "Upload complete.  Now just go to the <a href='/'>homepage</a> when you want to read them.");
+                        response.redirect("/feeds");
+                    }, function(err) {
+                        next(err);
+                    });
+            });
+    });
+
+    request.pipe(busboy);
 }
 
-function loadSubscriptionsFromGoogleXml(filepath) {
+function loadSubscriptionsFromGoogleXml(xml) {
 
     var deferred = Q.defer();
     var parser = new xml2js.Parser();
 
-    fs.readFile(filepath, function(err, data) {
+    parser.parseString(xml, function(err, result) {
 
         if (err) {
             deferred.reject(err);
         } else {
-            parser.parseString(data, function(err, result) {
+            var rows = [];
 
-                if (err) {
-                    deferred.reject(err);
-                } else {
-                    var rows = [];
-
-                    try {
-                        result.opml.body[0].outline.forEach(function(row) {
-                            rows.push({
-                                    name: row.$.title,
-                                    rssUrl: row.$.xmlUrl,
-                                    htmlUrl: row.$.htmlUrl
-                                });
+            try {
+                result.opml.body[0].outline.forEach(function(row) {
+                    rows.push({
+                            name: row.$.title,
+                            rssUrl: row.$.xmlUrl,
+                            htmlUrl: row.$.htmlUrl
                         });
-                    } catch (ex) {
-                        deferred.reject(ex);
-                        return;
-                    }
+                });
+            } catch (ex) {
+                deferred.reject(ex);
+                return;
+            }
 
-                    deferred.resolve(rows);
-                }
-            });
+            deferred.resolve(rows);
         }
     });
 

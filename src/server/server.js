@@ -28,10 +28,8 @@
         var app = express();
 
         app.use(express.limit('4mb'));
-        app.use(express.bodyParser({
-                    keepExtensions: true,
-                    uploadDir: config.tempPathForUploads()
-                }));
+        app.use(express.json());
+        app.use(express.urlencoded());
         app.use(express.cookieParser());
         app.use(express.cookieSession({
                     secret: config.get("server_sessionKey")
