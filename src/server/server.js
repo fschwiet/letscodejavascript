@@ -23,7 +23,7 @@
 
     var server;
 
-    exports.start = function(port, callback, extraMiddleware) {
+    exports.start = function(port, callback) {
 
         var app = express();
 
@@ -40,11 +40,6 @@
 
 
         app.use(connectFlash());
-
-        if (typeof extraMiddleware == "function") {
-            app.use(extraMiddleware);
-        }
-
         auth.addToExpress(port, app);
 
         require("./posts.js")(app);

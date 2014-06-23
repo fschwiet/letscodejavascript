@@ -26,18 +26,7 @@ exports.whenRunningTheServer = NodeunitBuilder.createTestScopeExtender(
     "when running the server",
     function(done) {
 
-        // test setup can modify this.server.extraMiddleware to do extra prep
-
-        this.server = {};
-        this.server.extraMiddleware = function(req,res,next) {
-            next();
-        };
-
-        var thisServerContext = this.server;
-
-        server.start(config.get("server_port"), done, function(req, res, next) {
-            thisServerContext.extraMiddleware(req,res,next);
-        });
+        server.start(config.get("server_port"), done);
     },
     function(done) {
         server.stop(function()

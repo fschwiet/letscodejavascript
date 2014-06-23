@@ -1,4 +1,3 @@
-
 TODO
 
   it would be nice for the homepage to have links to view posts for a particular subscription

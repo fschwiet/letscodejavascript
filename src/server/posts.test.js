@@ -9,6 +9,8 @@ var posts = require("../server/posts.js");
 var users = require("../server/data/users.js");
 var setup = require("../test/setup.js");
 var shouldFail = require("cauldron").shouldFail;
+var waitUntil = require("cauldron").waitUntil;
+
 
 var testWithRssOnly = setup.given3rdPartyRssServer(exports);
 
@@ -17,129 +19,114 @@ var expectedPostUrl = "http://www.feedforall.com/restaurant.htm";
 var NodeunitBuilder = require("cauldron").nodeunit;
 
 function assertMatchesExpectedPosts(posts) {
-    assert.equal(JSON.stringify(posts), JSON.stringify([{
-                    feedName: "FeedForAll Sample Feed",
-                    postName: "RSS Solutions for Restaurants",
-                    postUrl: expectedPostUrl,
-                    postDate: new Date("June 1, 2013")
-                }
-            ]));    
+    assert.equal(posts[0].feedName, "FeedForAll Sample Feed");
+    assert.equal(posts[0].postName, "RSS Solutions for Restaurants");
+    assert.equal(posts[0].postUrl, expectedPostUrl);
+    assert.equal(JSON.stringify(posts[0].postDate), JSON.stringify(new Date("June 1, 2013")));
 }
 
-var expectedUserId = 123; // this.server.extraMiddleware
+var browserTest = setup.usingPhantomPage(setup.whenRunningTheServer(setup.givenCleanDatabase(testWithRssOnly)));
 
-var testBlock = new NodeunitBuilder(setup.whenRunningTheServer(testWithRssOnly), "with user id");
+function loadRssEndpointsUrl(page, url, skipAuthentication) {
 
-testBlock.setUp = function(done) {
+    return page.open(config.urlFor("/"))
+        .then(function() {
+            if (!skipAuthentication) {
+                return require("../test/login.js").doLogin(page);
+            } else {
+                return waitUntil("page is loaded", function() {
+                    return page.evaluate(function() {
+                        return typeof $ != 'undefined';
+                    });
+                });
+            }
+        })
+        .then(function() {
+            return page.evaluate(function(rssFeedsEndpoint) {
+                var result = $.ajax(rssFeedsEndpoint, {
+                    async: false
+                });
+                return result.responseJSON;
+            }, url);
+        });
+}
 
-    this.server.extraMiddleware = function(req,res,next) {
-        req.user = { 
-            id: expectedUserId
-        };
-        next();
-    };
 
-    done();
-};
-
-
-testBlock.test("Should be able to load RSS feeds", function() {
+browserTest.test("Should be able to load RSS feeds", function() {
 
     var url = config.urlFor("/posts", {
             rssUrl: this.rssServer.urlFor("/rss/foo")
         });
 
-    return Q.nfcall(request, url)
-        .then(function(arr) {
-
-            var response = arr[0];
-            var body = arr[1];
-
-            assertMatchesExpectedPosts(JSON.parse(body));
-
-            assert.equal(response.headers["content-type"], "application/json");
+    return loadRssEndpointsUrl(this.page, url)
+        .then(function(rssFeeds) {
+            assertMatchesExpectedPosts(rssFeeds);
         });
 });
 
 
-testBlock.test("Should return empty result for invalid feeds", function() {
+browserTest.test("Should return empty result for invalid feeds", function() {
 
     var url = config.urlFor("/posts", {
             rssUrl: this.rssServer.urlFor("/notexistingPath")
         });
 
-    return Q.nfcall(request, url)
-        .then(function(arr) {
-
-            var response = arr[0];
-            var body = arr[1];
-
-            assert.equal(body, JSON.stringify([]));
-
-            assert.equal(response.headers["content-type"], "application/json");
+    return loadRssEndpointsUrl(this.page, url)
+        .then(function(rssFeeds) {
+            assert.deepEqual(rssFeeds, []);
         });
 });
 
-testBlock.test("Should be able to mark feeds as finished", function() {
+browserTest.test("Should be able to mark feeds as finished", function() {
 
     var url = config.urlFor("/posts", {
             rssUrl: this.rssServer.urlFor("/rss/foo")
         });
 
-    return Q.nfcall(request, url)
-        .then(function(arr) {
-            var body = JSON.parse(arr[1]);
-            assert.equal(body.length, 1);
+    var page = this.page;
+
+    return Q()
+        .then(function() {
+            return loadRssEndpointsUrl(page, url);
+        })
+        .then(function(rssFeeds) {
+            assert.equal(rssFeeds.length, 1);
         })
         .then(function() {
 
-            var d = Q.defer();
-
-            request({
-                method: 'POST',
-                url: config.urlFor("/posts/finished"),
-                json: { rssUrl: expectedPostUrl}
-            }, function(error, response, body) {
-
-                assert.ifError(error);
-                assert.equal(200, response.statusCode);
-
-                d.resolve();
-            });
-
-            return d.promise;
+            return page.evaluate(function(finishedUrl, jsonString) {
+                $.ajax(finishedUrl, {
+                    type: 'POST',
+                    data: jsonString,
+                    processData: false,
+                    contentType: 'application/json',                    
+                    async: false
+                });
+            }, config.urlFor("/posts/finished"), JSON.stringify({ rssUrl: expectedPostUrl}));
         })
         .then(function() {
-            return Q.nfcall(request, url);
+            return loadRssEndpointsUrl(page, url, true);
         })
-        .then(function(arr) {
-            var body = JSON.parse(arr[1]);
-            assert.equal(body.length, 0);
+        .then(function(rssFeeds) {
+            assert.equal(rssFeeds.length, 0);
         })
         .then(function() {
 
-            var d = Q.defer();
-
-            request({
-                method: 'POST',
-                url: config.urlFor("/posts/unfinished"),
-                json: { rssUrl: expectedPostUrl}
-            }, function(error, response, body) {
-
-                assert.ifError(error);
-                assert.equal(200, response.statusCode);
-
-                d.resolve();
-            });
-
-            return d.promise;
+            return page.evaluate(function(unfinishedUrl, jsonString) {
+                $.ajax(unfinishedUrl, {
+                    type: 'POST',
+                    data: jsonString,
+                    processData: false,
+                    contentType: 'application/json',                    
+                    async: false
+                });
+            }, config.urlFor("/posts/unfinished"), JSON.stringify({ rssUrl: expectedPostUrl}));
         })
         .then(function() {
-            return Q.nfcall(request, url);
+            return loadRssEndpointsUrl(page, url, true);
         })
-        .then(function(arr) {
-            var body = JSON.parse(arr[1]);
-            assert.equal(body.length, 1);
+        .then(function(rssFeeds) {
+            assert.equal(rssFeeds.length, 1);
         });
 });
 
