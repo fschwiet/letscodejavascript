@@ -1,10 +1,13 @@
 
 username=${1:?"Expected web app username as first parameter."}
 password=${2:?"Expected web app password as second parameter."}
+host_repository=${3:?"Expected host repository as third parameter."}
+project_repository=${4:?"Expected host repository as fourth parameter."}
+
 
 sudo useradd -m -c "Web Applications Account" -p $(openssl passwd -1 "$password") "$username"
 sudo mkdir /cumulonimbus
-git clone http://github.com/fschwiet/cumulonimbus-host /cumulonimbus
+git clone $host_repository /cumulonimbus
 mkdir /cumulonimbus/sites
 sudo chown --recursive "$username:$username" /cumulonimbus
 
@@ -13,6 +16,6 @@ sudo chown --recursive "$username:$username" /cumulonimbus
 
 echo "Next, run:"
 echo "    su $username"
-echo "    git clone http://github.com/fschwiet/cumulonimbus-project /cumulonimbus/sites/sample"
+echo "    git clone $project_repository /cumulonimbus/sites/sample"
 echo "    cd /cumulonimbus"
 echo "    ./deploy.sh sample"

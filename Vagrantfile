@@ -1,6 +1,22 @@
 # -*- mode: ruby -*-
 # vi: set ft=ruby :
 
+require 'yaml'
+
+if File.file? "../vagrant.yml" then
+	settings = YAML.load_file "../vagrant.yml"
+else
+	settings = {};
+end
+
+if settings["vagrant_dir"].is_a? String then
+	settings["vagrant_dir"] = File.absolute_path(settings["vagrant_dir"], "..")
+else
+	settings["vagrant_dir"] = "."
+end
+
+settings["host_repository"] = settings["host_repository"] || "http://github.com/fschwiet/cumulonimbus-host"
+settings["project_repository"] = settings["project_repository"] || "http://github.com/fschwiet/cumulonimbus-project"
 
 def aptgetUpdate(vm)
 	vm.provision :chef_solo do |chef|
@@ -40,7 +56,7 @@ Vagrant.configure("2") do |config|
 
 	config.vm.network "private_network", ip: "192.168.33.100"
 	config.vm.network "forwarded_port", guest: 8080, host: 8080
-	config.vm.synced_folder "..", "/vagrant"
+	config.vm.synced_folder settings["vagrant_dir"], "/vagrant"
 
 	aptgetUpdate config.vm
 	installGit config.vm
@@ -50,7 +66,12 @@ Vagrant.configure("2") do |config|
 	config.vm.provision "shell", inline: "sudo apt-get install -y realpath"
 	config.vm.provision "shell", inline: "sudo npm install pm2 -g"
 
-	config.vm.provision "shell", path: "./provision.sites.sh", args: [ "wwwuser", Secret.wwwuser_password || "password" ]
+	config.vm.provision "shell", path: "./provision.sites.sh", args: [ 
+		"wwwuser", 
+		Secret.wwwuser_password || "password",
+		settings["host_repository"],
+		settings["project_repository"]
+	]
 end
 
 
