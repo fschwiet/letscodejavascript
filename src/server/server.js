@@ -70,7 +70,7 @@
 
         var transports = [];
 
-        if (!config.isProduction) {
+        if (!config.isProduction()) {
             transports.push(new winston.transports.Console({json: true}));
         }
 

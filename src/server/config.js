@@ -18,7 +18,7 @@ function getDefaults() {
         "server_port": 8081,
         "server_hostname": "localhost",
         "server_sessionKey": "foo",
-        "isProduction": false,
+        "is_production": true,
 
         "googleTest_username": null,
         "googleTest_password": null,
@@ -39,15 +39,25 @@ function getDefaults() {
 
 nconf.defaults(getDefaults());
 
-nconf.getDefaults = getDefaults;
+var conf = {};
 
-var baseUrl = "http://" + nconf.get("server_hostname") + ":" + nconf.get("server_port") + "/";
+conf.get = function() {
+    return nconf.get.apply(nconf, arguments);
+};
 
-nconf.urlFor = function(path, query) {
+conf.getDefaults = getDefaults;
+
+var baseUrl = "http://" + conf.get("server_hostname") + ":" + conf.get("server_port") + "/";
+
+conf.urlFor = function(path, query) {
     var parts = urlParser.parse(baseUrl);
     parts.pathname = path;
     parts.query = query;
     return urlParser.format(parts);
 };
 
-module.exports = nconf;
+conf.isProduction = function() {
+    return nconf.get("is_production");    
+};
+
+module.exports = conf;
