@@ -23,13 +23,8 @@ TODO
 
   should have a loading indicator
 
-  should be able to subscribe to individual feeds
-
   should have post preview
 
-
-
-GOAL:
 
   should have a way to kill karma server+client processes, use it for deployToIIS
 
@@ -38,9 +33,7 @@ GOAL:
       in error message, recommend the hosts file be modified.
       
 
-  should have error logging when login fails using http://192.168.1.248 (hostname doesn't match configuration hostname)
-
-  should have better error output when migrations fail (happened when database not found)
+  should have better error output when migrations fail when database not found
 
   should have automated rollback
 
