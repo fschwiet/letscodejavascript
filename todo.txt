@@ -8,9 +8,9 @@ TODO
       - reference https://github.com/fschwiet/cumulonimbus-host/blob/master/machine/provision.sites.sh for additional setup
         - create user, pull cumulonimbus-host, pull the site, 
     - modify setup.js's whenRunningTheServer
-      - reload the VM
-        - verify vagrant is running
-      - use VM's target address
+      - skip starting the node process
+      - wait for server availability
+        - use VM's target address
       - for debugability, may want it to be optional.
 
   it would be nice for the homepage to have links to view posts for a particular subscription
