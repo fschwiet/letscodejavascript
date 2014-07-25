@@ -31,14 +31,16 @@ function loadRssEndpointsUrl(page, url, skipAuthentication) {
 
     return page.open(config.urlFor("/"))
         .then(function() {
+
+            return waitUntil("page is loaded", function() {
+                return page.evaluate(function() {
+                    return typeof $ != 'undefined';
+                });
+            });
+        })
+        .then(function() {
             if (!skipAuthentication) {
                 return require("../test/login.js").doLogin(page);
-            } else {
-                return waitUntil("page is loaded", function() {
-                    return page.evaluate(function() {
-                        return typeof $ != 'undefined';
-                    });
-                });
             }
         })
         .then(function() {
