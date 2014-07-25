@@ -6,7 +6,7 @@
     var assert = require("assert");
 
     function assertStatusIsGood(contents) {
-        checkStatus(contents, (/Database status:(.*)/mi), "connected (localhost)");
+        checkStatus(contents, (/Database status:(.*)/mi), "connected (" + config.get("database_hostname") + ")");
     }
 
     function checkStatus(contents, expectedPattern, expectedStatus) {
