@@ -23,5 +23,5 @@ module.exports.getConnectionInfo = function(includeDatabasename) {
 
 
 module.exports.isDatabaseProduction = function() {
-    return config.get("isProduction");
+    return config.isProduction();
 };

@@ -8,7 +8,7 @@
     "server_port": 8081,
     "server_hostname": "localhost",
     "server_sessionKey": "foo",
-    "isProduction": false,
+    "is_production": true,
     "googleTest_username": null,
     "googleTest_password": null,
     "deployment_configFile": "production.config.json",
