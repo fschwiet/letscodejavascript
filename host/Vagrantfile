@@ -47,6 +47,26 @@ def installNodejs(vm)
 	end
 end
 
+def installMysql(vm, rootPassword)
+
+	# Table and columns names will not be case sensitive
+	# reference: http://dev.mysql.com/doc/refman/5.0/en/identifier-case-sensitivity.html
+	
+	vm.provision :chef_solo do |chef|
+		chef.cookbooks_path = "cookbooks"
+		chef.add_recipe "mymysql"
+
+		chef.json = {
+			:mysql => {
+				server_root_password: rootPassword,
+				version: '5.6',
+				port: '3306',
+				data_dir: '/data-mysql'
+			}
+		}
+	end		
+end
+
 Vagrant.configure("2") do |config|
 
 	config.vm.box = "opscode-ubuntu-14.04"
@@ -72,6 +92,8 @@ Vagrant.configure("2") do |config|
 		settings["host_repository"],
 		settings["project_repository"]
 	]
+
+	installMysql config.vm, "password"
 end
 
 
