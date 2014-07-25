@@ -70,9 +70,7 @@
 
         var transports = [];
 
-        if (!config.isProduction()) {
-            transports.push(new winston.transports.Console({json: true}));
-        }
+        transports.push(new winston.transports.Console({json: true}));
 
         app.use(expressWinston.errorLogger({
                     transports: transports
