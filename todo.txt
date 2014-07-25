@@ -1,5 +1,18 @@
 TODO
 
+  integration tests should run within the VM
+    - jakefile should be able to up the vm,
+      - verify its not production
+      - vagrant down/up
+      - git subtree the hosts diretory somewhere
+      - reference https://github.com/fschwiet/cumulonimbus-host/blob/master/machine/provision.sites.sh for additional setup
+        - create user, pull cumulonimbus-host, pull the site, 
+    - modify setup.js's whenRunningTheServer
+      - reload the VM
+        - verify vagrant is running
+      - use VM's target address
+      - for debugability, may want it to be optional.
+
   it would be nice for the homepage to have links to view posts for a particular subscription
 
   client side tests were stalling on firefox or something?
