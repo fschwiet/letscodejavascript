@@ -444,5 +444,14 @@ task("cleanVagrant", function() {
             console.log(result.join("\n"));
             throw new Error("Expected default vagrant box to be using virtualbox provider");
         }
+        console.log("Verified vagrant is running on virtualbox");
+    })
+    .then(function() {
+        console.log("Destroying current vagrant environment");
+        return Q.ninvoke(vagrant, "destroy", "-f");
+    })
+    .then(function() {
+        console.log("Creating current vagrant environment");
+        return Q.ninvoke(vagrant, "up");
     });
 });
