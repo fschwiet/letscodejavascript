@@ -1,9 +1,16 @@
 TODO
 
+  cumulonimbus-machine:
+    parameterize using environment variables instead of Secret. and settings[]
+    
+    - how is this tested from cumulonimbus-host?
+    - specify the parameters when calling from letscodejavascript
+
   integration tests should run within the VM
     - jakefile should be able to up the vm,
-      - verify its not production
-      - vagrant down/up
+      *- verify the VM is not production  (config value should indicate provisioner allowed)
+      *- vagrant down/up
+      *- vagrant ssh-config to get ssh config
       - git subtree the hosts diretory somewhere
       - reference https://github.com/fschwiet/cumulonimbus-host/blob/master/machine/provision.sites.sh for additional setup
         - create user, pull cumulonimbus-host, pull the site, 
