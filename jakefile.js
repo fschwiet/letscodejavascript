@@ -419,3 +419,30 @@ function listNonImportedFiles() {
     return list;
 }
 
+var vagrant = require("vagrant");
+vagrant.start = path.resolve("./host");
+
+task("cleanVagrant", function() {
+
+    var statuses = {};
+
+    var statusRegex = /^([^\s]+)\s+(.+)\s\(([^\s]+)\)$/;
+
+    return Q.ninvoke(vagrant, "status")
+    .then(function(result) {
+        result.forEach(function(line) {
+            var regexResults = statusRegex.exec(line);
+            if (regexResults) {
+                statuses[regexResults[1]] = {
+                    status: regexResults[2],
+                    provider: regexResults[3]
+                };
+            }
+        });
+
+        if (!statuses['default'] || statuses['default'].provider != 'virtualbox') {
+            console.log(result.join("\n"));
+            throw new Error("Expected default vagrant box to be using virtualbox provider");
+        }
+    });
+});
