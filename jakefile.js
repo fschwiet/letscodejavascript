@@ -420,6 +420,8 @@ function listNonImportedFiles() {
 }
 
 var vagrant = require("vagrant");
+var Ssh2Connection = require("ssh2");
+
 vagrant.start = path.resolve("./host");
 
 function getVagrantSshConfig() {
@@ -434,24 +436,58 @@ function getVagrantSshConfig() {
 
         var configRegex = /^\s\s([^\s]+)\s(.+)$/;
 
+        var changeCase = require("change-case");
+
         configConsoleOut.forEach(function(line) {
 
             var regexResults = configRegex.exec(line);
 
             if (regexResults) {
-                sshConfig[regexResults[1].toLowerCase()] = regexResults[2];
+                sshConfig[changeCase.camelCase(regexResults[1])] = regexResults[2];
             }
         });
     })
     .then(function() {
-        return Q.ninvoke(fs, "readFile", sshConfig.identityfile);
+        return Q.ninvoke(fs, "readFile", sshConfig.identityFile);
     })
     .then(function(privateKey) {
+        
         sshConfig.privateKey = privateKey;
 
         return sshConfig;
     });
 }
+
+task("postVagrantUp", function() {
+    return getVagrantSshConfig()
+    .then(function(sshConfig) {
+        var connection = new Ssh2Connection();
+
+        var deferred = Q.defer();
+
+        connection.on('error', function(err) {
+            deferred.reject(err);
+        });
+
+        connection.on('ready', function() {
+            deferred.resolve(connection);
+        });
+
+        var ssh2Params = {
+            host: sshConfig.hostName,
+            port: sshConfig.port,
+            username: sshConfig.user,
+            privateKey: sshConfig.privateKey
+        };
+
+        connection.connect(ssh2Params);
+
+        return deferred.promise;
+    })
+    .then(function(connection) {
+
+    });
+});
 
 task("cleanVagrant", function() {
 
