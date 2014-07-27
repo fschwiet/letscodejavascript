@@ -422,6 +422,37 @@ function listNonImportedFiles() {
 var vagrant = require("vagrant");
 vagrant.start = path.resolve("./host");
 
+function getVagrantSshConfig() {
+
+    var sshConfig = {};
+
+    return Q()
+    .then(function() {
+        return Q.ninvoke(vagrant, "ssh-config", "default");
+    })
+    .then(function(configConsoleOut) {
+
+        var configRegex = /^\s\s([^\s]+)\s(.+)$/;
+
+        configConsoleOut.forEach(function(line) {
+
+            var regexResults = configRegex.exec(line);
+
+            if (regexResults) {
+                sshConfig[regexResults[1].toLowerCase()] = regexResults[2];
+            }
+        });
+    })
+    .then(function() {
+        return Q.ninvoke(fs, "readFile", sshConfig.identityfile);
+    })
+    .then(function(privateKey) {
+        sshConfig.privateKey = privateKey;
+
+        return sshConfig;
+    });
+}
+
 task("cleanVagrant", function() {
 
     var statuses = {};
@@ -453,5 +484,8 @@ task("cleanVagrant", function() {
     .then(function() {
         console.log("Creating current vagrant environment");
         return Q.ninvoke(vagrant, "up");
+    })
+    .then(function() {
+        return Q.ninvoke
     });
 });
