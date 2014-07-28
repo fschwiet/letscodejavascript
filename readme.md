@@ -1,7 +1,5 @@
 PREREQUISITES:
 
-* vagrant plugin install vagrant-secret
-* vagrant secret-init
 * [optional]  modify the secrets file in .vagrant/ to define wwwuser_password
 
 COOKBOOKS USED:
