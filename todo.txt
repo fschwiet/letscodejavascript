@@ -1,5 +1,11 @@
 TODO
 
+  test cumulonimbus-machine,
+    cumulonimbus-host
+
+  use git read-tree --prefix=testhack master
+    to project deployment instead of checking out
+
   cumulonimbus-machine:
     parameterize using environment variables instead of Secret. and settings[]
     
