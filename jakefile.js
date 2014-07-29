@@ -551,7 +551,13 @@ task("deploySiteToVirtualMachine", function() {
             return executeSshCommand(connection, 'git clone /vagrant /cumulonimbus/sites/letscodejavascript');
         })
         .then(function() {
-            return executeSshCommand(connection, 'mysql -u "root" -p"' + vagrant.env.mysqlRootPassword +'" -e "CREATE DATABASE TESTTEMP"');
+
+            var passwordInsert = '';
+            if (vagrant.env.mysqlRootPassword) {
+                passwordInsert = '-p"' + vagrant.env.mysqlRootPassword +'"';
+            }
+
+            return executeSshCommand(connection, 'mysql -u "root" ' + passwordInsert +' -e "CREATE DATABASE TESTTEMP"');
         })
         .then(function() {
             return executeSshCommand(connection, 'cd /cumulonimbus/sites/letscodejavascript; ./jake.sh runMigrations');
