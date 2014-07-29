@@ -426,7 +426,7 @@ vagrant.start = path.resolve("./host")
 vagrant.env = JSON.parse(JSON.stringify(vagrant.env))
 
 vagrant.env.hostGitUrl = "https://github.com/fschwiet/cumulonimbus-host"
-vagrant.env.hostGitCommit = "v0.0.1"
+vagrant.env.hostGitCommit = "master"
 vagrant.env.wwwuserUsername = "wwwuser"
 vagrant.env.wwwuserPassword = "password"
 
@@ -550,7 +550,7 @@ task("postVagrantUp", function() {
             return executeSshCommand(connection, 'git clone /vagrant /cumulonimbus/sites/letscodejavascript');
         })
         .then(function() {
-            return executeSshCommand(connection, 'cd /cumulonimbus; ./deploy.sh letscodejavascript');
+            return executeSshCommand(connection, 'cd /cumulonimbus; ./deploy.sh letscodejavascript cumu');
         })
         .fin(function() {
             connection.end();

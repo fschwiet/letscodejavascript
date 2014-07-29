@@ -1,7 +1,20 @@
 TODO
 
-  test cumulonimbus-machine,
-    cumulonimbus-host
+  C:\src\letscodejavascript>node node_modules\jake\bin\cli.js --trace postVagrantUp
+
+  Executing postVagrantUp
+
+  ssh exec failed for cd /cumulonimbus; ./deploy.sh letscodejavascript cumu, output was:
+  ./deploy.sh: line 94: ./prerun.sh: Permission denied
+  Failure running /cumulonimbus/deploys/letscodejavascript/be580663cc009de8b5a4363e9410605a7dda3503_0/prerun.sh
+
+  jake aborted.
+  Error: Ssh command cd /cumulonimbus; ./deploy.sh letscodejavascript cumu exited with code 1, signal: undefined
+      at api.fail (C:\src\letscodejavascript\node_modules\jake\lib\api.js:326:18)
+      at null._onTimeout (C:\src\letscodejavascript\node_modules\jake\lib\task\task.js:214:19)
+      at Timer.listOnTimeout [as ontimeout] (timers.js:110:15)
+
+
 
   use git read-tree --prefix=testhack master
     to project deployment instead of checking out
