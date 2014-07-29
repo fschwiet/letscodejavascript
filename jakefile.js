@@ -422,7 +422,14 @@ function listNonImportedFiles() {
 var vagrant = require("vagrant");
 var Ssh2Connection = require("ssh2");
 
-vagrant.start = path.resolve("./host");
+vagrant.start = path.resolve("./host")
+vagrant.env = JSON.parse(JSON.stringify(vagrant.env))
+
+vagrant.env.hostGitUrl = "https://github.com/fschwiet/cumulonimbus-host"
+vagrant.env.hostGitCommit = "v0.0.1"
+vagrant.env.wwwuserUsername = "wwwuser"
+vagrant.env.wwwuserPassword = "password"
+
 
 function getVagrantSshConfig() {
 
@@ -459,11 +466,12 @@ function getVagrantSshConfig() {
 }
 
 task("postVagrantUp", function() {
+
     return getVagrantSshConfig()
     .then(function(sshConfig) {
-        var connection = new Ssh2Connection();
 
         var deferred = Q.defer();
+        var connection = new Ssh2Connection();
 
         connection.on('error', function(err) {
             deferred.reject(err);
@@ -475,17 +483,42 @@ task("postVagrantUp", function() {
 
         var ssh2Params = {
             host: sshConfig.hostName,
-            port: sshConfig.port,
-            username: sshConfig.user,
-            privateKey: sshConfig.privateKey
+            port: sshConfig.port
+            //username: sshConfig.user,
+            //privateKey: sshConfig.privateKey
         };
+        ssh2Params.username = "wwwuser";
+        ssh2Params.password = "password";
 
         connection.connect(ssh2Params);
 
         return deferred.promise;
     })
     .then(function(connection) {
+        return Q.ninvoke (connection, "exec", "git clone /vagrant /cumulonimbus/sites/letscodejavascript")
+        .then(function(stream) {
 
+            stream.stderr.setEncoding('utf8');
+
+            stream.on('ready', function() {
+                console.log('ready', arguments);
+            });
+            stream.on('data', function() {
+                console.log('stdout', arguments);
+            });
+            stream.stderr.on('data', function() {
+                console.log('stderr', arguments);
+            });
+            stream.on('keyboard-interactive', function() {
+                console.log('keyboard-interactive', arguments);
+            });
+
+            return Q.defer().promise;
+
+        })
+        .fin(function() {
+            connection.end();
+        });
     });
 });
 
@@ -516,6 +549,16 @@ task("cleanVagrant", function() {
     .then(function() {
         console.log("Destroying current vagrant environment");
         return Q.ninvoke(vagrant, "destroy", "-f");
+    })
+    .then(function() {
+
+        vagrant.consoleLogFile = path.resolve("./vagrant.stdout.txt");
+
+        // Truncate the log file
+        return Q.ninvoke(fs, "open", vagrant.consoleLogFile, 'w+')
+        .then(function(fd) {
+            return Q.ninvoke(fs, "close", fd);
+        });
     })
     .then(function() {
         console.log("Creating current vagrant environment");
