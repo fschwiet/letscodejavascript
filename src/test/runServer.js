@@ -4,19 +4,15 @@ var assert = require("assert");
 var config = require("../server/config.js");
 var util = require("util");
 
-var SCRIPT_NAME = "src/iis/iis_server.js";
+var SCRIPT_NAME = "src/server/runServer.js";
 
 var server = null;
 
-exports.startServerLikeIIS = function(callback) {
+exports.startServerLikeProduction = function(callback) {
+
     assert.ok(fs.existsSync(SCRIPT_NAME), "Could not find file " + SCRIPT_NAME);
 
-    var env = JSON.parse(JSON.stringify(process.env));
-    env.PORT = config.get("server_port");
-
-    server = spawnOpenProcess("iis_server", "node", [SCRIPT_NAME], {
-            env: env
-        });
+    server = spawnOpenProcess("runServer", "node", [SCRIPT_NAME]);
 
     server.stdout.on('data', function(data) {
         if (data.indexOf("Server started") !== -1) {
@@ -40,9 +36,9 @@ exports.stopServer = function(callback) {
     }
 };
 
-function spawnOpenProcess(name, program, args, options) {
+function spawnOpenProcess(logName, program, args, options) {
 
-    console.log(util.format("running %s as %s %s", name, program, args.join(" ")));
+    console.log(util.format("running %s as %s %s", logName, program, args.join(" ")));
 
     var result = childProcess.spawn(program, args, options);
 
@@ -50,18 +46,18 @@ function spawnOpenProcess(name, program, args, options) {
 
     result.stderr.on('data', function(data) {
         data.toString().split("\n").forEach(function(line) {
-            console.log(name + " stderr: " + line);
+            console.log(logName + " stderr: " + line);
         });
     });
 
     result.stdout.on('data', function(data) {
         data.toString().split("\n").forEach(function(line) {
-            console.log(name + " stdout: " + line);
+            console.log(logName + " stdout: " + line);
         });
     });
 
     result.on('close', function(code) {
-        console.log(util.format("%s finished with exit code %s", name, code));
+        console.log(util.format("%s finished with exit code %s", logName, code));
     });
 
     return result;

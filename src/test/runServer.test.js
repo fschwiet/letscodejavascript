@@ -3,7 +3,7 @@ var request = require("request");
 var runServer = require("./runServer.js");
 
 exports.setUp = function(done) {
-    runServer.startServerLikeIIS(done);
+    runServer.startServerLikeProduction(done);
 };
 
 exports.tearDown = function(done) {

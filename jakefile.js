@@ -125,7 +125,7 @@ task("testSmoke", function() {
 
 task("startSmokeServer", function() {
 
-    runServer.startServerLikeIIS(complete);
+    runServer.startServerLikeProduction(complete);
 }, {
     async: true
 });
@@ -422,13 +422,13 @@ function listNonImportedFiles() {
 var vagrant = require("vagrant");
 var Ssh2Connection = require("ssh2");
 
-vagrant.start = path.resolve("./host")
-vagrant.env = JSON.parse(JSON.stringify(vagrant.env))
+vagrant.start = path.resolve("./host");
+vagrant.env = JSON.parse(JSON.stringify(vagrant.env));
 
-vagrant.env.hostGitUrl = "https://github.com/fschwiet/cumulonimbus-host"
-vagrant.env.hostGitCommit = "master"
-vagrant.env.wwwuserUsername = "wwwuser"
-vagrant.env.wwwuserPassword = "password"
+vagrant.env.hostGitUrl = "https://github.com/fschwiet/cumulonimbus-host";
+vagrant.env.hostGitCommit = "master";
+vagrant.env.wwwuserUsername = "wwwuser";
+vagrant.env.wwwuserPassword = "password";
 
 
 function getVagrantSshConfig() {
@@ -493,7 +493,7 @@ function executeSshCommand(connection, command, traceOutput) {
 
         stream.on("close", function() {
 
-            if (exitCode == 0) {
+            if (exitCode === 0) {
 
                 if (traceOutput) {
                     console.log("command '" + command + "' had output:");
@@ -601,6 +601,5 @@ task("cleanVagrant", function() {
         return Q.ninvoke(vagrant, "up");
     })
     .then(function() {
-        return Q.ninvoke
     });
 });
