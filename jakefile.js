@@ -429,6 +429,7 @@ vagrant.env.hostGitUrl = "https://github.com/fschwiet/cumulonimbus-host";
 vagrant.env.hostGitCommit = "master";
 vagrant.env.wwwuserUsername = "wwwuser";
 vagrant.env.wwwuserPassword = "password";
+vagrant.env.mysqlRootPassword = "password";
 
 
 function getVagrantSshConfig() {
@@ -551,6 +552,9 @@ task("postVagrantUp", function() {
         })
         .then(function() {
             return executeSshCommand(connection, 'cd /cumulonimbus; ./deploy.sh letscodejavascript cumu');
+        })
+        .then(function() {
+            return executeSshCommand(connection, 'mysql -u "root" -p"' + vagrant.env.mysqlRootPassword +'" -e "CREATE DATABASE TESTTEMP"');
         })
         .fin(function() {
             connection.end();

@@ -1,5 +1,3 @@
-  remove iis_reader, replacing usage with src/server/runServer.js
-
   use git read-tree --prefix=testhack master
     to project deployment instead of checking out
 
