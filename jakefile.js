@@ -429,7 +429,7 @@ vagrant.env.hostGitUrl = "https://github.com/fschwiet/cumulonimbus-host";
 vagrant.env.hostGitCommit = "master";
 vagrant.env.wwwuserUsername = "wwwuser";
 vagrant.env.wwwuserPassword = "password";
-vagrant.env.mysqlRootPassword = "password";
+vagrant.env.mysqlRootPassword = "";
 
 
 function getVagrantSshConfig() {
@@ -516,7 +516,7 @@ function executeSshCommand(connection, command, traceOutput) {
     });
 }
 
-task("postVagrantUp", function() {
+task("deploySiteToVirtualMachine", function() {
 
     return getVagrantSshConfig()
     .then(function(sshConfig) {
@@ -551,10 +551,13 @@ task("postVagrantUp", function() {
             return executeSshCommand(connection, 'git clone /vagrant /cumulonimbus/sites/letscodejavascript');
         })
         .then(function() {
-            return executeSshCommand(connection, 'cd /cumulonimbus; ./deploy.sh letscodejavascript cumu');
+            return executeSshCommand(connection, 'mysql -u "root" -p"' + vagrant.env.mysqlRootPassword +'" -e "CREATE DATABASE TESTTEMP"');
         })
         .then(function() {
-            return executeSshCommand(connection, 'mysql -u "root" -p"' + vagrant.env.mysqlRootPassword +'" -e "CREATE DATABASE TESTTEMP"');
+            return executeSshCommand(connection, 'cd /cumulonimbus/sites/letscodejavascript; ./jake.sh runMigrations');
+        })
+        .then(function() {
+            return executeSshCommand(connection, 'cd /cumulonimbus; ./deploy.sh letscodejavascript cumu');
         })
         .fin(function() {
             connection.end();
@@ -562,7 +565,7 @@ task("postVagrantUp", function() {
     });
 });
 
-task("cleanVagrant", function() {
+task("recreateVirtualMachine", function() {
 
     var statuses = {};
 
@@ -606,4 +609,7 @@ task("cleanVagrant", function() {
     })
     .then(function() {
     });
+});
+
+task("deploySite", ["recreateVirtualMachine", "deploySiteToVirtualMachine"], function() {
 });
