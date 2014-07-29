@@ -2,7 +2,8 @@
 # vi: set ft=ruby :
 
 syncedFolder = File.absolute_path(ENV["SyncedFolder"] || "..")
-hostGitUrl = ENV["HostGitUrl"] || "https://github.com/fschwiet/cumulonimbus-host/releases/tag/v0.0.1"
+hostGitUrl = ENV["HostGitUrl"] || "https://github.com/fschwiet/cumulonimbus-host"
+hostGitCommit = ENV["HostGitCommit"] || "master"
 wwwuser = ENV["wwwuserUsername"] || "wwwuser"
 wwwuserPassword = ENV["wwwuserPassword"] || "password"
 
@@ -77,7 +78,8 @@ Vagrant.configure("2") do |config|
 	config.vm.provision "shell", path: "./provision.sites.sh", args: [ 
 		wwwuser, 
 		wwwuserPassword,
-		hostGitUrl
+		hostGitUrl,
+		hostGitCommit
 	]
 
 	installMysql config.vm, "password"
