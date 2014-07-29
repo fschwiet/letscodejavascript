@@ -465,6 +465,56 @@ function getVagrantSshConfig() {
     });
 }
 
+function executeSshCommand(connection, command, traceOutput) {
+
+    return Q.ninvoke (connection, 'exec', command)
+    .then(function(stream) {
+
+        var deferred = Q.defer();
+
+        var output = "";
+        var exitCode = 1;
+        var exitSignal = "exit event not received";
+
+        stream.setEncoding('utf8');
+        stream.stderr.setEncoding('utf8');
+
+        stream.on('exit', function(code, signal) {
+            exitCode = code;
+            exitSignal = signal;
+        });
+
+        stream.on('data', function(data) {
+            output += data;
+        });
+        stream.stderr.on('data', function(data) {
+            output += data;
+        });
+
+        stream.on("close", function() {
+
+            if (exitCode == 0) {
+
+                if (traceOutput) {
+                    console.log("command '" + command + "' had output:");
+                    console.log(output);
+                }
+
+                deferred.resolve();
+            } else {
+
+                console.log();
+                console.log("ssh exec failed for " + command + ", output was:");
+                console.log(output);
+
+                deferred.reject('Ssh command ' + command + ' exited with code ' + exitCode + ', signal: ' + exitSignal);
+            }
+        });
+
+        return deferred.promise;
+    });
+}
+
 task("postVagrantUp", function() {
 
     return getVagrantSshConfig()
@@ -495,26 +545,12 @@ task("postVagrantUp", function() {
         return deferred.promise;
     })
     .then(function(connection) {
-        return Q.ninvoke (connection, "exec", "git clone /vagrant /cumulonimbus/sites/letscodejavascript")
-        .then(function(stream) {
-
-            stream.stderr.setEncoding('utf8');
-
-            stream.on('ready', function() {
-                console.log('ready', arguments);
-            });
-            stream.on('data', function() {
-                console.log('stdout', arguments);
-            });
-            stream.stderr.on('data', function() {
-                console.log('stderr', arguments);
-            });
-            stream.on('keyboard-interactive', function() {
-                console.log('keyboard-interactive', arguments);
-            });
-
-            return Q.defer().promise;
-
+        return Q()
+        .then(function() {
+            return executeSshCommand(connection, 'git clone /vagrant /cumulonimbus/sites/letscodejavascript');
+        })
+        .then(function() {
+            return executeSshCommand(connection, 'cd /cumulonimbus; ./deploy.sh letscodejavascript');
         })
         .fin(function() {
             connection.end();
