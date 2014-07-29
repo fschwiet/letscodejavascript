@@ -13,7 +13,7 @@ old_ids=$(pm2 jlist | node -e "var pm2List = JSON.parse(require('fs').readFileSy
     });
 ")
 
-if pm2 start ./node_modules/jake/bin/cli.js --name asimplereader -- jakefile.js runServer
+if pm2 start ./src/server/runServer.js --name asimplereader
 then 
     for old_id in $old_ids
     do
