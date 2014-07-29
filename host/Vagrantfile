@@ -6,6 +6,7 @@ hostGitUrl = ENV["HostGitUrl"] || "https://github.com/fschwiet/cumulonimbus-host
 hostGitCommit = ENV["HostGitCommit"] || "master"
 wwwuser = ENV["wwwuserUsername"] || "wwwuser"
 wwwuserPassword = ENV["wwwuserPassword"] || "password"
+mysqlRootPassword = ENV["mysqlRootPassword"] || ""
 
 def aptgetUpdate(vm)
 	vm.provision :chef_solo do |chef|
@@ -82,7 +83,7 @@ Vagrant.configure("2") do |config|
 		hostGitCommit
 	]
 
-	installMysql config.vm, "password"
+	installMysql config.vm, mysqlRootPassword
 end
 
 
