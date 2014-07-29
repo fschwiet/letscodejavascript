@@ -1,11 +1,9 @@
+  environment variables bad place for secret strings?  
+http://stackoverflow.com/questions/14786072/keep-secret-keys-out-with-environment-variables
+
+
   use git read-tree --prefix=testhack master
     to project deployment instead of checking out
-
-  cumulonimbus-machine:
-    parameterize using environment variables instead of Secret. and settings[]
-    
-    - how is this tested from cumulonimbus-host?
-    - specify the parameters when calling from letscodejavascript
 
   integration tests should run within the VM
     - jakefile should be able to up the vm,
