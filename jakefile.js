@@ -429,7 +429,7 @@ vagrant.env.hostGitUrl = "https://github.com/fschwiet/cumulonimbus-host";
 vagrant.env.hostGitCommit = "master";
 vagrant.env.wwwuserUsername = "wwwuser";
 vagrant.env.wwwuserPassword = "password";
-vagrant.env.mysqlRootPassword = "";
+vagrant.env.mysqlRootPassword = "password";
 
 
 function getVagrantSshConfig() {
@@ -547,6 +547,12 @@ task("deploySiteToVirtualMachine", function() {
     })
     .then(function(connection) {
         return Q()
+        .then(function() {
+            return executeSshCommand(connection, 'mkdir /cumulonimbus/sites/letscodejavascript.config');
+        })
+        .then(function() {
+            return executeSshCommand(connection, 'cp /vagrant/host.config/* /cumulonimbus/sites/letscodejavascript.config/');
+        })
         .then(function() {
             return executeSshCommand(connection, 'git clone /vagrant /cumulonimbus/sites/letscodejavascript');
         })

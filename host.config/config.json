@@ -1,0 +1,9 @@
+{
+    "database_port": 3306,
+    "database_user": "root",
+    "database_password": "password",
+    "server_friendlyName": "asimplereader vagrant",
+    "server_hostname": "asimplereader.192.168.33.100.xip.io",
+    "server_sessionKey": "foo 192",
+    "is_production": false
+}

@@ -1,3 +1,14 @@
+need to copy over a config file
+  - where to store config?
+    - during site deployment, adminsistrator will pull down a configuration repository and perhaps identify it when calling deploy.sh
+      - before calling deploy.sh, setConfig.sh is used to create a symbolic link to the file.
+      - if no config file is specific to deploy.sh, use symbolic link
+    - during vagrant localhost test, 
+      - config file will be copied out once
+        - use sftp on ssh2 (https://www.npmjs.org/package/ssh2)
+
+
+
   environment variables bad place for secret strings?  
 http://stackoverflow.com/questions/14786072/keep-secret-keys-out-with-environment-variables
 
