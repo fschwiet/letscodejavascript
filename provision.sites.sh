@@ -7,8 +7,6 @@ host_repository_commit=${4:?"Expected host repository commit id as fourth parame
 sudo useradd -m -c "Web Applications Account" -p $(openssl passwd -1 "$password") "$username"
 sudo mkdir /cumulonimbus
 git clone -b $host_repository_commit $host_repository /cumulonimbus
-mkdir /cumulonimbus/sites
-mkdir /cumulonimbus/configs
 sudo chown --recursive "$username:$username" /cumulonimbus
 
 #  It might be preferable to write to /etc/cron.d/<filename>, but I couldnt' get that to work.
