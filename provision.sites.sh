@@ -1,3 +1,6 @@
+#!/bin/sh
+
+set -e
 
 username=${1:?"Expected web app username as first parameter."}
 password=${2:?"Expected web app password as second parameter."}
