@@ -1,5 +1,6 @@
 #!/bin/sh
 
+set -e
 
 #later call to pm2 list -name was stalling on first run)
 pm2 list

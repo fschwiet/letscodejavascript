@@ -554,6 +554,9 @@ task("deploySiteToVirtualMachine", function() {
             return executeSshCommand(connection, 'cp /vagrant/host.config/* /cumulonimbus/sites/letscodejavascript.config/');
         })
         .then(function() {
+            return executeSshCommand(connection, 'ln --symbolic /cumulonimbus/sites/letscodejavascript.config /cumulonimbus/config/letscodejavascript')
+        })
+        .then(function() {
             return executeSshCommand(connection, 'git clone /vagrant /cumulonimbus/sites/letscodejavascript');
         })
         .then(function() {
@@ -564,9 +567,6 @@ task("deploySiteToVirtualMachine", function() {
             }
 
             return executeSshCommand(connection, 'mysql -u "root" ' + passwordInsert +' -e "CREATE DATABASE TESTTEMP"');
-        })
-        .then(function() {
-            return executeSshCommand(connection, 'cd /cumulonimbus/sites/letscodejavascript; ./jake.sh runMigrations');
         })
         .then(function() {
             return executeSshCommand(connection, 'cd /cumulonimbus; ./deploy.sh letscodejavascript cumu');

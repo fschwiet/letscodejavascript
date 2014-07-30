@@ -1,3 +1,6 @@
 #!/bin/sh
 
-#todo: run migrations
+set -e
+
+./jake.sh runMigrations
+./jake.sh buildClientBundle
