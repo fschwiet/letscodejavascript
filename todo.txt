@@ -1,3 +1,8 @@
+it looks like the google strategy for auth needs to be updated (http://stackoverflow.com/questions/23780039/mvc-google-login-openid-auth-request-contains-an-unregistered-domain) otherwise new hostnames won't work
+-> new to switch to https://github.com/jaredhanson/passport-google-oauth
+
+
+
 modify deploy.sh in cumulonimbus-host to look for config folder and copy its contents on deploy
 
 
