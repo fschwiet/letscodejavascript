@@ -425,12 +425,12 @@ var Ssh2Connection = require("ssh2");
 vagrant.start = path.resolve("./host");
 vagrant.env = JSON.parse(JSON.stringify(vagrant.env));
 
+vagrant.env.syncedFolder = "..";
 vagrant.env.hostGitUrl = "https://github.com/fschwiet/cumulonimbus-host";
 vagrant.env.hostGitCommit = "master";
 vagrant.env.wwwuserUsername = "wwwuser";
 vagrant.env.wwwuserPassword = "password";
 vagrant.env.mysqlRootPassword = "password";
-
 
 function getVagrantSshConfig() {
 
@@ -554,10 +554,10 @@ task("deploySiteToVirtualMachine", function() {
             return executeSshCommand(connection, 'cp /vagrant/host.config/* /cumulonimbus/sites/letscodejavascript.config/');
         })
         .then(function() {
-            return executeSshCommand(connection, 'ln --symbolic /cumulonimbus/sites/letscodejavascript.config /cumulonimbus/config/letscodejavascript')
+            return executeSshCommand(connection, 'git clone /vagrant /cumulonimbus/sites/letscodejavascript');
         })
         .then(function() {
-            return executeSshCommand(connection, 'git clone /vagrant /cumulonimbus/sites/letscodejavascript');
+            return executeSshCommand(connection, 'cd /cumulonimbus; ./link-config-folder.sh letscodejavascript /cumulonimbus/sites/letscodejavascript.config');
         })
         .then(function() {
 
@@ -623,5 +623,5 @@ task("recreateVirtualMachine", function() {
     });
 });
 
-task("deploySite", ["recreateVirtualMachine", "deploySiteToVirtualMachine"], function() {
+task("deploySite", ["lint", "recreateVirtualMachine", "deploySiteToVirtualMachine"], function() {
 });
