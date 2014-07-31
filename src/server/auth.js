@@ -6,8 +6,8 @@ var url = require('url');
 var util = require("util");
 var validator = require('validator');
 
-var GoogleStrategy = require('passport-google');
 var LocalStrategy = require('passport-local').Strategy;
+var GoogleStrategy = require('passport-google-oauth').OAuth2Strategy;
 
 var config = require("./config");
 var users = require("./data/users.js");
@@ -51,6 +51,7 @@ exports.getAfterAuthUrl = getAfterAuthUrl;
 
 function authHandler(req, res, next) {
     return function (err, user, info) {
+
         if (err) {
             return next(err);
         }
@@ -97,10 +98,13 @@ exports.addToExpress = function(port, app) {
         }
     ));
 
-    passport.use(new GoogleStrategy.Strategy({
-                returnURL: config.urlFor('/auth/google/return'),
-                realm: config.urlFor('/')
-            }, users.findOrCreateUserByGoogleIdentifier));
+    passport.use(new GoogleStrategy({
+        clientID: config.get("google_api_client_id"),
+        clientSecret: config.get("google_api_client_secret"),
+        callbackURL: config.urlFor('/auth/google/return')
+      },
+      users.findOrCreateUserByGoogleIdentifier
+    ));    
 
     app.use(passport.initialize());
     app.use(passport.session());
@@ -293,6 +297,7 @@ exports.addToExpress = function(port, app) {
     app.get('/auth/google', 
         handleRefererHeaderUsingLoginPage("/login"), 
         passport.authenticate('google', {
+            scope: 'email profile',
             successRedirect: '/',
             failureRedirect: '/'
         }));

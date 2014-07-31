@@ -2,6 +2,7 @@ var assert = require("assert");
 
 var waitUntil = require("cauldron").waitUntil;
 var config = require("../server/config.js");
+var Q = require("q");
 
 waitUntil.defaultWait = 15000;
 
@@ -43,7 +44,7 @@ var selectors = {
 
     googleNoThanksButton: "form#recoveryPromptForm input#cancel",
 
-    googleAllowSubmit: "button[id=submit_approve_access]"
+    googleAllowSubmit: "button#submit_approve_access"
 };
 
 exports.selectors = selectors;
@@ -141,19 +142,25 @@ function handleGoogleAuth(page) {
                             return false;
                         });
                 } else if (state.needAllow) {
-                    var ii = 0;
-                    return waitUntil("short delay", function() {
-                        return ++ii > 3;
-                    })
+
+                        return Q()
+                        .then(function() {
+                            var deferred = Q.defer();
+                            setTimeout(function() { deferred.resolve(); }, 5000);  // TODO UGH
+                            return deferred.promise;
+                        })
                         .then(function() {
                             return page.clickElement(selectors.googleAllowSubmit);
                         })
                         .then(function() {
                             return waitUntil("done allowing google account access", function() {
-                                return getPageState()
-                                    .then(function(state) {
-                                        return !state.needAllow;
-                                    });
+                                return Q()
+                                .then(function() {
+                                    return getPageState();
+                                })                                    
+                                .then(function(state) {
+                                    return !state.needAllow;
+                                });
                             });
                         })
                         .then(function() {

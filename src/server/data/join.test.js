@@ -14,7 +14,9 @@ var dataJoin = require("./join.js");
 
 var setup = require("../../test/setup.js");
 
-var findOrCreateUserByGoogleIdentifier = Q.nbind(users.findOrCreateUserByGoogleIdentifier);
+function findOrCreateUserByGoogleIdentifier(baseName) {
+    return Q.ninvoke(users, "findOrCreateUserByGoogleIdentifier", uuid(), uuid(), setup.getGoogleProfile(uuid(), baseName));    
+}
 
 var context = setup.givenCleanDatabase(exports);
 
@@ -32,7 +34,7 @@ context.test("Can load stored posts for a user", function() {
     ];
 
 
-    return findOrCreateUserByGoogleIdentifier(uuid.v4(), setup.getGoogleProfile("someUser"))
+    return findOrCreateUserByGoogleIdentifier("someUser")
     .then(function(user) {
 
         return dataSubscriptions.saveSubscriptions(user.id, [{
@@ -85,7 +87,7 @@ context.test("Only loads posts that have not been read", function() {
         }
     ];
 
-    return findOrCreateUserByGoogleIdentifier(uuid.v4(), setup.getGoogleProfile("Duper"))
+    return findOrCreateUserByGoogleIdentifier("Duper")
     .then(function(user) {
 
         return dataSubscriptions.saveSubscriptions(user.id, [{
@@ -140,7 +142,7 @@ context.test("Duplicated posts across feeds are only returned once", function() 
     var postUrl = "http://firstPost/";
     var postDate = new Date();
 
-    return findOrCreateUserByGoogleIdentifier(uuid.v4(), setup.getGoogleProfile("repostVictim"))
+    return findOrCreateUserByGoogleIdentifier("repostVictim")
     .then(function(user) {
 
         return dataSubscriptions.saveSubscriptions(user.id, [{

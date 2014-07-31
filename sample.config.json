@@ -9,6 +9,8 @@
     "server_hostname": "localhost",
     "server_sessionKey": "foo",
     "is_production": true,
+    "google_api_client_id": null,
+    "google_api_client_secret": null,
     "googleTest_username": null,
     "googleTest_password": null,
     "deployment_configFile": "production.config.json",
