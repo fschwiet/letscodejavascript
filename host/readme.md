@@ -1,10 +1,10 @@
 ENVIRONMENT VARIABLES
 
-    syncedFolder = File.absolute_path(ENV["SyncedFolder"] || "..")
-    hostGitUrl = ENV["HostGitUrl"] || "https://github.com/fschwiet/cumulonimbus-host/releases/tag/v0.0.1"
-    wwwuser = ENV["wwwuserUsername"] || "wwwuser"
-    wwwuserPassword = ENV["wwwuserPassword"] || "password"
-    mysqlRootPassword = ENV["mysqlRootPassword"] || ""
+	syncedFolder = File.absolute_path(ENV["SyncedFolder"] || "..")
+	hostGitUrl = ENV["HostGitUrl"] || "https://github.com/fschwiet/cumulonimbus-host"
+	hostGitCommit = ENV["HostGitCommit"] || "master"
+	wwwuser = ENV["wwwuserUsername"] || "wwwuser"
+	wwwuserPassword = ENV["wwwuserPassword"] || "password"
 
 COOKBOOKS USED:
 

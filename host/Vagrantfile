@@ -45,7 +45,6 @@ def installMysql(vm, rootPassword)
 	vm.provision :chef_solo do |chef|
 		chef.cookbooks_path = "cookbooks"
 		chef.add_recipe "mymysql"
-
 		chef.json = {
 			:mysql => {
 				server_root_password: rootPassword,
