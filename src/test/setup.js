@@ -122,8 +122,9 @@ exports.given3rdPartyRssServer = NodeunitBuilder.createTestScopeExtender(
     });
 
 
-exports.getGoogleProfile = function(postfix) {
+exports.getGoogleProfile = function(userId, postfix) {
     return {
+        id: userId,
         displayName: 'displayName' + postfix + uuid(),
         emails: [{
                 value: 'emailValue' + postfix

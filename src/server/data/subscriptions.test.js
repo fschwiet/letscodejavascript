@@ -11,7 +11,9 @@ var dataSubscriptions = require("./subscriptions.js");
 var dataRssUrlStatus = require("./rssUrlStatus.js");
 var users = require("./users.js");
 
-var findOrCreateUserByGoogleIdentifier = Q.nbind(users.findOrCreateUserByGoogleIdentifier);
+function findOrCreateUserByGoogleIdentifier(baseName) {
+    return Q.ninvoke(users, "findOrCreateUserByGoogleIdentifier", uuid(), uuid(), setup.getGoogleProfile(uuid(), baseName));    
+}
 
 var addTest = require("cauldron").nodeunit.addTest;
 
@@ -21,7 +23,7 @@ addTest(exports, "loadSubscriptions includes whether the feed status needs updat
     var originTime = new Date();
     var earlierTime = new Date(originTime.getTime() - 3 * 60 * 60 * 1000);
 
-    return findOrCreateUserByGoogleIdentifier(uuid.v4(), setup.getGoogleProfile("Duper"))
+    return findOrCreateUserByGoogleIdentifier("Duper")
     .then(function(user) {
 
         var userId = user.id;
@@ -69,7 +71,7 @@ addTest(exports, "loadSubscriptions includes whether the feed status needs updat
 
 addTest(exports, "saveSubscriptions treats duplicates as updates", function() {
 
-    return findOrCreateUserByGoogleIdentifier(uuid.v4(), setup.getGoogleProfile("Duper"))
+    return findOrCreateUserByGoogleIdentifier("Duper")
         .then(function(user) {
 
             var userId = user.id;
@@ -136,7 +138,7 @@ addTest(exports, "saveSubscriptions treats duplicates as updates", function() {
 
 addTest(exports, "unsubscribe should remove subscriptions", function() {
 
-    return findOrCreateUserByGoogleIdentifier(uuid.v4(), setup.getGoogleProfile("Duper"))
+    return findOrCreateUserByGoogleIdentifier("Duper")
         .then(function(user) {
 
             var userId = user.id;
@@ -188,12 +190,12 @@ addTest(exports, "unsubscribe shouldn't remove other people's subscriptions", fu
 
     var otherUserId;
 
-    return findOrCreateUserByGoogleIdentifier(uuid.v4(), setup.getGoogleProfile("Other"))
+    return findOrCreateUserByGoogleIdentifier("Other")
         .then(function(user) {
             otherUserId = user.id;
         })
         .then(function() {
-            return findOrCreateUserByGoogleIdentifier(uuid.v4(), setup.getGoogleProfile("User"));
+            return findOrCreateUserByGoogleIdentifier("User");
         })
         .then(function(user) {
             return dataSubscriptions.saveSubscriptions(user.id, [{

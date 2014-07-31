@@ -20,6 +20,9 @@ function getDefaults() {
         "server_sessionKey": "foo",
         "is_production": true,
 
+        "google_api_client_id": null, // https://console.developers.google.com/project
+        "google_api_client_secret": null,
+
         "googleTest_username": null,
         "googleTest_password": null,
 

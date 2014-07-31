@@ -14,7 +14,7 @@ var context = setup.givenCleanDatabase(exports);
 
 context.test("markPostAsRead shouldn't insert duplicates", function() {
 
-    return findOrCreateUserByGoogleIdentifier(uuid(), setup.getGoogleProfile("Other"))
+    return findOrCreateUserByGoogleIdentifier(uuid(), uuid(), setup.getGoogleProfile(uuid(), "Other"))
     .then(function(user) {
         return dataUserPostsRead.markPostAsRead(user.id, "http://someurl.com/")
         .then(function() {

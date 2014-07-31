@@ -12,14 +12,14 @@ function promiseHashOf(value) {
 //
 //  Does not include email
 //
-exports.findOrCreateUserByGoogleIdentifier = function(identifier, profile, callback) {
+exports.findOrCreateUserByGoogleIdentifier = function(accessToken, refreshToken, profile, callback) {
 
     return database.getPooledConnection()
     .then(function(connection)
     {
         var query = Q.nbind(connection.query, connection);
 
-        return query("SELECT users.id, users.friendlyName FROM users JOIN googleProfiles ON googleProfiles.userId = users.id WHERE googleProfiles.id = ?", identifier)
+        return query("SELECT users.id, users.friendlyName FROM users JOIN googleProfiles ON googleProfiles.userId = users.id WHERE googleProfiles.id = ?", profile.id)
         .then(function(result) {
 
             if (result[0].length > 0) {
@@ -38,7 +38,7 @@ exports.findOrCreateUserByGoogleIdentifier = function(identifier, profile, callb
                         var userId = result[0].insertId;
 
                         return query("INSERT INTO googleProfiles SET ?", {
-                                id: identifier,
+                                id: profile.id,
                                 userId: userId,
                                 profile: JSON.stringify(profile)
                             })

@@ -14,19 +14,19 @@ var addTest = require("cauldron").nodeunit.addTest;
 addTest(exports, "findOrCreateUserByGoogleIdentifier can save and load users", function() {
 
     var firstGoogleIdentifier = uuid.v4();
-    var firstGoogleProfile = setup.getGoogleProfile("First");
+    var firstGoogleProfile = setup.getGoogleProfile(firstGoogleIdentifier, "First");
 
     var secondGoogleIdentifier = uuid.v4();
-    var secondGoogleProfile = setup.getGoogleProfile("Second");
+    var secondGoogleProfile = setup.getGoogleProfile(secondGoogleIdentifier, "Second");
 
     //  Load the first user
-    return findOrCreateUserByGoogleIdentifier(firstGoogleIdentifier, firstGoogleProfile)
+    return findOrCreateUserByGoogleIdentifier(uuid.v4(),uuid.v4(), firstGoogleProfile)
         .then(function(firstUser) {
             expect(firstUser.id).to.be.a('number');
             expect(firstUser.friendlyName).to.equal(firstGoogleProfile.displayName);
 
             //  Load the second user
-            return findOrCreateUserByGoogleIdentifier(secondGoogleIdentifier, secondGoogleProfile)
+            return findOrCreateUserByGoogleIdentifier(uuid.v4(),uuid.v4(), secondGoogleProfile)
                 .then(function(secondUser) {
                     expect(secondUser.id).to.be.a('number');
                     expect(secondUser.id).not.to.equal(firstUser.id);
@@ -35,7 +35,7 @@ addTest(exports, "findOrCreateUserByGoogleIdentifier can save and load users", f
                 .then(function() {
 
                     //  Reload the first user
-                    return findOrCreateUserByGoogleIdentifier(firstGoogleIdentifier, firstGoogleProfile)
+                    return findOrCreateUserByGoogleIdentifier(uuid.v4(),uuid.v4(), firstGoogleProfile)
                         .then(function(reloadedUser) {
                             expect(reloadedUser.id).to.equal(firstUser.id);
                             expect(reloadedUser.friendlyName).to.equal(firstGoogleProfile.displayName);

@@ -168,14 +168,16 @@ testWithRssOnly.test("loadFeeds should give error if the http request fails #2",
 });
 
 
-var findOrCreateUserByGoogleIdentifier = Q.nbind(users.findOrCreateUserByGoogleIdentifier);
+function findOrCreateUserByGoogleIdentifier(baseName) {
+    return Q.ninvoke(users, "findOrCreateUserByGoogleIdentifier", uuid(), uuid(), setup.getGoogleProfile(uuid(), baseName));    
+}
 
 
 testWithRssOnly.test("loadFeedsThroughDatabase should be able to load RSS feeds", function() {
 
     var rssUrl = this.rssServer.urlFor("/rss/" + uuid.v4());
 
-    return findOrCreateUserByGoogleIdentifier(uuid.v4(), setup.getGoogleProfile("user"))
+    return findOrCreateUserByGoogleIdentifier("user")
     .then(function(user) {
         return Q()
         .then(function(){
@@ -193,7 +195,7 @@ testWithRssOnly.test("loadFeedsThroughDatabase should not insert duplicates", fu
     var originTime = new Date();
     var laterTime = new Date(originTime.getTime() + 24 * 60 * 60 * 1000);
 
-    return findOrCreateUserByGoogleIdentifier(uuid.v4(), setup.getGoogleProfile("user"))
+    return findOrCreateUserByGoogleIdentifier("user")
     .then(function(user) {
         return Q()
         .then(function(){
@@ -216,7 +218,7 @@ testWithRssOnly.test("loadFeedsThroughDatabase should use database values, if fr
     var originTime = new Date();
     var laterTime = new Date(originTime.getTime() + 5 * 24 * 60 * 60 * 1000);
 
-    return findOrCreateUserByGoogleIdentifier(uuid.v4(), setup.getGoogleProfile("user"))
+    return findOrCreateUserByGoogleIdentifier("user")
     .then(function(user) {
         return Q()
         .then(function(){
@@ -248,7 +250,7 @@ testWithRssOnly.test("loadFeedsThroughDatabase should not return feeds that have
 
     var time = new Date();
 
-    return findOrCreateUserByGoogleIdentifier(uuid.v4(), setup.getGoogleProfile("user"))
+    return findOrCreateUserByGoogleIdentifier("user")
     .then(function(user) {
         return Q()
         .then(function(){

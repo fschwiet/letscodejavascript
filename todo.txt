@@ -7,6 +7,9 @@ TODO
   status page should indicate if email settings are working
      - watch http://stackoverflow.com/questions/18774630/how-can-i-validate-smtp-hostname-port-username-password-is-working-on-node-js
 
+
+  ugh, 5 second wait in login.js
+
   how to port the auth stuff to another site?
     - MySQL
     - all the passport stuff
