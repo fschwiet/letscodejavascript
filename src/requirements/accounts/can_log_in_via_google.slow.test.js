@@ -3,7 +3,7 @@ var setup = require("../../test/setup");
 var config = require("../../server/config");
 var login = require("../../test/login.js");
 
-var context = setup.usingPhantomPage(exports);
+var context = setup.usingPhantomPage(setup.whenRunningTheServer(exports));
 
 check_login_from(config.urlFor("/feeds"));
 check_login_from(config.urlFor("/status"));
