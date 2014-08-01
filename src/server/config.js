@@ -1,5 +1,5 @@
 var nconf = require('nconf');
-var urlParser = require("url");
+var url = require("url");
 var path = require("path");
 
 nconf.file({
@@ -42,25 +42,37 @@ function getDefaults() {
 
 nconf.defaults(getDefaults());
 
-var conf = {};
+var config = {};
 
-conf.get = function() {
+config.get = function() {
     return nconf.get.apply(nconf, arguments);
 };
 
-conf.getDefaults = getDefaults;
+config.getDefaults = getDefaults;
 
-var baseUrl = "http://" + conf.get("server_hostname") + ":" + conf.get("server_port") + "/";
+function commonUrlParameters(path, query) {
 
-conf.urlFor = function(path, query) {
-    var parts = urlParser.parse(baseUrl);
-    parts.pathname = path;
-    parts.query = query;
-    return urlParser.format(parts);
+    var port = config.get("server_port");
+    port = port == 80 ? null : port;
+
+    return {
+        protocol: 'http',
+        hostname: config.get("server_hostname"),
+        port: port,
+        pathname: path,
+        query: query
+    };
+}
+
+config.urlFor = function(path, query) {
+
+    var urlParams = commonUrlParameters(path, query);
+
+    return url.format(urlParams);
 };
 
-conf.isProduction = function() {
+config.isProduction = function() {
     return nconf.get("is_production");    
 };
 
-module.exports = conf;
+module.exports = config;
