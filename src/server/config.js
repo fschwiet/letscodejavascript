@@ -26,10 +26,6 @@ function getDefaults() {
         "googleTest_username": null,
         "googleTest_password": null,
 
-        "deployment_configFile": "production.config.json",
-        "deployment_smoketestPort": 8082,
-        "deployment_basePath": "c:/inetpub/letscodejavascript",
-
         "smtp_host": "localhost",               // "oxmail.registrar-servers.com"
         "smtp_port": 8083,                      // 465
         "smtp_useSSL": false,                   // true
