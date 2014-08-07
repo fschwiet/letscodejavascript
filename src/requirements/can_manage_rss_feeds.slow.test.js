@@ -21,7 +21,8 @@ setup.qtest(testBlock, "can upload rss", function() {
         });
     }
 
-    var unsubscribeButton = "*[data-rssurl='http://blog.stackoverflow.com/'] a.js-unsubscribe";
+    var unsubscribeRow = "*[data-rssurl='http://blog.stackoverflow.com/']";
+    var unsubscribeButton = unsubscribeRow + " a.js-unsubscribe";
 
     function getSubscriptionsFromUI() {
         return page.evaluate(function() {
@@ -76,6 +77,13 @@ setup.qtest(testBlock, "can upload rss", function() {
         })
         .then(function() {
             return page.clickElement(unsubscribeButton);
+        })
+        .then(function() {
+            return waitUntil("unsubscribe row is removed", function() {
+                return page.evaluate(function(selector) {
+                    return document.querySelectorAll(selector).length === 0;
+                }, unsubscribeRow);
+            });
         })
         .then(function() {
             return page.open(config.urlFor("/feeds"));

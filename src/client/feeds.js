@@ -5,9 +5,10 @@ define(["less!feeds"], function() {
             var unsubscribeLink = ".js-unsubscribe";
 
             region.on("click", unsubscribeLink, function() {
-                var row = $(this).parents("[data-rssurl]");
+                var anchor = $(this);
+                var row = anchor.parents("[data-rssurl]");
                 var rssUrl = row.data("rssurl");
-                row.remove();
+                anchor.hide();
 
                 $.ajax({
                         type: "POST",
@@ -15,7 +16,13 @@ define(["less!feeds"], function() {
                         data: JSON.stringify({
                                 rssUrl: rssUrl
                             }),
-                        contentType: "application/json; charset=utf-8"
+                        contentType: "application/json; charset=utf-8",
+                        success: function() {
+                            row.remove();
+                        },
+                        error: function() {
+                            anchor.show();
+                        }
                     });
             });
         }
