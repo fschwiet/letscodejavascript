@@ -49,7 +49,10 @@ define(["feeds", "jquery", "views/feeds.jade", "sinon"], function(feeds, $, feed
                 secondRow.find("a.js-unsubscribe").click();
             });
 
-            it("will hide the row ", function() {
+            it("when the request is complete, it will hide the row ", function() {
+
+                this.fakeServer.requests[0].respond(200);
+                
                 expect(this.fixtureContainsSecondRow()).to.be(false);
             });
 
