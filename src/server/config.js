@@ -20,6 +20,9 @@ function getDefaults() {
         "server_sessionKey": "foo",
         "is_production": true,
 
+        "fakeServer_hostName": "127.0.0.76",
+        "fakeServer_port": 8081,
+
         "google_api_client_id": null, // https://console.developers.google.com/project
         "google_api_client_secret": null,
 

@@ -59,8 +59,8 @@ exports.given3rdPartyRssServer = NodeunitBuilder.createTestScopeExtender(
     "given a 3rd part RSS server",
     function(done) {
 
-        var hostname = "127.0.0.76";
-        var port = config.get("server_port");
+        var hostname = config.get("fakeServer_hostName");
+        var port = config.get("fakeServer_port");
 
         var thisRssServerContext = {
             feedName: "FeedForAll Sample Feed",
@@ -81,6 +81,11 @@ exports.given3rdPartyRssServer = NodeunitBuilder.createTestScopeExtender(
         that.rssServer.requestCount = 0;
 
         var app = require('express')();
+
+        app.get("/", function(req,res) {
+            res.send("Fake RSS OK");
+        });
+
         app.get("/rss/*", function(req, res) {
 
             var feed = new RSS({
@@ -115,7 +120,6 @@ exports.given3rdPartyRssServer = NodeunitBuilder.createTestScopeExtender(
         this.rssServer.server = http.createServer(app);
 
         this.rssServer.server.listen(port, hostname, done);
-
     },
     function(done) {
         this.rssServer.server.close(done);

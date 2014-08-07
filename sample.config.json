@@ -9,6 +9,8 @@
     "server_hostname": "localhost",
     "server_sessionKey": "foo",
     "is_production": true,
+    "fakeServer_hostName": "127.0.0.76",
+    "fakeServer_port": 8081,
     "google_api_client_id": null,
     "google_api_client_secret": null,
     "googleTest_username": null,
