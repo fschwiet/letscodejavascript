@@ -3,7 +3,7 @@
 	[
 		{
 			"path": ".",
-            "folder_exclude_patterns": ["node_modules", "temp", "src/client/clientLib"],
+            "folder_exclude_patterns": ["node_modules", "temp", "src/client/clientLib", "host/cookbooks"],
             "file_exclude_patterns": ["letscodejavascript.sublime-workspace"]
 		}
 	],
