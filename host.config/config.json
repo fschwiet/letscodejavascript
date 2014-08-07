@@ -1,11 +1,7 @@
 {
-    "database_port": 3306,
-    "database_user": "root",
-    "database_password": "password",
+    "is_production": false,
     "server_friendlyName": "asimplereader vagrant",
     "server_hostname": "asimplereader.192.168.33.100.xip.io",
-    "server_sessionKey": "foo 192",
-    "is_production": false,
     "google_api_client_id": "17269552488-gtkpqo9786c8pr1q789046hjtcr5093v.apps.googleusercontent.com",
     "google_api_client_secret": "4xZzjt42pfL8AYzbHd96Ltwy"
 }

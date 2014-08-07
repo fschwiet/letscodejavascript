@@ -8,11 +8,11 @@ nconf.file({
 
 function getDefaults() {
     return {
-        "database_hostname": "localhost",
+        "database_hostname": "192.168.33.100",
         "database_name": "testtemp",
         "database_port": 3306,
         "database_user": "root",
-        "database_password": "",
+        "database_password": "password",
 
         "server_friendlyName": "letscodejavascript",
         "server_port": 8081,
@@ -23,8 +23,8 @@ function getDefaults() {
         "fakeServer_hostName": "127.0.0.76",
         "fakeServer_port": 8081,
 
-        "google_api_client_id": null, // https://console.developers.google.com/project
-        "google_api_client_secret": null,
+        "google_api_client_id": "17269552488-r2morqk5d792hhmhlfvhjghfe9jig6ki.apps.googleusercontent.com", // domain-specific, https://console.developers.google.com/project
+        "google_api_client_secret": "FxokeurIyCbHc5-NknhYqf6z",
 
         "googleTest_username": null,
         "googleTest_password": null,
