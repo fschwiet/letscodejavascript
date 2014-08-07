@@ -79,7 +79,7 @@ browserTest.test("Should return empty result for invalid feeds", function() {
         });
 });
 
-browserTest.test("Should be able to mark feeds as finished", function() {
+browserTest.test("Should be able to mark posts as finished", function() {
 
     var url = config.urlFor("/posts", {
             rssUrl: this.rssServer.urlFor("/rss/foo")
@@ -92,7 +92,7 @@ browserTest.test("Should be able to mark feeds as finished", function() {
             return loadRssEndpointsUrl(page, url);
         })
         .then(function(rssFeeds) {
-            assert.equal(rssFeeds.length, 1);
+            assert.equal(rssFeeds.length, 1, "Initially there is one unread post");
         })
         .then(function() {
 
@@ -110,7 +110,7 @@ browserTest.test("Should be able to mark feeds as finished", function() {
             return loadRssEndpointsUrl(page, url, true);
         })
         .then(function(rssFeeds) {
-            assert.equal(rssFeeds.length, 0);
+            assert.equal(rssFeeds.length, 0, "There are no posts after its marked finished");
         })
         .then(function() {
 
@@ -128,7 +128,7 @@ browserTest.test("Should be able to mark feeds as finished", function() {
             return loadRssEndpointsUrl(page, url, true);
         })
         .then(function(rssFeeds) {
-            assert.equal(rssFeeds.length, 1);
+            assert.equal(rssFeeds.length, 1, "There is one post after its marked finished");
         });
 });
 

@@ -1,6 +1,7 @@
+var fs = require('fs');
 var nconf = require('nconf');
-var url = require("url");
 var path = require("path");
+var url = require("url");
 
 nconf.file({
         file: __dirname + '/../../config.json'
@@ -15,8 +16,8 @@ function getDefaults() {
         "database_password": "password",
 
         "server_friendlyName": "letscodejavascript",
-        "server_port": 8081,
         "server_hostname": "localhost",
+        "server_port": 8081,
         "server_sessionKey": "foo",
         "is_production": true,
 
@@ -41,13 +42,29 @@ function getDefaults() {
 
 nconf.defaults(getDefaults());
 
+var useVagrantHost = !!process.env["use-vagrant-host"];
+
+nconf.set("useVagrantHost", useVagrantHost);
+
+if (useVagrantHost) {
+
+    var vagrantConfigOverrides = JSON.parse(fs.readFileSync(path.resolve(__dirname + '/../../host.config/config.json'), { encoding: 'utf8'}));
+
+    for(var key in vagrantConfigOverrides) {
+        if (vagrantConfigOverrides.hasOwnProperty(key)) {
+            nconf.set(key, vagrantConfigOverrides[key]);
+        }
+    }
+}
+
 var config = {};
+
+config.getDefaults = getDefaults;
 
 config.get = function() {
     return nconf.get.apply(nconf, arguments);
 };
 
-config.getDefaults = getDefaults;
 
 function commonUrlParameters(path, query) {
 

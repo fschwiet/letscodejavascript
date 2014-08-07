@@ -1,9 +1,36 @@
-it looks like the google strategy for auth needs to be updated (http://stackoverflow.com/questions/23780039/mvc-google-login-openid-auth-request-contains-an-unregistered-domain) otherwise new hostnames won't work
--> new to switch to https://github.com/jaredhanson/passport-google-oauth
+
+vagrant mode:
+  we need to make sure the VM can reach the port the fake rss reader is on, (fakeServer_hostName=192.168.33.1, fakeServer_port=80)
+  (ditto for the SMTP server)
+  server.test.js maybe shouldn't call server.start directly
+
+
+Because tests have an external RSS server,
+    To run vagrant tests, need to open up firewall on port config:fakeServer_port.
+    To run non-vagrant test, still need vagrant adapter configured to run on fakeServer_hostName
 
 
 
-modify deploy.sh in cumulonimbus-host to look for config folder and copy its contents on deploy
+https://groups.google.com/forum/#!topic/vagrant-up/s69YHYN0KWE
+
+
+
+tests run RSS servers- they need to be made accessible to the vagrant box
+  - add config for hostname of localhost rss server "thirdpartyserver_faked_hostname"
+  - replace localhost/127.0.0.1 in tests with that config
+  - update thirdpartyserver_faked_hostname config value in host.config/config.json
+  
+  
+its not obvious that certain config values production  - is there a way to make it obvious which configs are not needed by the production server?
+  (fakeServer_hostName, fakeServer_port, googleTest_username, googleTest_password)
+
+
+
+run tests against vagrant VM
+
+
+port over security stuff from helloVagrant
+  - remember to leave port fakeServer_port open
 
 
 environment variables bad place for secret strings?  
@@ -14,13 +41,6 @@ environment variables bad place for secret strings?
     to project deployment instead of checking out
 
   integration tests should run within the VM
-    - jakefile should be able to up the vm,
-      *- verify the VM is not production  (config value should indicate provisioner allowed)
-      *- vagrant down/up
-      *- vagrant ssh-config to get ssh config
-      - git subtree the hosts diretory somewhere
-      - reference https://github.com/fschwiet/cumulonimbus-host/blob/master/machine/provision.sites.sh for additional setup
-        - create user, pull cumulonimbus-host, pull the site, 
     - modify setup.js's whenRunningTheServer
       - skip starting the node process
       - wait for server availability

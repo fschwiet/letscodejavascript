@@ -8,14 +8,15 @@ var find = require("find");
 var fs = require('fs-extra');
 var rimraf = require("rimraf");
 var childProcess = require("child_process");
-var config = require("./src/server/config.js");
 var Q = require("q");
 var request = require("request");
 var os = require("os");
 var nodeVersion = new(require("node-version").version)();
 var util = require("util");
-var runServer = require("./src/test/runServer.js");
 var beautify = require('js-beautify');
+
+
+var config = require("./src/server/config.js");
 
 var copyModifiedJson = require("cauldron").copyModifiedJson;
 var gitUtil = require("cauldron").gitUtil;
@@ -80,7 +81,7 @@ task("writeSampleConfig", function() {
 });
 
 desc("test everything");
-task("test", ["testClient", "testRemaining", "testSmokeAsRegularTest", "testSlow"]);
+task("test", ["testClient", "testSmoke", "testRemaining", "testSlow"]);
 
 task("testClient", function() {
 
@@ -109,9 +110,7 @@ task("testSlow", ["commonTestPrequisites"], function() {
     async: true
 });
 
-task("testSmokeAsRegularTest", ["commonTestPrequisites", "startSmokeServer", "testSmoke", "stopSmokeServer"], function() {});
-
-task("testSmoke", function() {
+task("testSmoke", ["commonTestPrequisites"], function() {
 
     var testList = listNonImportedFiles();
 
@@ -119,20 +118,6 @@ task("testSmoke", function() {
     testList.exclude(clientCode);
 
     runTestsWithNodeunit(testList.toArray());
-}, {
-    async: true
-});
-
-task("startSmokeServer", function() {
-
-    runServer.startServerLikeProduction(complete);
-}, {
-    async: true
-});
-
-task("stopSmokeServer", function() {
-
-    runServer.stopServer(complete);
 }, {
     async: true
 });
@@ -472,3 +457,14 @@ task("recreateVirtualMachine", function() {
 
 task("deploySite", ["lint", "recreateVirtualMachine", "deploySiteToVirtualMachine"], function() {
 });
+
+task("requireVagrantHost", function() {
+    if (!config.get('useVagrantHost')) {
+        throw new Error("Task expected use-vagrant-host=true");
+    }
+});
+
+task("vagrantTest", ["requireVagrantHost", "testSmoke","test"]);
+
+task("doFinalTest", ["requireVagrantHost", "deploySite", "testSmoke", "test"]);
+

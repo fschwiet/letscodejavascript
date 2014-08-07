@@ -26,13 +26,21 @@ exports.whenRunningTheServer = NodeunitBuilder.createTestScopeExtender(
     "when running the server",
     function(done) {
 
-        server.start(config.get("server_port"), done);
+        if (config.get("useVagrantHost")) {
+            done();
+        } else {
+            server.start(config.get("server_port"), done);
+        }
     },
     function(done) {
-        server.stop(function()
-        {
+        if (config.get("useVagrantHost")) {
             done();
-        });
+        } else {
+            server.stop(function()
+            {
+                done();
+            });
+        }
     });
 
 exports.givenCleanDatabase = NodeunitBuilder.createTestScopeExtender(
