@@ -6,7 +6,7 @@
     var assert = require("assert");
 
     function assertStatusIsGood(contents) {
-        checkStatus(contents, (/Database status:(.*)/mi), "connected (" + config.get("database_hostname") + ")");
+        checkStatus(contents, (/Database status:(.*)/mi), "connected (");
     }
 
     function checkStatus(contents, expectedPattern, expectedStatus) {
@@ -15,7 +15,7 @@
         assert.ok(match !== null, "Did not find " + expectedPattern.toString());
 
         if (match !== null) {
-            assert.equal(match[1].trim(), expectedStatus);
+            assert.equal(match[1].trim().slice(0, expectedStatus.length), expectedStatus);
         }
     }
 
