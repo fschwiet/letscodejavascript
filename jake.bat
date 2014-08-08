@@ -1,1 +1,1 @@
-node node_modules\jake\bin\cli.js --trace %*
+node node_modules\jake\bin\cli.js %*
