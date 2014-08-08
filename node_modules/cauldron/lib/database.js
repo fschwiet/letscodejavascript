@@ -73,12 +73,13 @@ function emptyDatabase(callback) {
 
     var query = Q.nbind(connection.query, connection);
 
-    return Q.ninvoke(connection, "query", "SHOW TABLES")
+    return Q.ninvoke(connection, "query", "SHOW FULL TABLES WHERE Table_Type != 'VIEW'")
         .then(function(results) {
 
             var fieldName = results[1][0].name;
 
             var remainingWork = results[0].map(function(result) {
+
                 var tableName = result[fieldName];
 
                 if (tableName !== "migrations") {
