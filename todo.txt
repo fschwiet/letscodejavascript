@@ -5,6 +5,12 @@ vagrant mode:
 
   server.test.js maybe shouldn't call server.start directly
 
+  Ok, so lets run external test dependencies on an external server
+    - fake RSS usage needs to be setup via HTTP
+    - fake SMTP usage needs to be setup via HTTP
+    - create separate vagrant image
+    - deploy RSS/SMTP subdirectories with something like:
+        git archive --format=tar HEAD:<subdirectory> 
 
 Because tests have an external RSS server,
     To run vagrant tests, need to open up firewall on port config:fakeServer_port.
