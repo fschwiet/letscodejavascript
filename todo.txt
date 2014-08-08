@@ -2,6 +2,8 @@
 vagrant mode:
   we need to make sure the VM can reach the port the fake rss reader is on, (fakeServer_hostName=192.168.33.1, fakeServer_port=80)
   (ditto for the SMTP server)
+  - mac won't listen on 127.0.0.76 anyway (the port when not using vagrant in testing)
+
   server.test.js maybe shouldn't call server.start directly
 
 

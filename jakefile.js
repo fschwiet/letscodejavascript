@@ -466,5 +466,5 @@ task("requireVagrantHost", function() {
 
 task("vagrantTest", ["requireVagrantHost", "testSmoke","test"]);
 
-task("doFinalTest", ["requireVagrantHost", "deploySite", "testSmoke", "test"]);
+task("doFinalTest", ["requireVagrantHost", "deploySite", "vagrantTest"]);
 
