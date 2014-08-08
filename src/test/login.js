@@ -123,6 +123,9 @@ function handleGoogleAuth(page) {
                                     .then(function(state) {
                                         return !state.needLogin;
                                     });
+                            }, {
+                                msTimeout: 2000,
+                                noTimeoutError: true
                             });
                         })
                         .then(function() {
@@ -170,5 +173,7 @@ function handleGoogleAuth(page) {
 
                 return state.ready;
             });
-    }, 10000);
+    }, {
+        msTimeout: 16000
+    });
 }
