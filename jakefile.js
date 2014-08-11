@@ -17,6 +17,7 @@ var beautify = require('js-beautify');
 
 
 var config = require("./src/server/config.js");
+var vagrant = require("./vagrant.js");
 
 var copyModifiedJson = require("cauldron").copyModifiedJson;
 var gitUtil = require("cauldron").gitUtil;
@@ -251,155 +252,26 @@ function listNonImportedFiles() {
     return list;
 }
 
-var vagrant = require("vagrant");
-var Ssh2Connection = require("ssh2");
-
-vagrant.start = path.resolve("./host");
-vagrant.env = JSON.parse(JSON.stringify(vagrant.env));
-
-vagrant.env.syncedFolder = "..";
-vagrant.env.hostGitUrl = config.get("vagrant_hostGitUrl");
-vagrant.env.hostGitCommit = config.get("vagrant_hostGitCommit");
-vagrant.env.wwwuserUsername = config.get("vagrant_wwwuserUsername");
-vagrant.env.wwwuserPassword = config.get("vagrant_wwwuserPassword");
-vagrant.env.mysqlRootPassword = config.get("database_password");
-vagrant.consoleLogFile = path.resolve("./vagrant.stdout.txt");
-
-
-function getVagrantSshConfig() {
-
-    var sshConfig = {};
-
-    return Q()
-    .then(function() {
-        return Q.ninvoke(vagrant, "ssh-config", "default");
-    })
-    .then(function(configConsoleOut) {
-
-        var configRegex = /^\s\s([^\s]+)\s(.+)$/;
-
-        var changeCase = require("change-case");
-
-        configConsoleOut.forEach(function(line) {
-
-            var regexResults = configRegex.exec(line);
-
-            if (regexResults) {
-                sshConfig[changeCase.camelCase(regexResults[1])] = regexResults[2];
-            }
-        });
-    })
-    .then(function() {
-        return Q.ninvoke(fs, "readFile", sshConfig.identityFile);
-    })
-    .then(function(privateKey) {
-        
-        sshConfig.privateKey = privateKey;
-
-        return sshConfig;
-    });
-}
-
-function executeSshCommand(connection, command, traceOutput) {
-
-    return Q.ninvoke (connection, 'exec', command)
-    .then(function(stream) {
-
-        var deferred = Q.defer();
-
-        var output = "";
-        var exitCode = 1;
-        var exitSignal = "exit event not received";
-
-        stream.setEncoding('utf8');
-        stream.stderr.setEncoding('utf8');
-
-        stream.on('exit', function(code, signal) {
-            exitCode = code;
-            exitSignal = signal;
-        });
-
-        stream.on('data', function(data) {
-            output += data;
-        });
-        stream.stderr.on('data', function(data) {
-            output += data;
-        });
-
-        stream.on("close", function() {
-
-            if (exitCode === 0) {
-
-                if (traceOutput) {
-                    console.log("command '" + command + "' had output:");
-                    console.log(output);
-                }
-
-                deferred.resolve();
-            } else {
-
-                console.log();
-                console.log("ssh exec failed for " + command + ", output was:");
-                console.log(output);
-
-                deferred.reject('Ssh command ' + command + ' exited with code ' + exitCode + ', signal: ' + exitSignal);
-            }
-        });
-
-        return deferred.promise;
-    });
-}
-
-function truncateLogFile() {
-    // Truncate the log file
-    return Q.ninvoke(fs, "open", vagrant.consoleLogFile, 'w+')
-    .then(function(fd) {
-        return Q.ninvoke(fs, "close", fd);
-    });
-}
-
 task("deploySiteToVirtualMachine", function() {
 
-    return getVagrantSshConfig()
-    .then(function(sshConfig) {
-
-        var deferred = Q.defer();
-        var connection = new Ssh2Connection();
-
-        connection.on('error', function(err) {
-            deferred.reject(err);
-        });
-
-        connection.on('ready', function() {
-            deferred.resolve(connection);
-        });
-
-        var ssh2Params = {
-            host: sshConfig.hostName,
-            port: sshConfig.port
-            //username: sshConfig.user,
-            //privateKey: sshConfig.privateKey
-        };
-        ssh2Params.username = "wwwuser";
-        ssh2Params.password = "password";
-
-        connection.connect(ssh2Params);
-
-        return deferred.promise;
+    return vagrant.getSshConnection({
+        username: config.get("vagrant_wwwuserUsername"),
+        password: config.get("vagrant_wwwuserPassword"),
+        privateKey: null
     })
     .then(function(connection) {
         return Q()
         .then(function() {
-            return executeSshCommand(connection, 'mkdir /cumulonimbus/sites/letscodejavascript.config');
+            return vagrant.executeSshCommand(connection, 'mkdir /cumulonimbus/sites/letscodejavascript.config');
         })
         .then(function() {
-            return executeSshCommand(connection, 'cp /vagrant/host.config/* /cumulonimbus/sites/letscodejavascript.config/');
+            return vagrant.executeSshCommand(connection, 'cp /vagrant/host.config/* /cumulonimbus/sites/letscodejavascript.config/');
         })
         .then(function() {
-            return executeSshCommand(connection, 'git clone /vagrant /cumulonimbus/sites/letscodejavascript');
+            return vagrant.executeSshCommand(connection, 'git clone /vagrant /cumulonimbus/sites/letscodejavascript');
         })
         .then(function() {
-            return executeSshCommand(connection, 'cd /cumulonimbus; ./link-config-folder.sh letscodejavascript /cumulonimbus/sites/letscodejavascript.config');
+            return vagrant.executeSshCommand(connection, 'cd /cumulonimbus; ./link-config-folder.sh letscodejavascript /cumulonimbus/sites/letscodejavascript.config');
         })
         .then(function() {
 
@@ -409,10 +281,10 @@ task("deploySiteToVirtualMachine", function() {
                 passwordInsert = '-p"' + databasePassword +'"';
             }
 
-            return executeSshCommand(connection, 'mysql -u "root" ' + passwordInsert +' -e "CREATE DATABASE TESTTEMP"');
+            return vagrant.executeSshCommand(connection, 'mysql -u "root" ' + passwordInsert +' -e "CREATE DATABASE TESTTEMP"');
         })
         .then(function() {
-            return executeSshCommand(connection, 'cd /cumulonimbus; ./deploy.sh letscodejavascript cumu');
+            return vagrant.executeSshCommand(connection, 'cd /cumulonimbus; ./deploy.sh letscodejavascript cumu');
         })
         .fin(function() {
             connection.end();
@@ -450,7 +322,7 @@ task("recreateVirtualMachine", function() {
     })
     .then(function() {
 
-        return truncateLogFile();
+        return vagrant.truncateLogFile();
     })
     .then(function() {
         console.log("Creating current vagrant environment");
