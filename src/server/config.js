@@ -21,9 +21,6 @@ function getDefaults() {
         "server_sessionKey": "foo",
         "is_production": true,
 
-        "fakeServer_hostName": "localhost",
-        "fakeServer_port": 8084,
-
         "google_api_client_id": "17269552488-r2morqk5d792hhmhlfvhjghfe9jig6ki.apps.googleusercontent.com", // domain-specific, https://console.developers.google.com/project
         "google_api_client_secret": "FxokeurIyCbHc5-NknhYqf6z",
 
@@ -36,7 +33,15 @@ function getDefaults() {
         "smtp_username": null,    // support@asimplereader.com
         "smtp_password": null,
 
-        "support_email": "support@asimplereader.com"
+        "support_email": "support@asimplereader.com",
+
+        "fakeServer_hostName": "localhost",
+        "fakeServer_port": 8084,
+
+        "vagrant_hostGitUrl": "https://github.com/fschwiet/cumulonimbus-host",
+        "vagrant_hostGitCommit": "master",
+        "vagrant_wwwuserUsername": "wwwuser",
+        "vagrant_wwwuserPassword": "password"
     };
 }
 

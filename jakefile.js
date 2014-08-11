@@ -258,11 +258,13 @@ vagrant.start = path.resolve("./host");
 vagrant.env = JSON.parse(JSON.stringify(vagrant.env));
 
 vagrant.env.syncedFolder = "..";
-vagrant.env.hostGitUrl = "https://github.com/fschwiet/cumulonimbus-host";
-vagrant.env.hostGitCommit = "master";
-vagrant.env.wwwuserUsername = "wwwuser";
-vagrant.env.wwwuserPassword = "password";
-vagrant.env.mysqlRootPassword = "password";
+vagrant.env.hostGitUrl = config.get("vagrant_hostGitUrl");
+vagrant.env.hostGitCommit = config.get("vagrant_hostGitCommit");
+vagrant.env.wwwuserUsername = config.get("vagrant_wwwuserUsername");
+vagrant.env.wwwuserPassword = config.get("vagrant_wwwuserPassword");
+vagrant.env.mysqlRootPassword = config.get("database_password");
+vagrant.consoleLogFile = path.resolve("./vagrant.stdout.txt");
+
 
 function getVagrantSshConfig() {
 
@@ -348,6 +350,14 @@ function executeSshCommand(connection, command, traceOutput) {
     });
 }
 
+function truncateLogFile() {
+    // Truncate the log file
+    return Q.ninvoke(fs, "open", vagrant.consoleLogFile, 'w+')
+    .then(function(fd) {
+        return Q.ninvoke(fs, "close", fd);
+    });
+}
+
 task("deploySiteToVirtualMachine", function() {
 
     return getVagrantSshConfig()
@@ -394,8 +404,9 @@ task("deploySiteToVirtualMachine", function() {
         .then(function() {
 
             var passwordInsert = '';
-            if (vagrant.env.mysqlRootPassword) {
-                passwordInsert = '-p"' + vagrant.env.mysqlRootPassword +'"';
+            var databasePassword = config.get("database_password");
+            if (databasePassword) {
+                passwordInsert = '-p"' + databasePassword +'"';
             }
 
             return executeSshCommand(connection, 'mysql -u "root" ' + passwordInsert +' -e "CREATE DATABASE TESTTEMP"');
@@ -439,13 +450,7 @@ task("recreateVirtualMachine", function() {
     })
     .then(function() {
 
-        vagrant.consoleLogFile = path.resolve("./vagrant.stdout.txt");
-
-        // Truncate the log file
-        return Q.ninvoke(fs, "open", vagrant.consoleLogFile, 'w+')
-        .then(function(fd) {
-            return Q.ninvoke(fs, "close", fd);
-        });
+        return truncateLogFile();
     })
     .then(function() {
         console.log("Creating current vagrant environment");
