@@ -2,10 +2,10 @@ var assert = require("assert");
 var expect = require("expect.js");
 var Q = require("q");
 
-var config = require("../../server/config");
+var config = require("../../config.js");
 var users = require("../../server/data/users.js");
 
-var setup = require("../../test/setup");
+var setup = require("../../test/setup.js");
 var login = require("../../test/login.js");
 
 var waitUntil = require("cauldron").waitUntil;

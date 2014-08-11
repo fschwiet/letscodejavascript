@@ -19,7 +19,7 @@
     var modelFor = require("./modelFor");
 
     var auth = require("./auth.js");
-    var config = require('./config.js');
+    var config = require('../config.js');
 
     var server;
 

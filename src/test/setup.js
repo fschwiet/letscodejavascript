@@ -8,7 +8,7 @@ var RSS = require("rss");
 var setDefault = require('set-default');
 var uuid = require("node-uuid");
 
-var config = require("./../server/config.js");
+var config = require("./../config.js");
 var database = require("../server/database.js");
 
 var NodeunitBuilder = require("cauldron").nodeunit;

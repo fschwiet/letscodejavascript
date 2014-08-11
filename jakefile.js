@@ -16,8 +16,8 @@ var util = require("util");
 var beautify = require('js-beautify');
 
 
-var config = require("./src/server/config.js");
-var vagrant = require("./vagrant.js");
+var config = require("./src/config.js");
+var vagrant = require("./src/vagrant.js");
 
 var copyModifiedJson = require("cauldron").copyModifiedJson;
 var gitUtil = require("cauldron").gitUtil;

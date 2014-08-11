@@ -6,7 +6,7 @@ var vagrant = require("vagrant");
 
 module.exports = vagrant;
 
-var config = require("./src/config.js");
+var config = require("./config.js");
 
 var Ssh2Connection = require("ssh2");
 

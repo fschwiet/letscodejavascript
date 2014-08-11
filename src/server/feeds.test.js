@@ -1,7 +1,7 @@
 var Q = require("q");
 var expect = require("expect.js");
 
-var config = require("../server/config.js");
+var config = require("../config.js");
 var login = require("../test/login.js");
 var setup = require("../test/setup.js");
 var waitUntil = require("cauldron").waitUntil;

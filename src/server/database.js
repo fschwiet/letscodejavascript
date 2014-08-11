@@ -1,5 +1,5 @@
 
-var config = require("./config.js");
+var config = require("../config.js");
 
 module.exports = require("cauldron").database;
 

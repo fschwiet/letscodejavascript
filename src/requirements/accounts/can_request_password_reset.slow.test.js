@@ -4,10 +4,10 @@ var Q = require("q");
 var util = require("util");
 var uuid = require("node-uuid");
 
-var config = require("../../server/config");
+var config = require("../../config.js");
 var users = require("../../server/data/users.js");
 
-var setup = require("../../test/setup");
+var setup = require("../../test/setup.js");
 var login = require("../../test/login.js");
 
 var waitUntil = require("cauldron").waitUntil;

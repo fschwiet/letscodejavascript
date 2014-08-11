@@ -9,7 +9,7 @@ var validator = require('validator');
 var LocalStrategy = require('passport-local').Strategy;
 var GoogleStrategy = require('passport-google-oauth').OAuth2Strategy;
 
-var config = require("./config");
+var config = require("../config.js");
 var users = require("./data/users.js");
 var modelFor = require("./modelFor.js");
 var users = require("./data/users.js");

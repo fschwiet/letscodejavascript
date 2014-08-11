@@ -3,7 +3,7 @@
 var mysql = require('mysql');
 var Q = require("q");
 
-var nconf = require('../server/config.js');
+var nconf = require('../config.js');
 
 function getConnectionInfo(includeDatabasename) {
 

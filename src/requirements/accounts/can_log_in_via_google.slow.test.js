@@ -1,6 +1,6 @@
 var assert = require("assert");
-var setup = require("../../test/setup");
-var config = require("../../server/config");
+var setup = require("../../test/setup.js");
+var config = require("../../config.js");
 var login = require("../../test/login.js");
 
 var context = setup.usingPhantomPage(setup.whenRunningTheServer(exports));

@@ -2,7 +2,7 @@ var assert = require("assert");
 var expect = require("expect.js");
 
 var setup = require("../test/setup");
-var config = require("../server/config.js");
+var config = require("../config.js");
 var waitUntil = require("cauldron").waitUntil;
 
 var testBlock = setup.usingPhantomPage(setup.whenRunningTheServer(exports));

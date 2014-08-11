@@ -2,7 +2,7 @@ var dbm = require('db-migrate');
 var type = dbm.dataType;
 var Q = require("q");
 
-var config = require("../server/config.js");
+var config = require("../config.js");
 
 exports.up = function(db, callback) {
 

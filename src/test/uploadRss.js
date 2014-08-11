@@ -3,7 +3,7 @@ var os = require("os");
 var path = require("path");
 var setDefault = require('set-default');
 
-var config = require("../server/config.js");
+var config = require("../config.js");
 
 var waitUntil = require("cauldron").waitUntil;
 var testData = require("./test-data.js");

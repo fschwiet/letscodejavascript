@@ -1,5 +1,5 @@
 
-var config = require("./config.js");
+var config = require("../config.js");
 var server = require("./server.js");
 
 server.start(config.get("server_port"), function() {

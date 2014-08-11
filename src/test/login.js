@@ -1,7 +1,7 @@
 var assert = require("assert");
 
 var waitUntil = require("cauldron").waitUntil;
-var config = require("../server/config.js");
+var config = require("../config.js");
 var Q = require("q");
 
 waitUntil.defaultWait = 15000;

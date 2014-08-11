@@ -3,9 +3,9 @@ var expect = require("expect.js");
 var Q = require("q");
 var uuid = require("node-uuid");
 
-var config = require("../../server/config");
+var config = require("../../config.js");
 
-var setup = require("../../test/setup");
+var setup = require("../../test/setup.js");
 var login = require("../../test/login.js");
 var users = require("../../server/data/users.js");
 

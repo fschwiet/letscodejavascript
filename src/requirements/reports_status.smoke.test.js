@@ -5,7 +5,7 @@
     var request = require("request");
     var Q = require("q");
 
-    var config = require("../server/config.js");
+    var config = require("../config.js");
     var setup = require("../test/setup.js");
 
     function assertStatusIsGood(contents) {

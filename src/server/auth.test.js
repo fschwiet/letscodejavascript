@@ -2,7 +2,7 @@
 var expect = require("expect.js");
 
 var auth = require("./auth.js");
-var config = require("./config.js");
+var config = require("../config.js");
 
 function getRequestWithReferer(referer, existingSessionReferer) {
     return { 

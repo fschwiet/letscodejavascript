@@ -4,7 +4,7 @@ var path = require("path");
 var url = require("url");
 
 nconf.file({
-        file: __dirname + '/../../config.json'
+        file: __dirname + '/../config.json'
     });
 
 function getDefaults() {
@@ -53,7 +53,7 @@ nconf.set("useVagrantHost", useVagrantHost);
 
 if (useVagrantHost) {
 
-    var vagrantConfigOverrides = JSON.parse(fs.readFileSync(path.resolve(__dirname + '/../../host.config/config.json'), { encoding: 'utf8'}));
+    var vagrantConfigOverrides = JSON.parse(fs.readFileSync(path.resolve(__dirname + '/../host.config/config.json'), { encoding: 'utf8'}));
 
     for(var key in vagrantConfigOverrides) {
         if (vagrantConfigOverrides.hasOwnProperty(key)) {

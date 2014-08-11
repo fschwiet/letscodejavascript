@@ -3,7 +3,7 @@ var Q = require("q");
 var request = require("request");
 var uuid = require('node-uuid');
 
-var config = require("../server/config.js");
+var config = require("../config.js");
 var dataUserPostsRead = require("../server/data/userPostsRead.js");
 var posts = require("../server/posts.js");
 var users = require("../server/data/users.js");
