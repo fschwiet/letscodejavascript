@@ -345,3 +345,13 @@ task("vagrantTest", ["requireVagrantHost", "testSmoke","test"]);
 
 task("doFinalTest", ["requireVagrantHost", "deploySite", "vagrantTest"]);
 
+task("pipe", ["requireVagrantHost"], function() {
+
+    return vagrant.openSshTunnel("8083:localhost:8083")
+    .then(function() {
+        return vagrant.openSshTunnel("8084:localhost:8084");
+    })
+    .then(function() {
+        return Q.defer().promise;
+    });
+});

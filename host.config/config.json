@@ -4,8 +4,5 @@
     "server_hostname": "asimplereader.192.168.33.100.xip.io",
     "server_port": 8081,
     "google_api_client_id": "17269552488-gtkpqo9786c8pr1q789046hjtcr5093v.apps.googleusercontent.com",
-    "google_api_client_secret": "4xZzjt42pfL8AYzbHd96Ltwy",
-    "fakeServer_hostName": "192.168.33.1",
-    "fakeServer_port": "8081",
-    "smtp_host": "192.168.33.1"
+    "google_api_client_secret": "4xZzjt42pfL8AYzbHd96Ltwy"
 }

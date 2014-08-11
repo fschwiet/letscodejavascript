@@ -22,6 +22,12 @@ vagrant.env.mysqlRootPassword = config.get("database_password");
  
 vagrant.consoleLogFile = path.resolve("./vagrant.stdout.txt");  // supported by custom changes to vagrant
 
+vagrant.openSshTunnel = function(specification) {
+    return Q()
+    .then(function() {
+        return Q.ninvoke(vagrant, "ssh", ["--", "-R", specification]);
+    });
+};
 
 vagrant.getSshConnection = function(configOverrides) {
 

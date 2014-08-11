@@ -1,3 +1,7 @@
+current code worked with vagrant tests if ssh pipe was opened manually for 8083, 8084 via:
+  vagrant ssh -- -R 8084:localhost:8084
+BUT the jake task isn't working yet because vagrant.getSshConnection blocks while the connection is open (so we only get one connection piped)
+
 vagrant mode:
   we need to make sure the VM can reach the port the fake rss reader is on, (fakeServer_hostName=192.168.33.1, fakeServer_port=80)
   (ditto for the SMTP server)
