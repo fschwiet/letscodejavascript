@@ -3,6 +3,9 @@ vagrant mode:
   (ditto for the SMTP server)
   - mac won't listen on 127.0.0.76 anyway (the port when not using vagrant in testing)
 
+  - use ssh to reverse-forward ports: http://stackoverflow.com/questions/16244601/vagrant-reverse-port-forwarding
+
+
   server.test.js maybe shouldn't call server.start directly
 
   Ok, so lets run external test dependencies on an external server
