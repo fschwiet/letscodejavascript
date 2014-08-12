@@ -90,10 +90,22 @@ task("testClient", function() {
 });
 
 function runTestsWithNodeunit(testList) {
-    var reporter = nodeunit.reporters["default"];
-    reporter.run(testList, null, function(failures) {
-        assert.ifError(failures);
-        complete();
+
+    return Q()
+    .then(function() {
+
+        var deferred = Q.defer();
+
+        var reporter = nodeunit.reporters["default"];
+        reporter.run(testList, null, function(failures) {
+            if (failures) {
+                deferred.reject(failures);
+            } else {
+                deferred.resolve();
+            }
+        });
+
+        return deferred.promise;
     });
 }
 
@@ -106,9 +118,7 @@ task("testSlow", ["commonTestPrequisites"], function() {
     testList.include(slowTests);
     testList.exclude(clientCode);
 
-    runTestsWithNodeunit(testList.toArray());
-}, {
-    async: true
+    return runTestsWithNodeunit(testList.toArray());
 });
 
 task("testSmoke", ["commonTestPrequisites"], function() {
@@ -118,9 +128,7 @@ task("testSmoke", ["commonTestPrequisites"], function() {
     testList.include(smokeTests);
     testList.exclude(clientCode);
 
-    runTestsWithNodeunit(testList.toArray());
-}, {
-    async: true
+    return runTestsWithNodeunit(testList.toArray());
 });
 
 task("testRemaining", ["commonTestPrequisites"], function() {
@@ -133,9 +141,7 @@ task("testRemaining", ["commonTestPrequisites"], function() {
     testList.exclude(slowTests);
     testList.exclude(smokeTests);
 
-    runTestsWithNodeunit(testList.toArray());
-}, {
-    async: true
+    return runTestsWithNodeunit(testList.toArray());
 });
 
 task("createTestDatabase", function() {
@@ -149,19 +155,6 @@ task("createTestDatabase", function() {
 });
 
 task("prepareTestDatabase", ["createTestDatabase", "runMigrations"]);
-
-
-function assertExecFileSucceeded(execFileResults) {
-
-    var stdout = execFileResults[0];
-    var stderr = execFileResults[1];
-
-    console.log("stdout:\n" + stdout.toString());
-
-    if (stderr.trim().length > 0) {
-        throw new Error("Have error output: " + stderr.toString());
-    }
-}
 
 
 desc("Verifies there are no uncommitted changes");
