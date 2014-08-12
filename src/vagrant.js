@@ -1,8 +1,10 @@
 
+var child_process = require("child_process");
 var fs = require("fs");
 var path = require("path");
 var Q = require("q");
 var vagrant = require("vagrant");
+var which = require("which");
 
 module.exports = vagrant;
 
@@ -10,22 +12,72 @@ var config = require("./config.js");
 
 var Ssh2Connection = require("ssh2");
 
-vagrant.start = path.resolve("./host");
-vagrant.env = JSON.parse(JSON.stringify(vagrant.env));
-
-vagrant.env.syncedFolder = "..";
-vagrant.env.hostGitUrl = config.get("vagrant_hostGitUrl");
-vagrant.env.hostGitCommit = config.get("vagrant_hostGitCommit");
-vagrant.env.wwwuserUsername = config.get("vagrant_wwwuserUsername");
-vagrant.env.wwwuserPassword = config.get("vagrant_wwwuserPassword");
-vagrant.env.mysqlRootPassword = config.get("database_password");
+vagrant.start = getWorkingDirectory();
+vagrant.env = getEnvironment();
  
 vagrant.consoleLogFile = path.resolve("./vagrant.stdout.txt");  // supported by custom changes to vagrant
 
+function getWorkingDirectory() {
+    return path.resolve("./host");
+}
+
+function getEnvironment() {
+
+    var env = JSON.parse(JSON.stringify(vagrant.env));
+
+    env.syncedFolder = "..";
+    env.hostGitUrl = config.get("vagrant_hostGitUrl");
+    env.hostGitCommit = config.get("vagrant_hostGitCommit");
+    env.wwwuserUsername = config.get("vagrant_wwwuserUsername");
+    env.wwwuserPassword = config.get("vagrant_wwwuserPassword");
+    env.mysqlRootPassword = config.get("database_password");
+
+    return env;
+}
+
 vagrant.openSshTunnel = function(specification) {
+
+    var expectedPwdResult = '/home/vagrant';
+
     return Q()
     .then(function() {
-        return Q.ninvoke(vagrant, "ssh", ["--", "-R", specification]);
+        return Q.nfcall(which, 'vagrant');
+    })
+    .then(function(vagrantLocation) {
+
+        var deferred = Q.defer();
+
+        var process = child_process.spawn('vagrant', ['ssh', '--', '-R', specification], {
+            cwd: getWorkingDirectory(),
+            env: getEnvironment()
+        });
+        
+        process.stdout.setEncoding('utf8');
+        process.stderr.setEncoding('utf8');
+
+        process.stdout.on('data', function(data) {
+            if (data.indexOf(expectedPwdResult)) {
+                deferred.resolve();
+            }
+        });
+
+        process.stderr.on('data', function(data) {
+            deferred.reject(data);
+        });
+
+        process.on('exit', function(code) {
+            if (code) {
+                deferred.reject("Vagrant ssh -- -R exited with code: " + code);
+            }
+        });
+
+        process.stdin.write('pwd\n', 'utf8', function(err) {
+            if (err) {
+                deferred.reject(err);
+            }
+        });
+
+        return deferred.promise;
     });
 };
 
