@@ -84,7 +84,7 @@ task("writeSampleConfig", function() {
 desc("test everything");
 task("test", ["testClient", "testSmoke", "testRemaining", "testSlow"]);
 
-task("testClient", function() {
+task("testClient", ["lint"], function() {
 
     return karma.runTests(path.resolve("./build/karma/karma.conf.js"));
 });
@@ -92,6 +92,26 @@ task("testClient", function() {
 function runTestsWithNodeunit(testList) {
 
     return Q()
+    .then(function() {
+        if (config.get('useVagrantHost')) {
+
+            var deferred = Q.defer();
+
+            var taskToRun = jake.Task.forwardTestPorts;
+
+            taskToRun.addListener('complete', function() {
+                deferred.resolve();
+            });
+
+            taskToRun.addListener('error', function(err) {
+                deferred.reject(err);
+            });
+
+            taskToRun.invoke();
+
+            return deferred.promise;
+        }
+    })
     .then(function() {
 
         var deferred = Q.defer();
@@ -325,6 +345,21 @@ task("recreateVirtualMachine", function() {
     });
 });
 
+task("forwardTestPorts", ["requireVagrantHost"], function() {
+
+    var portsToForward = [
+        [config.get("smtp_host"), config.get("smtp_port")], 
+        [config.get("fakeServer_hostName"), config.get("fakeServer_port")]
+    ];
+
+    var commands = portsToForward.map(function(entry) {
+        return vagrant.openSshTunnel(entry[1] + ":" + entry[0] + ":" + entry[1]);
+    });
+
+    return commands.reduce(Q.when, Q());
+});
+
+
 task("deploySite", ["lint", "recreateVirtualMachine", "deploySiteToVirtualMachine"], function() {
 });
 
@@ -338,16 +373,3 @@ task("vagrantTest", ["requireVagrantHost", "testSmoke","test"]);
 
 task("doFinalTest", ["requireVagrantHost", "deploySite", "vagrantTest"]);
 
-task("forwardTestPorts", ["requireVagrantHost"], function() {
-
-    var portsToForward = [
-        [config.get("smtp_host"), config.get("smtp_port")], 
-        [config.get("fakeServer_hostName"), config.get("fakeServer_port")]
-    ];
-
-    var commands = portsToForward.forEach(function(entry) {
-        return vagrant.openSshTunnel(entry[1] + ":" + entry[0] + ":" + entry[1]);
-    });
-
-    return commands.reduce(Q.when, Q());
-});
