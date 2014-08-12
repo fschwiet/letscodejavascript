@@ -1,32 +1,3 @@
-current code worked with vagrant tests if ssh pipe was opened manually for 8083, 8084 via:
-  vagrant ssh -- -R 8084:localhost:8084
-BUT the jake task isn't working yet because vagrant.getSshConnection blocks while the connection is open (so we only get one connection piped)
-
-vagrant mode:
-  we need to make sure the VM can reach the port the fake rss reader is on, (fakeServer_hostName=192.168.33.1, fakeServer_port=80)
-  (ditto for the SMTP server)
-  - mac won't listen on 127.0.0.76 anyway (the port when not using vagrant in testing)
-
-  - use ssh to reverse-forward ports: http://stackoverflow.com/questions/16244601/vagrant-reverse-port-forwarding
-
-
-  server.test.js maybe shouldn't call server.start directly
-
-  Ok, so lets run external test dependencies on an external server
-    - fake RSS usage needs to be setup via HTTP
-    - fake SMTP usage needs to be setup via HTTP
-    - create separate vagrant image
-    - deploy RSS/SMTP subdirectories with something like:
-        git archive --format=tar HEAD:<subdirectory> 
-
-Because tests have an external RSS server,
-    To run vagrant tests, need to open up firewall on port config:fakeServer_port.
-    To run non-vagrant test, still need vagrant adapter configured to run on fakeServer_hostName
-
-
-
-https://groups.google.com/forum/#!topic/vagrant-up/s69YHYN0KWE
-
 
 oops, jake task to verify version of node doesn't apply to the one running in the VM
 
@@ -43,10 +14,7 @@ environment variables bad place for secret strings?
   http://stackoverflow.com/questions/14786072/keep-secret-keys-out-with-environment-variables
 
 
-  use git read-tree --prefix=testhack master
-    to project deployment instead of checking out
-
-  integration tests should run within the VM
+    integration tests should run within the VM
     - modify setup.js's whenRunningTheServer
       - skip starting the node process
       - wait for server availability
@@ -111,9 +79,13 @@ HMMM
     didn't catch bug with automated tests when request parameters used in client-side didn't match what was used in server-side tests
       end-to-end test for this functionality was being painful to write
 
+    use git read-tree --prefix=testhack master to project deployment instead of checking out
+
+
 
 SOME LESSONS LEARNED:
   
   Set SQL collation when you create a database.  The default probably isn't utf8.
+  Table names by default are case sensitive on Unix, but not Windows.  
 
   node-mysql will treat incoming dates as being in the local timezone, set the timezone to Z to disable that.

@@ -1,80 +1,81 @@
-(function() {
+var assert = require("assert");
+var Q = require("q");
+var request = require("request");
 
-    "use strict";
+var config = require('../config.js');
+var server = require("./server.js");
 
-    var config = require('../config.js');
-    var server = require("./server.js");
-    var request = require("request");
+var setup = require("../test/setup.js");
 
-    var port = config.get("server_port");
+var port = config.get("server_port");
 
+exports.test_earlyStopCallsAreOk = function(test) {
+    server.stop(function() {
+        test.done();
+    });
+};
 
-    exports.test_earlyStopCallsAreOk = function(test) {
-        server.stop(function() {
-            test.done();
+exports.test_extraStopCallsAreOk = function(test) {
+    server.stop(function() {});
+    server.stop(function() {});
+    server.stop(function() {});
+    server.stop(function() {
+        test.done();
+    });
+};
+
+var context = setup.whenRunningTheServer(exports);
+
+context.test("has 404 page", function() {
+
+    return Q()
+    .then(function() {
+        var url = config.urlFor("/non-existing");
+
+        return Q.nfcall(request, url)
+        .then(function(results) {
+            var response = results[0];
+            var body = results[1];
+
+            assert.equal(response.statusCode, 404, "Expected 404 response code for url " + url);
+
+            return Q.ninvoke(server, "stop");
         });
-    };
+    });
+});
 
-    exports.test_extraStopCallsAreOk = function(test) {
-        server.stop(function() {});
-        server.stop(function() {});
-        server.stop(function() {});
-        server.stop(function() {
-            test.done();
+context.test("serves client-side bundle", function() {
+
+    return Q()
+    .then(function() {
+        var url = config.urlFor("/client/main-built.js");
+
+        return Q.nfcall(request, url)
+        .then(function(results) {
+            var response = results[0];
+            var body = results[1];
+
+            assert.equal(response.statusCode, 200, "Expected 200 response code for url " + url);
+
+            return Q.ninvoke(server, "stop");
         });
-    };
+    });
+});
 
-    exports.test_has404Page = function(test) {
+context.test("can compile jade views", function() {
 
-        server.start(port, function() {
-            var url = config.urlFor("/non-existing");
+    return Q()
+    .then(function() {
+        var url = config.urlFor("/client/views/error500.jade.js");
 
-            request(url, function(err, response, body) {
+        return Q.nfcall(request, url)
+        .then(function(results) {
+            var response = results[0];
+            var body = results[1];
 
-                test.ok(err === null, "Error: " + err);
+            assert.equal(response.statusCode, 200, "Expected 200 response code for url " + url);
 
-                test.equal(response.statusCode, 404, "Expected 404 response code for url " + url);
-
-                server.stop(function() {
-                    test.done();
-                });
-            });
+            return Q.ninvoke(server, "stop");
         });
-    };
-
-    exports.test_servesBuiltClientSide = function(test) {
-
-        server.start(port, function() {
-            var url = config.urlFor("/client/main-built.js");
-
-            request(url, function(err, response, body) {
-
-                test.ok(err === null, "Error: " + err);
-
-                test.equal(response.statusCode, 200, "Expected 200 response code for url " + url);
-
-                server.stop(function() {
-                    test.done();
-                });
-            });
-        });
-    };
-
-    exports["can compile jade views"] = function(test) {
-        server.start(port, function() {
-            var url = config.urlFor("/client/views/error500.jade.js");
-
-            request(url, function(err, response, body) {
-
-                test.ok(err === null, "Error: " + err);
-
-                test.equal(response.statusCode, 200, "Expected 200 response code for url " + url);
-
-                server.stop(function() {
-                    test.done();
-                });
-            });
-        });
-    };
-
-})();
+    });
+});
