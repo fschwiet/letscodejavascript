@@ -338,13 +338,16 @@ task("vagrantTest", ["requireVagrantHost", "testSmoke","test"]);
 
 task("doFinalTest", ["requireVagrantHost", "deploySite", "vagrantTest"]);
 
-task("pipe", ["requireVagrantHost"], function() {
+task("forwardTestPorts", ["requireVagrantHost"], function() {
 
-    return vagrant.openSshTunnel("8083:localhost:8083")
-    .then(function() {
-        return vagrant.openSshTunnel("8084:localhost:8084");
-    })
-    .then(function() {
-        return Q.defer().promise;
+    var portsToForward = [
+        [config.get("smtp_host"), config.get("smtp_port")], 
+        [config.get("fakeServer_hostName"), config.get("fakeServer_port")]
+    ];
+
+    var commands = portsToForward.forEach(function(entry) {
+        return vagrant.openSshTunnel(entry[1] + ":" + entry[0] + ":" + entry[1]);
     });
+
+    return commands.reduce(Q.when, Q());
 });
