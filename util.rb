@@ -90,3 +90,43 @@ def enableFirewall(vm, allowed)
 	vm.provision "shell", inline: firewallConfig
 end
 
+
+def installNginx(vm)
+	vm.provision :chef_solo do |chef|
+		chef.cookbooks_path = "cookbooks"
+		chef.add_recipe "nginx"
+	end
+end
+
+def writeNginxProxyRule(vm, ipAddress, port)
+
+	nginxConfig = <<-EOS
+		server {
+				listen 80;
+
+				location ~ ^/ {
+				    proxy_pass http://$IP_ADDRESS:$PORT;
+
+			        proxy_http_version 1.1;
+			        proxy_set_header Upgrade \\$http_upgrade;
+			        proxy_set_header Connection 'upgrade';
+			        proxy_set_header Host \\$host;
+			        proxy_cache_bypass \\$http_upgrade;
+				}
+			}
+		EOS
+
+	nginxConfig = nginxConfig.gsub("$IP_ADDRESS", ipAddress)
+	nginxConfig = nginxConfig.gsub("$PORT", port.to_s)
+
+	vm.provision "shell", 
+		inline: "echo -e $1 > /etc/nginx/conf.d/firstServer.conf", args: [ nginxConfig ]
+
+	## force nginx to reload configuration
+	  #vm.provision "shell", inline: " pid=$(cat /var/run/nginx.pid); sudo kill -HUP $pid"
+	    # failed with cat: /var/run/nginx.pid: No such file or directory
+
+	  #vm.provision "shell", inline: 'sudo service nginx start'
+	    # seems to have no effect
+end
+

@@ -26,7 +26,7 @@ Vagrant.configure("2") do |config|
 		"21/tcp",    #ftp, used by wget during some provisioning
 		"22/tcp",    #ssh
 		"80/tcp",    #www
-		"8081/tcp",  #www testing
+		"8080/tcp",  #www testing
 		"3306/tcp"  #mysql
 	]
 
@@ -48,6 +48,9 @@ Vagrant.configure("2") do |config|
 		hostGitUrl,
 		hostGitCommit
 	]
+
+	installNginx config.vm
+	writeNginxProxyRule config.vm, "127.0.0.1", 8080
 end
 
 
