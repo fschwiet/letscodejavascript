@@ -6,9 +6,6 @@ port over security stuff from helloVagrant
 auto-deploy on new commits
  - email on completion
 
-
-oops, jake task to verify version of node doesn't apply to the one running in the VM
-
   
 its not obvious that certain config values production  - is there a way to make it obvious which configs are not needed by the production server?
   (fakeServer_hostName, fakeServer_port, googleTest_username, googleTest_password)

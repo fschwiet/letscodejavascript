@@ -2,6 +2,8 @@
     "use strict";
 
     var assert = require("assert");
+    var fs = require('fs');
+    var path = require('path');
     var request = require("request");
     var Q = require("q");
 
@@ -9,6 +11,10 @@
     var setup = require("../test/setup.js");
 
     function assertStatusIsGood(contents) {
+
+        var expectedVersion = fs.readFileSync(path.resolve(__dirname, "../../.node-version"));
+
+        checkStatus(contents, (/Node version: (.*)/mi), expectedVersion);
         checkStatus(contents, (/Database status:(.*)/mi), "connected (");
     }
 
