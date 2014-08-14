@@ -407,6 +407,9 @@ task("mergeIntoRelease", ["verifyEmptyGitStatus"], function() {
         return exec("git merge --no-ff --log @{-1}");
     })
     .then(function() {
+        return exec("git push origin release");
+    })
+    .then(function() {
         return exec("git checkout @{-1}");
     })
     .then(function() {
