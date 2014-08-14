@@ -388,10 +388,10 @@ task("mergeIntoRelease", ["verifyEmptyGitStatus"], function() {
     .then(function(currentHead) {
         return exec("git checkout release")
         .then(function() {
-            return exec("git merge --no-ff --log " + currentHead);
+            return exec("git merge --no-ff --log @{-1}");
         })
         .then(function() {
-            return exec("git checkout " + currentHead);
+            return exec("git checkout @{-1}");
         });        
     });
 });
