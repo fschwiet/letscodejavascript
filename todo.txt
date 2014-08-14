@@ -1,11 +1,5 @@
 
 
-task doFinalTest improvements:
-  - only run if there are no uncomitted changes
-  - only run if "git branch head --contains release" is non-empty
-  - checkout & merge into release branch
-
-
 port over security stuff from helloVagrant
 
 
