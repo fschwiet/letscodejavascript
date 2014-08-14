@@ -374,7 +374,15 @@ task("requireVagrantHost", function() {
 task("vagrantTest", ["requireVagrantHost", "testSmoke","test"]);
 
 task("mergeIntoRelease", ["verifyEmptyGitStatus"], function() {
+
     return Q()
+    .then(function() {
+        return exec("git ls-remote --exit-code origin")
+        .fail(function() {
+            throw new Error('A git remote named "origin" is required.');
+        });
+
+    })
     .then(function() {
         return exec("git show-ref --verify --quiet refs/heads/release")
         .fail(function() {
