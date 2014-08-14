@@ -15,13 +15,15 @@ var nodeVersion = new(require("node-version").version)();
 var util = require("util");
 var beautify = require('js-beautify');
 
+var exec = require("child-process-promise").exec;
+var spawn = require("child-process-promise").spawn;
+
 
 var config = require("./src/config.js");
 var vagrant = require("./src/vagrant.js");
 
 var copyModifiedJson = require("cauldron").copyModifiedJson;
 var gitUtil = require("cauldron").gitUtil;
-var spawnProcess = require("cauldron").spawnProcess;
 
 var jadePreprocessor = require("./build/karma/jadePreprocessor.js");
 
@@ -371,5 +373,29 @@ task("requireVagrantHost", function() {
 
 task("vagrantTest", ["requireVagrantHost", "testSmoke","test"]);
 
-task("doFinalTest", ["requireVagrantHost", "deploySite", "vagrantTest"]);
+task("mergeIntoRelease", ["verifyEmptyGitStatus"], function() {
+    return Q()
+    .then(function() {
+        return exec("git branch head --contains release");
+    })
+    .then(function(branchOutput) {
+
+        assert.equal(branchOutput.stderr.length, 0, "Encountered error verifying current git head to contain release branch.");
+        assert.equal(branchOutput.stdout.length, 0, "Expected current git head to contain the release branch.");
+
+        return gitUtil.getGitCurrentCommit();
+    })
+    .then(function(currentHead) {
+        return exec("git checkout release")
+        .then(function() {
+            return exec("git merge --no-ff --log " + currentHead);
+        })
+        .then(function() {
+            return exec("git checkout " + currentHead);
+        });        
+    });
+});
+
+task("doFinalTest", ["requireVagrantHost", "deploySite", "vagrantTest", "mergeIntoRelease"], function() {
+});
 
