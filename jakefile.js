@@ -376,24 +376,34 @@ task("vagrantTest", ["requireVagrantHost", "testSmoke","test"]);
 task("mergeIntoRelease", ["verifyEmptyGitStatus"], function() {
     return Q()
     .then(function() {
+        return exec("git show-ref --verify --quiet refs/heads/release")
+        .fail(function() {
+            return exec("git checkout --track origin/release")
+            .then(function() {
+                return exec("git checkout @{-1}");
+            });
+        })
+    })
+    .then(function() {
         return exec("git branch head --contains release");
     })
     .then(function(branchOutput) {
 
         assert.equal(branchOutput.stderr.length, 0, "Encountered error verifying current git head to contain release branch.");
         assert.equal(branchOutput.stdout.length, 0, "Expected current git head to contain the release branch.");
-
-        return gitUtil.getGitCurrentCommit();
     })
     .then(function(currentHead) {
         return exec("git checkout release")
-        .then(function() {
-            return exec("git merge --no-ff --log @{-1}");
-        })
-        .then(function() {
-            return exec("git checkout @{-1}");
-        });        
-    });
+    })
+    .then(function() {
+        return exec("git merge --no-ff --log @{-1}");
+    })
+    .then(function() {
+        return exec("git checkout @{-1}");
+    })
+    .then(function() {
+        return exec("git merge release");
+    });        
 });
 
 task("doFinalTest", ["requireVagrantHost", "deploySite", "vagrantTest", "mergeIntoRelease"], function() {
