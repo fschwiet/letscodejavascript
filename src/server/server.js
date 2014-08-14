@@ -142,18 +142,14 @@
 
     function handleStatusRequest(request, response) {
 
-        var model = modelFor('Status', request);
+        var model = {};
+
+        model.nodeVersion = process.version;
 
         if (typeof request.user === "object") {
             model.userId = request.user.id;
         } else {
             model.userId = "none";
-        }
-
-        if (typeof process.env.IISNODE_VERSION !== "undefined") {
-            model.iisnodeVersion = process.env.IISNODE_VERSION;
-        } else {
-            model.iisnodeVersion = "not used";
         }
 
         database.getStatus(function(statusString) {
@@ -171,7 +167,7 @@
             if (typeof processGid == 'undefined' && typeof process.getgid == 'function')
                 processGid = process.getgid();
 
-            response.render('status', model);
+            response.json(model);
             response.end();
         });
     }
