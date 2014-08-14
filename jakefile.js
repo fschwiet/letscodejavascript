@@ -269,10 +269,18 @@ function listNonImportedFiles() {
 
 task("deploySiteToVirtualMachine", function() {
 
-    return vagrant.getSshConnection({
-        username: config.get("vagrant_wwwuserUsername"),
-        password: config.get("vagrant_wwwuserPassword"),
-        privateKey: null
+    var commitToDeploy;
+
+    return gitUtil.getGitCurrentCommit()
+    .then(function(commitId) {
+        commitToDeploy = commitId;
+    })
+    .then(function() {
+        return vagrant.getSshConnection({
+            username: config.get("vagrant_wwwuserUsername"),
+            password: config.get("vagrant_wwwuserPassword"),
+            privateKey: null
+        });
     })
     .then(function(connection) {
         return Q()
@@ -299,7 +307,7 @@ task("deploySiteToVirtualMachine", function() {
             return vagrant.executeSshCommand(connection, 'mysql -u "root" ' + passwordInsert +' -e "CREATE DATABASE TESTTEMP"');
         })
         .then(function() {
-            return vagrant.executeSshCommand(connection, 'cd /cumulonimbus; ./deploy.sh letscodejavascript cumu');
+            return vagrant.executeSshCommand(connection, 'cd /cumulonimbus; ./deploy.sh letscodejavascript ' + commitToDeploy);
         })
         .fin(function() {
             connection.end();
