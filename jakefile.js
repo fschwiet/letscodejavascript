@@ -390,7 +390,7 @@ task("mergeIntoRelease", ["verifyEmptyGitStatus"], function() {
             .then(function() {
                 return exec("git checkout @{-1}");
             });
-        })
+        });
     })
     .then(function() {
         return exec("git branch head --contains release");
@@ -401,7 +401,7 @@ task("mergeIntoRelease", ["verifyEmptyGitStatus"], function() {
         assert.equal(branchOutput.stdout.length, 0, "Expected current git head to contain the release branch.");
     })
     .then(function(currentHead) {
-        return exec("git checkout release")
+        return exec("git checkout release");
     })
     .then(function() {
         return exec("git merge --no-ff --log @{-1}");
