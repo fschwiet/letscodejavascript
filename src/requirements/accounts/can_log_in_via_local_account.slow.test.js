@@ -84,4 +84,4 @@ function check_login_from(startPage) {
 }
 
 check_login_from(config.urlFor("/feeds"));
-check_login_from(config.urlFor("/status"));
+check_login_from(config.urlFor("/about"));

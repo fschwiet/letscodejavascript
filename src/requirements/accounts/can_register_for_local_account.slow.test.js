@@ -60,7 +60,7 @@ function testRegistration(startPage) {
     });
 }
 
-testRegistration(config.urlFor("/status"));
+testRegistration(config.urlFor("/about"));
 testRegistration(config.urlFor("/feeds"));
 
 context.test("should receive an error message if email is already taken", function() {
@@ -76,7 +76,7 @@ context.test("should receive an error message if email is already taken", functi
         return users.createLocalUser(email, "username" + uuid(), "password" + uuid());
     })
     .then(function() {
-        return tryRegistration(page, config.urlFor("/status"), email, username, password);
+        return tryRegistration(page, config.urlFor("/about"), email, username, password);
     })
     .then(function() {
         return page.waitForSelector("div.alert-error");
@@ -104,7 +104,7 @@ context.test("should receive an error message if username is already taken", fun
         return users.createLocalUser("someotheremail" + uuid() + "@server.com", username, "password" + uuid());
     })
     .then(function() {
-        return tryRegistration(page, config.urlFor("/status"), email, username, password);
+        return tryRegistration(page, config.urlFor("/about"), email, username, password);
     })
     .then(function() {
         return page.waitForSelector("div.alert-error");
@@ -130,7 +130,7 @@ context.test("should receive an error message if password is not retyped correct
 
     return Q()
     .then(function() {
-        return tryRegistration(page, config.urlFor("/status"), email, username, password, "mistyped password");
+        return tryRegistration(page, config.urlFor("/about"), email, username, password, "mistyped password");
     })
     .then(function() {
         return page.waitForSelector("div.alert-error");

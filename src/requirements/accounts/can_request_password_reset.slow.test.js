@@ -36,7 +36,7 @@ context.test("User should be able to request a password reset by username", func
         return users.createLocalUser(emailAddress, username, uuid());
     })
     .then(function() {
-        return page.open(config.urlFor("/status"));
+        return page.open(config.urlFor("/about"));
     })
     .then(function(){ 
         return page.clickElement(login.selectors.loginButton);
