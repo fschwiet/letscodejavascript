@@ -8,32 +8,8 @@ wwwuser = ENV["wwwuserUsername"] || "wwwuser"
 wwwuserPassword = ENV["wwwuserPassword"] || "password"
 mysqlRootPassword = ENV["mysqlRootPassword"] || ""
 
-def aptgetUpdate(vm)
-	vm.provision :chef_solo do |chef|
-		chef.cookbooks_path = "cookbooks"
-		chef.add_recipe "apt"
-	end
-end
+require "./util.rb"
 
-def installGit(vm)
-	vm.provision "shell", inline: "sudo apt-get install -y git"
-end
-
-def installNodejs(vm)
-
-	vm.provision :chef_solo do |chef|
-		chef.cookbooks_path = "cookbooks"
-		chef.add_recipe "nodejs::install_from_binary"
-		chef.add_recipe "nodejs::npm"
-
-		chef.json = {
-			:nodejs => {
-				version: "0.10.30",
-				checksum_linux_x64: "173d2b9ba4cbfb45a2472029f2904f965081498381a34d01b3889a850238de2b"
-			}	
-		}
-	end
-end
 
 def installMysql(vm, rootPassword)
 
@@ -58,12 +34,35 @@ Vagrant.configure("2") do |config|
 
 	config.vm.box = "opscode-ubuntu-14.04"
 	config.vm.box_url = "http://opscode-vm-bento.s3.amazonaws.com/vagrant/virtualbox/opscode_ubuntu-14.04_chef-provisionerless.box"
+	megabytesMemoryInstalled = 512
 
 	config.omnibus.chef_version = :latest
 
 	config.vm.network "private_network", ip: "192.168.33.100"
 	config.vm.network "forwarded_port", guest: 8080, host: 8080
 	config.vm.synced_folder syncedFolder, "/vagrant"
+
+	enableFirewall config.vm, [
+		"21/tcp",    #ftp, used by wget during some provisioning
+		"22/tcp",    #ssh
+		"80/tcp",    #
+		"8080/tcp",  # testing
+		"8081/tcp",  # testing
+		"8082/tcp",  # testing
+		"8083/tcp",  # testing
+		"8084/tcp",  # testing
+		"8085/tcp",  # testing
+		"8086/tcp",  # testing
+		"8086/tcp",  # testing
+		"8087/tcp",  # testing
+		"8088/tcp",  # testing
+		"8089/tcp",  # testing
+		"3306/tcp"  #mysql
+	]
+
+	protectSshFromLoginAttacks config.vm
+
+	createSwapFileIfMissing config.vm, 2*megabytesMemoryInstalled
 
 	aptgetUpdate config.vm
 	installGit config.vm
@@ -72,6 +71,9 @@ Vagrant.configure("2") do |config|
 
 	config.vm.provision "shell", inline: "sudo apt-get install -y realpath"
 	config.vm.provision "shell", inline: "sudo npm install pm2 -g"
+
+	installNginx config.vm
+	writeNginxProxyRule config.vm, "127.0.0.1", 8080
 
 	config.vm.provision "shell", path: "./provision.sites.sh", args: [ 
 		wwwuser, 
