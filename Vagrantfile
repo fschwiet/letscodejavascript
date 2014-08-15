@@ -19,7 +19,6 @@ Vagrant.configure("2") do |config|
 	config.omnibus.chef_version = :latest
 
 	config.vm.network "private_network", ip: "192.168.33.100"
-	config.vm.network "forwarded_port", guest: 8080, host: 8080
 	config.vm.synced_folder syncedFolder, "/vagrant"
 
 	enableFirewall config.vm, [
@@ -43,7 +42,7 @@ Vagrant.configure("2") do |config|
 	config.vm.provision "shell", inline: "sudo npm install pm2 -g"
 
 	installNginx config.vm
-	writeNginxProxyRule config.vm, "127.0.0.1", 8080
+	writeNginxProxyRule config.vm, "www.192.168.33.100.xip.io", 80, "localhost", 8080
 
 	config.vm.provision "shell", path: "./provision.sites.sh", args: [ 
 		wwwuser, 
