@@ -12,8 +12,7 @@ sudo mkdir /cumulonimbus
 git clone -b $host_repository_commit $host_repository /cumulonimbus
 sudo chown --recursive "$username:$username" /cumulonimbus
 
-#  It might be preferable to write to /etc/cron.d/<filename>, but I couldnt' get that to work.
-(sudo crontab -l -u $username ; echo '@reboot PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin bash -c "cd /cumulonimbus && ./run.sh >>~/cronrun_cumulonimbus 2>&1"') | sudo crontab -u "$username" -
+echo '@reboot wwwuser PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin bash -c "cd /cumulonimbus; ./run.sh >>~/cronrun_cumulonimbus 2>&1"' | sudo tee /etc/cron.d/cumulonimbus > /dev/null
 
 echo "To deploy an individual site, do something like:"
 echo "    su $username"
