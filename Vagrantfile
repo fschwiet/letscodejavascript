@@ -42,15 +42,15 @@ Vagrant.configure("2") do |config|
 	config.vm.provision "shell", inline: "sudo apt-get install -y realpath"
 	config.vm.provision "shell", inline: "sudo npm install pm2 -g"
 
+	installNginx config.vm
+	writeNginxProxyRule config.vm, "127.0.0.1", 8080
+
 	config.vm.provision "shell", path: "./provision.sites.sh", args: [ 
 		wwwuser, 
 		wwwuserPassword,
 		hostGitUrl,
 		hostGitCommit
 	]
-
-	installNginx config.vm
-	writeNginxProxyRule config.vm, "127.0.0.1", 8080
 end
 
 

@@ -122,11 +122,6 @@ def writeNginxProxyRule(vm, ipAddress, port)
 	vm.provision "shell", 
 		inline: "echo -e $1 > /etc/nginx/conf.d/firstServer.conf", args: [ nginxConfig ]
 
-	## force nginx to reload configuration
-	  #vm.provision "shell", inline: " pid=$(cat /var/run/nginx.pid); sudo kill -HUP $pid"
-	    # failed with cat: /var/run/nginx.pid: No such file or directory
-
-	  #vm.provision "shell", inline: 'sudo service nginx start'
-	    # seems to have no effect
+	# vm.provision "shell", inline: 'sudo nginx -s reload'
 end
 
