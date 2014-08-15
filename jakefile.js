@@ -200,7 +200,7 @@ task("verifyNodeVersion", function() {
 
 desc("Run the server locally");
 task("runServer", ["compileJadeViews"], function() {
-    var port = config.get("server_port");
+    var port = config.get("server_internal_port");
     console.log("running the server on", port);
     var server = require("./src/server/server.js");
     server.start(port);

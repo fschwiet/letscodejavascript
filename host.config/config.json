@@ -2,7 +2,8 @@
     "is_production": false,
     "server_friendlyName": "asimplereader vagrant",
     "server_hostname": "asimplereader.192.168.33.100.xip.io",
-    "server_port": 8081,
-    "google_api_client_id": "17269552488-gtkpqo9786c8pr1q789046hjtcr5093v.apps.googleusercontent.com",
-    "google_api_client_secret": "4xZzjt42pfL8AYzbHd96Ltwy"
+    "server_internal_port": 8081,
+    "server_external_port": 80,
+    "google_api_client_id": "17269552488-aqh3bsvtjcf8l2lp1h01qrstqaqu4tvd.apps.googleusercontent.com",
+    "google_api_client_secret": "SvpljH2L056S3Q4MZULRK3Cz"
 }

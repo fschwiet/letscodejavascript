@@ -29,7 +29,7 @@ exports.whenRunningTheServer = NodeunitBuilder.createTestScopeExtender(
         if (config.get("useVagrantHost")) {
             done();
         } else {
-            server.start(config.get("server_port"), done);
+            server.start(config.get("server_internal_port"), done);
         }
     },
     function(done) {

@@ -17,7 +17,8 @@ function getDefaults() {
 
         "server_friendlyName": "letscodejavascript",
         "server_hostname": "localhost",
-        "server_port": 8081,
+        "server_internal_port": 8081,
+        "server_external_port": 8081,
         "server_sessionKey": "foo",
         "is_production": true,
 
@@ -73,7 +74,7 @@ config.get = function() {
 
 function commonUrlParameters(path, query) {
 
-    var port = config.get("server_port");
+    var port = config.get("server_external_port");
     port = port == 80 ? null : port;
 
     return {
