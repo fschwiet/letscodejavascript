@@ -1,11 +1,5 @@
 port over security stuff from helloVagrant
-  - modify letscodejavascript config "server_port" -> "sever_listen_port", "server_external_port"
-  - firewall should open up port 80 and mysql (3306)
   - nginx rules need to be created per site
-
-
-  There is an internal port for each site, that is where it listens.
-  firewall - open ports 80
 
 
 auto-deploy on new commits

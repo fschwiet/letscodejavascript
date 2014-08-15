@@ -7,8 +7,6 @@ var server = require("./server.js");
 
 var setup = require("../test/setup.js");
 
-var port = config.get("server_port");
-
 exports.test_earlyStopCallsAreOk = function(test) {
     server.stop(function() {
         test.done();
