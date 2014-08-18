@@ -8,6 +8,9 @@ wwwuser = ENV["wwwuserUsername"] || "wwwuser"
 wwwuserPassword = ENV["wwwuserPassword"] || "password"
 mysqlRootPassword = ENV["mysqlRootPassword"] || ""
 
+hostnameASimpleReader = ENV["hostnameASimpleReader"] || "asimplereader.192.168.33.100.xip.io"
+hostnameInternetDanceFloor = ENV["hostnameInternetDanceFloor"] || "internetdancefloor.192.168.33.100.xip.io"
+
 require "./util.rb"
 
 
@@ -72,7 +75,10 @@ Vagrant.configure("2") do |config|
 	config.vm.provision "shell", inline: "sudo npm install pm2 -g"
 
 	installNginx config.vm
-	writeNginxProxyRule config.vm, "asimplereader.192.168.33.100.xip.io", 80, "localhost", 8081
+	writeNginxProxyRule config.vm, hostnameASimpleReader, 80, "localhost", 8081
+	writeNginxProxyRule config.vm, hostnameInternetDanceFloor, 80, "localhost", 8082
+
+	installMysql config.vm, mysqlRootPassword
 
 	config.vm.provision "shell", path: "./provision.sites.sh", args: [ 
 		wwwuser, 
@@ -80,8 +86,6 @@ Vagrant.configure("2") do |config|
 		hostGitUrl,
 		hostGitCommit
 	]
-
-	installMysql config.vm, mysqlRootPassword
 end
 
 
