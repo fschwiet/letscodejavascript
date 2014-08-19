@@ -467,3 +467,9 @@ task("mergeIntoRelease", ["verifyEmptyGitStatus"], function() {
 task("doFinalTest", ["requireVagrantHost", "deploySite", "rebootVirtualMachine", "vagrantTest", "mergeIntoRelease"], function() {
 });
 
+task("deployDigitalOcean", [], function() {
+    return Q()
+    .then(function() {
+        return exec("vagrant plugin install vagrant-digitalocean");
+    });
+});

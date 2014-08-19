@@ -5,7 +5,7 @@ deploy to digital ocean
       (they add the box to the local vagrant install, but it could be in source)
     - generate a key an ssh key (ssh-keygen -t rsa)
     - add provider element to Vagrantfile
-      - be sure to set a useful ssh_key_name  (prompt user?)
+      - be sure to set a useful ssh_key_name  (this is shown in digital ocean's key management UI)
     - in some cases, needed to add an SSL key to the global environment (SSL_CERT_FILE)
       - lets hope not. Prefer not to automate, may need a checklist
     - vagrant up
@@ -15,7 +15,8 @@ deploy to digital ocean
     - wwwuser password (comes from config.json override)
 
     - call to "jake deployDigitalOcean" might take as reference an alternative config.json file to use
-      - config.js loads that file over config.json      
+      - config.js loads that file over config.json
+        - load config file with require() so that script can resolve relative path to SSH key      
       - vagrant includes the file, that ruby file overrides vagrantfile variables
         - replace useVagrantHost with useConfigFile
         - fail if the fail is specified but fails to load
