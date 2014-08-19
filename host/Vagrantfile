@@ -1,7 +1,7 @@
 # -*- mode: ruby -*-
 # vi: set ft=ruby :
 
-syncedFolder = File.absolute_path(ENV["SyncedFolder"] || "..")
+syncedFolder = File.absolute_path(ENV["SyncedFolder"] || ".")
 hostGitUrl = ENV["HostGitUrl"] || "https://github.com/fschwiet/cumulonimbus-host"
 hostGitCommit = ENV["HostGitCommit"] || "master"
 wwwuser = ENV["wwwuserUsername"] || "wwwuser"
@@ -10,6 +10,10 @@ mysqlRootPassword = ENV["mysqlRootPassword"] || ""
 
 hostnameASimpleReader = ENV["hostnameASimpleReader"] || "asimplereader.192.168.33.100.xip.io"
 hostnameInternetDanceFloor = ENV["hostnameInternetDanceFloor"] || "internetdancefloor.192.168.33.100.xip.io"
+
+digitalOceanPrivateKeyPath = ENV["hostnameInternetDanceFloor"] || nil
+digitalOceanProviderToken = ENV["digitalOceanProviderToken"] || nil
+
 
 require "./util.rb"
 
@@ -39,6 +43,20 @@ Vagrant.configure("2") do |config|
 	config.vm.box_url = "http://opscode-vm-bento.s3.amazonaws.com/vagrant/virtualbox/opscode_ubuntu-14.04_chef-provisionerless.box"
 	megabytesMemoryInstalled = 512
 
+	config.vm.provider :digital_ocean do |provider, override|
+		
+		provider.ssh_key_name = "cumulonimbus-machine fschwiet"
+		override.ssh.private_key_path = digitalOceanPrivateKeyPath
+		
+		override.vm.box = 'digital_ocean'
+		override.vm.box_url = "https://github.com/smdahlen/vagrant-digitalocean/raw/master/box/digital_ocean.box"
+
+		provider.token = digitalOceanProviderToken
+		provider.image = 'Ubuntu 14.04 x64'
+		provider.region = 'nyc2'
+		provider.size = '512mb'
+	end
+
 	config.omnibus.chef_version = :latest
 
 	config.vm.network "private_network", ip: "192.168.33.100"
@@ -67,6 +85,9 @@ Vagrant.configure("2") do |config|
 	createSwapFileIfMissing config.vm, 2*megabytesMemoryInstalled
 
 	aptgetUpdate config.vm
+
+	config.vm.provision "shell", inline: "sudo apt-get install -y make"  # required by nodejs cookbook, was missing from DigitalOcean box
+
 	installGit config.vm
 
 	installNodejs config.vm
