@@ -8,6 +8,7 @@ deploy to digital ocean
       - be sure to set a useful ssh_key_name  (this is shown in digital ocean's key management UI)
     - in some cases, needed to add an SSL key to the global environment (SSL_CERT_FILE)
       - lets hope not. Prefer not to automate, may need a checklist
+      - documentation for vagrant box said this was mac-only
     - vagrant up
 
   - need to store/use some secrets:
