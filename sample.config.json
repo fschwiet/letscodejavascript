@@ -22,7 +22,7 @@
     "googleTest_password": null,
     "fakeServer_hostName": "localhost",
     "fakeServer_port": 8084,
-    "vagrant_provisioner": null,
+    "vagrant_provider": null,
     "vagrant_hostGitUrl": "https://github.com/fschwiet/cumulonimbus-host",
     "vagrant_hostGitCommit": "master",
     "vagrant_wwwuserUsername": "wwwuser",

@@ -1,6 +1,6 @@
 {
     "is_production": false,
-    "vagrant_provisioner": "virtualbox",
+    "vagrant_provider": "virtualbox",
 
     "server_friendlyName": "asimplereader vagrant",
     "server_hostname": "asimplereader.192.168.33.100.xip.io",

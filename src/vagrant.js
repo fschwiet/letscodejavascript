@@ -32,6 +32,10 @@ function getEnvironment() {
     env.wwwuserPassword = config.get("vagrant_wwwuserPassword");
     env.mysqlRootPassword = config.get("database_password");
 
+    env.hostnameASimpleReader = config.get("server_external_port");
+    env.digitalOceanPrivateKeyPath = config.get("digitalOceanPrivateKeyPath");
+    env.digitalOceanProviderToken = config.get("digitalOceanProviderToken");
+
     return env;
 }
 

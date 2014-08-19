@@ -41,7 +41,7 @@ function getDefaults() {
         "fakeServer_hostName": "localhost",
         "fakeServer_port": 8084,
 
-        "vagrant_provisioner": null,
+        "vagrant_provider": null,
 
         "vagrant_hostGitUrl": "https://github.com/fschwiet/cumulonimbus-host",
         "vagrant_hostGitCommit": "master",
@@ -72,7 +72,7 @@ config.get = function() {
 };
 
 config.isVagrantEnvironment = function() {
-    return config.get("vagrant_provisioner") !== null;
+    return config.get("vagrant_provider") !== null;
 };
 
 function commonUrlParameters(path, query) {
