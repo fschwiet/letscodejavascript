@@ -102,7 +102,15 @@ function handleGoogleAuth(page) {
                 needAllow: isGooglePage && hasElement(selectors.googleAllowSubmit),
                 ready: !isGooglePage && hasElement(selectors.logoutButtonSelector)
             };
-        }, selectors);
+        }, selectors)
+        .fail(function(err) {
+            return {
+                needLogin: false,
+                needSkip: false,
+                needAllow: false,
+                ready: false
+            };
+        });
     }
 
     return waitUntil("done authenticating", function() {
@@ -162,6 +170,7 @@ function handleGoogleAuth(page) {
                                     return getPageState();
                                 })                                    
                                 .then(function(state) {
+
                                     return !state.needAllow;
                                 });
                             });
