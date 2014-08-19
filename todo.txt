@@ -1,10 +1,30 @@
-deploy to production
-  - hostname in vagrantfile needs to be parameterized
-  - nginx rules need to be created per site
+deploy to digital ocean
+  - https://www.digitalocean.com/community/tutorials/how-to-use-digitalocean-as-your-provider-in-vagrant-on-an-ubuntu-12-10-vps
+    - install vagrant plugin
+    - use box digital_ocean https://github.com/smdahlen/vagrant-digitalocean/raw/master/box/digital_ocean.box
+      (they add the box to the local vagrant install, but it could be in source)
+    - generate a key an ssh key (ssh-keygen -t rsa)
+    - add provider element to Vagrantfile
+      - be sure to set a useful ssh_key_name  (this is shown in digital ocean's key management UI)
+    - in some cases, needed to add an SSL key to the global environment (SSL_CERT_FILE)
+      - lets hope not. Prefer not to automate, may need a checklist
+      - documentation for vagrant box said this was mac-only
+    - vagrant up
+
+  - need to store/use some secrets:
+    - SSH key for root access (new)
+    - wwwuser password (comes from config.json override)
+
+    - call to "jake deployDigitalOcean" might take as reference an alternative config.json file to use
+      - config.js loads that file over config.json
+        - load config file with require() so that script can resolve relative path to SSH key      
+      - vagrant includes the file, that ruby file overrides vagrantfile variables
+        - replace useVagrantHost with useConfigFile
+        - fail if the fail is specified but fails to load
 
 
 auto-deploy on new commits
- - email on completion
+  - email on completion
 
   
 

@@ -41,6 +41,8 @@ function getDefaults() {
         "fakeServer_hostName": "localhost",
         "fakeServer_port": 8084,
 
+        "vagrant_provisioner": null,
+
         "vagrant_hostGitUrl": "https://github.com/fschwiet/cumulonimbus-host",
         "vagrant_hostGitCommit": "master",
         "vagrant_wwwuserUsername": "wwwuser",
@@ -50,13 +52,11 @@ function getDefaults() {
 
 nconf.defaults(getDefaults());
 
-var useVagrantHost = !!process.env["use-vagrant-host"];
+var configFile = process.env["config-json"];
 
-nconf.set("useVagrantHost", useVagrantHost);
+if (typeof configFile == 'string') {
 
-if (useVagrantHost) {
-
-    var vagrantConfigOverrides = JSON.parse(fs.readFileSync(path.resolve(__dirname + '/../host.config/config.json'), { encoding: 'utf8'}));
+    var vagrantConfigOverrides = require(path.resolve(configFile));
 
     for(var key in vagrantConfigOverrides) {
         if (vagrantConfigOverrides.hasOwnProperty(key)) {
@@ -65,14 +65,15 @@ if (useVagrantHost) {
     }
 }
 
-var config = {};
-
-config.getDefaults = getDefaults;
+var config = { getDefaults: getDefaults };
 
 config.get = function() {
     return nconf.get.apply(nconf, arguments);
 };
 
+config.isVagrantEnvironment = function() {
+    return config.get("vagrant_provisioner") !== null;
+};
 
 function commonUrlParameters(path, query) {
 

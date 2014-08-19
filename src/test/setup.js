@@ -26,14 +26,14 @@ exports.whenRunningTheServer = NodeunitBuilder.createTestScopeExtender(
     "when running the server",
     function(done) {
 
-        if (config.get("useVagrantHost")) {
+        if (config.isVagrantEnvironment()) {
             done();
         } else {
             server.start(config.get("server_internal_port"), done);
         }
     },
     function(done) {
-        if (config.get("useVagrantHost")) {
+        if (config.isVagrantEnvironment()) {
             done();
         } else {
             server.stop(function()
