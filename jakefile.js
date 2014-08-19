@@ -95,7 +95,7 @@ function runTestsWithNodeunit(testList) {
 
     return Q()
     .then(function() {
-        if (config.get('useVagrantHost')) {
+        if (config.isVagrantEnvironment()) {
 
             var deferred = Q.defer();
 
@@ -413,8 +413,11 @@ task("deploySite", ["lint", "recreateVirtualMachine", "deploySiteToVirtualMachin
 });
 
 task("requireVagrantHost", function() {
-    if (!config.get('useVagrantHost')) {
-        throw new Error("Task expected use-vagrant-host=true");
+
+    // should we be checking isProduction?
+
+    if (!config.isVagrantEnvironment()) {
+        throw new Error("Task expected to run against a vagrant environment (load alternative config via config-json=<configFile>)");
     }
 });
 

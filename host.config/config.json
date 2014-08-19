@@ -1,5 +1,7 @@
 {
     "is_production": false,
+    "vagrant_provisioner": "virtualbox",
+
     "server_friendlyName": "asimplereader vagrant",
     "server_hostname": "asimplereader.192.168.33.100.xip.io",
     "server_internal_port": 8081,
