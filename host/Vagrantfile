@@ -11,7 +11,7 @@ mysqlRootPassword = ENV["mysqlRootPassword"] || ""
 hostnameASimpleReader = ENV["hostnameASimpleReader"] || "asimplereader.192.168.33.100.xip.io"
 hostnameInternetDanceFloor = ENV["hostnameInternetDanceFloor"] || "internetdancefloor.192.168.33.100.xip.io"
 
-digitalOceanPrivateKeyPath = ENV["hostnameInternetDanceFloor"] || nil
+digitalOceanPrivateKeyPath = ENV["digitalOceanPrivateKeyPath"] || nil
 digitalOceanProviderToken = ENV["digitalOceanProviderToken"] || nil
 
 
