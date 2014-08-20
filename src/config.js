@@ -46,7 +46,10 @@ function getDefaults() {
         "vagrant_hostGitUrl": "https://github.com/fschwiet/cumulonimbus-host",
         "vagrant_hostGitCommit": "master",
         "vagrant_wwwuserUsername": "wwwuser",
-        "vagrant_wwwuserPassword": "password"
+        "vagrant_wwwuserPassword": "password",
+
+        "digitalOceanPrivateKeyPath": null,
+        "digitalOceanProviderToken": null
     };
 }
 
