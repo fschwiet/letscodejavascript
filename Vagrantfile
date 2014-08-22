@@ -39,7 +39,7 @@ Vagrant.configure("2") do |config|
 	installNodejs config.vm
 
 	config.vm.provision "shell", inline: "sudo apt-get install -y realpath"
-	config.vm.provision "shell", inline: "sudo npm install pm2 -g"
+	config.vm.provision "shell", inline: "sudo npm install pm2 -g --unsafe-perm"
 
 	installNginx config.vm
 	writeNginxProxyRule config.vm, "www.192.168.33.100.xip.io", 80, "localhost", 8080
