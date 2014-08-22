@@ -44,7 +44,7 @@ Vagrant.configure("2") do |config|
 	installNginx config.vm
 	writeNginxProxyRule config.vm, "www.192.168.33.100.xip.io", 80, "localhost", 8080
 
-	config.vm.provision "shell", path: "./provision.sites.sh", args: [ 
+	config.vm.provision "shell", path: "./scripts/prepareCumulonimbus.sh", args: [ 
 		wwwuser, 
 		wwwuserPassword,
 		hostGitUrl,
