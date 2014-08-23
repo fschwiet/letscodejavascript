@@ -2,12 +2,10 @@
 
 # Replaces string "IPADDRESS_AWKARD" with the systems actual IP address in the ip rule's name and content
 
-
-$incomingHost=$1
-$incomingPort=$2
-$outgoingHost=$3
-$outgoingPort=$4
-
+incomingHost=$1
+incomingPort=$2
+outgoingHost=$3
+outgoingPort=$4
 
 nginxRuleContent="
 
@@ -33,4 +31,5 @@ ipAddress=$(ip addr show eth0 | grep 'state UP' -A2 | tail -n1 | awk '{print $2}
 nginxRuleContent=$(echo $nginxRuleContent | sed "s/IPADDRESS_AWKWARD/$ipAddress/")
 nginxRuleFilepath=$(echo $nginxRuleFilepath | sed "s/IPADDRESS_AWKWARD/$ipAddress/")
 
-echo -e $nginxRuleContent > $nginxRuleFilepath
+#note: need quotes on "$nginxRuleContent" to preserve newlines, though its not sufficient w/ vagrant provisioner for some reason
+echo "$nginxRuleContent" > $nginxRuleFilepath
