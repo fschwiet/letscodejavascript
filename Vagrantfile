@@ -23,10 +23,7 @@ Vagrant.configure("2") do |config|
 
 	enableFirewall config.vm, [
 		"21/tcp",    #ftp, used by wget during some provisioning
-		"22/tcp",    #ssh
-		"80/tcp",    #www
-		"8080/tcp",  #www testing
-		"3306/tcp"  #mysql
+		"22/tcp"     #ssh
 	]
 
 	protectSshFromLoginAttacks config.vm
@@ -42,14 +39,23 @@ Vagrant.configure("2") do |config|
 	config.vm.provision "shell", inline: "sudo npm install pm2 -g --unsafe-perm"
 
 	installNginx config.vm
-	writeNginxProxyRule config.vm, "www.192.168.33.100.xip.io", 80, "localhost", 8080
 
-	config.vm.provision "shell", path: "./scripts/prepareCumulonimbus.sh", args: [ 
+	config.vm.provision "file", source: "./scripts/cumulonimbus-listen-hostname.sh", destination: "/tmp/cumulonimbus-listen-hostname.sh"
+	config.vm.provision "shell", inline: "mv /tmp/cumulonimbus-listen-hostname.sh /usr/local/bin; chmod +x /usr/local/bin/cumulonimbus-listen-hostname.sh"
+
+	config.vm.provision "file", destination: "/tmp/cumulonimbus.sudoers", source: "./resources/cumulonimbus.sudoers"
+	config.vm.provision "shell", inline: "visudo -f /tmp/cumulonimbus.sudoers -c"
+	config.vm.provision "shell", inline: "chown root:root /tmp/cumulonimbus.sudoers"
+	config.vm.provision "shell", inline: "chmod 0440 /tmp/cumulonimbus.sudoers"
+	config.vm.provision "shell", inline: "mv /tmp/cumulonimbus.sudoers /etc/sudoers.d/cumulonimbus"
+
+	config.vm.provision "shell", path: "./scripts/install-cumulonimbus.sh", args: [ 
 		wwwuser, 
 		wwwuserPassword,
 		hostGitUrl,
 		hostGitCommit
 	]
+
 end
 
 
