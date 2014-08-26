@@ -3,7 +3,7 @@
 	[
 		{
 			"path": ".",
-            "folder_exclude_patterns": ["node_modules", "temp", "src/client/clientLib", "cookbooks"],
+            "folder_exclude_patterns": [".vagrant", "cookbooks"],
             "file_exclude_patterns": ["cumulonimbus-machine.sublime-workspace"]
 		}
 	],

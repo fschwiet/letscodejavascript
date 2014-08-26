@@ -17,7 +17,7 @@ echo '@reboot wwwuser PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sb
 echo "To deploy an individual site, do something like:"
 echo "    su $username"
 echo "    git clone <project_repository> /cumulonimbus/sites/sample"
-echo "    cumulonimbusMapHostnamePort.sh www.192.168.33.100.xip.ip 80 localhost 8080"
+echo "    cumulonimbus-listen-hostname.sh www.192.168.33.100.xip.ip 80 localhost 8080"
 echo "    mkdir /cumulonimbus/sites/sample.config"
 echo "    cp <config file> /cumulonimbus/sites/sample.config/config.json"
 echo "    ln --symbolic /cumulonimbus/sites/sample.config /cumulonimbus/configs/sample"

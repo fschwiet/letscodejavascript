@@ -40,8 +40,8 @@ Vagrant.configure("2") do |config|
 
 	installNginx config.vm
 
-	config.vm.provision "file", source: "./scripts/cumulonimbusMapHostnamePort.sh", destination: "/tmp/cumulonimbusMapHostnamePort.sh"
-	config.vm.provision "shell", inline: "mv /tmp/cumulonimbusMapHostnamePort.sh /usr/local/bin; chmod +x /usr/local/bin/cumulonimbusMapHostnamePort.sh"
+	config.vm.provision "file", source: "./scripts/cumulonimbus-listen-hostname.sh", destination: "/tmp/cumulonimbus-listen-hostname.sh"
+	config.vm.provision "shell", inline: "mv /tmp/cumulonimbus-listen-hostname.sh /usr/local/bin; chmod +x /usr/local/bin/cumulonimbus-listen-hostname.sh"
 
 	config.vm.provision "file", destination: "/tmp/cumulonimbus.sudoers", source: "./resources/cumulonimbus.sudoers"
 	config.vm.provision "shell", inline: "visudo -f /tmp/cumulonimbus.sudoers -c"
@@ -49,7 +49,7 @@ Vagrant.configure("2") do |config|
 	config.vm.provision "shell", inline: "chmod 0440 /tmp/cumulonimbus.sudoers"
 	config.vm.provision "shell", inline: "mv /tmp/cumulonimbus.sudoers /etc/sudoers.d/cumulonimbus"
 
-	config.vm.provision "shell", path: "./scripts/prepareCumulonimbus.sh", args: [ 
+	config.vm.provision "shell", path: "./scripts/install-cumulonimbus.sh", args: [ 
 		wwwuser, 
 		wwwuserPassword,
 		hostGitUrl,

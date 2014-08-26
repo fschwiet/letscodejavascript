@@ -1,5 +1,5 @@
 
 User_Alias                  CUMULONIMBUS_DEPLOYERS  =   wwwuser
-Cmnd_Alias                  CUMULONIMBUS_BIN        =   /usr/local/bin/cumulonimbusMapHostnamePort.sh
+Cmnd_Alias                  CUMULONIMBUS_BIN        =   /usr/local/bin/cumulonimbus-listen-hostname.sh
 
 CUMULONIMBUS_DEPLOYERS      ALL = NOPASSWD: CUMULONIMBUS_BIN
