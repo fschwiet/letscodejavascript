@@ -2,10 +2,10 @@
 
 # Replaces string "IPADDRESS_AWKARD" with the systems actual IP address in the ip rule's name and content
 
-incomingHost=$1
-incomingPort=$2
-outgoingHost=$3
-outgoingPort=$4
+incomingHost=${1:?"Expected incoming host as parameter 1."}
+incomingPort=${2:?"Expected incoming port as parameter 2."}
+outgoingHost=${3:?"Expected outgoing host as parameter 3."}
+outgoingPort=${4:?"Expected outgoing port as parameter 4."}
 
 nginxRuleContent="
 
