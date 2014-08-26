@@ -1,3 +1,31 @@
+ugh, digitalocean ip address makes things hard to configure.  options:
+  - require digitalocean VM to be ready for hosting before deploying site
+    - refactor site-specific tail of vagrantfile to be script calls of things in /scripts folder
+    - add a single script someone can use to add a project 
+      - parameters:  1) project name, 2) source repro, 3) configuration directory
+      - will get credentials be updated?
+
+
+  - require digitalocean VM to be primed so we have a IP address we can configure, use vagrant rebuild
+  - code agnostic to deployment server's IP address
+    - config.js provider uses require to include config files
+    - config files can assume the ip address has been passed into them
+      - ip address may be null
+      - config file may be called again
+    - config system can reload config.  null values can be replaced, but existing values can't change
+    - throw exception if null config is consumed
+
+
+  can we get the public IP address during deployment to configure the server_hostname?
+    vagrant up output includes:
+      C:\src\cumulonimbus-machine [fschwiet]> vagrant up --provider=digital_ocean
+      Bringing machine 'default' up with 'digital_ocean' provider...
+      ==> default: Using existing SSH key: cumulonimbus-machine fschwiet
+      ==> default: Creating a new droplet...
+      ==> default: Assigned IP address: 162.243.199.7
+
+
+
 deploy to digital ocean
   - https://www.digitalocean.com/community/tutorials/how-to-use-digitalocean-as-your-provider-in-vagrant-on-an-ubuntu-12-10-vps
     - install vagrant plugin
