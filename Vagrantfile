@@ -44,12 +44,21 @@ Vagrant.configure("2") do |config|
 	installNginx config.vm
 	writeNginxProxyRule config.vm, "www.192.168.33.100.xip.io", 80, "localhost", 8080
 
+	config.vm.provision "file", source: "./scripts/writeNginxRule.sh", destination: "/tmp/writeNginxRule.sh"
+	config.vm.provision "shell", inline: "cp /tmp/writeNginxRule.sh /usr/local/bin; chmod +x /usr/local/bin/writeNginxRule.sh"
+
+	config.vm.provision "file", destination: "/tmp/cumulonimbus.sudoers", source: "./resources/cumulonimbus.sudoers"
+	config.vm.provision "shell", inline: "visudo -f /tmp/cumulonimbus.sudoers -c"
+	config.vm.provision "shell", inline: "chmod 0440 /tmp/cumulonimbus.sudoers"
+	config.vm.provision "shell", inline: "cp /tmp/cumulonimbus.sudoers /etc/sudoers.d/cumulonimbus.sudoers"
+
 	config.vm.provision "shell", path: "./scripts/prepareCumulonimbus.sh", args: [ 
 		wwwuser, 
 		wwwuserPassword,
 		hostGitUrl,
 		hostGitCommit
 	]
+
 end
 
 
