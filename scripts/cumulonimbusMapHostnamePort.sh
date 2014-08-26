@@ -7,6 +7,8 @@ incomingPort=${2:?"Expected incoming port as parameter 2."}
 outgoingHost=${3:?"Expected outgoing host as parameter 3."}
 outgoingPort=${4:?"Expected outgoing port as parameter 4."}
 
+set -e
+
 nginxRuleContent="
 
 server {
@@ -33,3 +35,11 @@ nginxRuleFilepath=$(echo $nginxRuleFilepath | sed "s/IPADDRESS_AWKWARD/$ipAddres
 
 #note: need quotes on "$nginxRuleContent" to preserve newlines, though its not sufficient w/ vagrant provisioner for some reason
 echo "$nginxRuleContent" > $nginxRuleFilepath
+
+#  open up the firewall
+#  
+#  The outgoing port is opened up for debugging purposes
+
+ufw allow "${incomingPort}/tcp"
+ufw allow "${outgoingPort}/tcp"
+ufw reload

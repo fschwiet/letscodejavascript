@@ -98,9 +98,3 @@ def installNginx(vm)
 	end
 end
 
-def writeNginxProxyRule(vm, incomingHost, incomingPort, outgoingHost, outgoingPort)
-
-	vm.provision "shell", path: "./scripts/writeNginxRule.sh", args: [ incomingHost, incomingPort.to_s, outgoingHost, outgoingPort.to_s ]
-	# vm.provision "shell", inline: 'sudo nginx -s reload'
-end
-
