@@ -12,7 +12,7 @@ sudo mkdir /cumulonimbus
 git clone -b $host_repository_commit $host_repository /cumulonimbus
 sudo chown --recursive "$username:$username" /cumulonimbus
 
-echo '@reboot wwwuser PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin bash -c "cd /cumulonimbus; ./run.sh >>~/cronrun_cumulonimbus 2>&1"' | sudo tee /etc/cron.d/cumulonimbus > /dev/null
+echo '@reboot wwwuser PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin bash -c "cd /cumulonimbus; ./scripts/run-on-reboot.sh >>~/cronrun_cumulonimbus 2>&1"' | sudo tee /etc/cron.d/cumulonimbus > /dev/null
 
 echo "To deploy an individual site, do something like:"
 echo "    su $username"
