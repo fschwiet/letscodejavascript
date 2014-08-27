@@ -449,7 +449,7 @@ task("forwardTestPorts", function() {
 });
 
 
-task("deploySite", ["lint", "recreateVirtualMachine", "deploySiteToVirtualMachine"], function() {
+task("deploySite", ["lint", "recreateVirtualMachine", "rebootVirtualMachine", "deploySiteToVirtualMachine"], function() {
 });
 
 task("mergeIntoRelease", ["verifyEmptyGitStatus"], function() {
@@ -496,5 +496,5 @@ task("mergeIntoRelease", ["verifyEmptyGitStatus"], function() {
     });        
 });
 
-task("doFinalTest", ["deploySite", "rebootVirtualMachine", "testSmoke", "test", "mergeIntoRelease"], function() {
+task("doFinalTest", ["deploySite", "testSmoke", "test", "mergeIntoRelease"], function() {
 });
