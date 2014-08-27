@@ -14,6 +14,7 @@ var os = require("os");
 var nodeVersion = new(require("node-version").version)();
 var util = require("util");
 var beautify = require('js-beautify');
+var _ = require('lodash');
 
 var exec = require("child-process-promise").exec;
 var spawn = require("child-process-promise").spawn;
@@ -32,12 +33,15 @@ var slowTests = "**/*.slow.test.js";
 var smokeTests = "**/*.smoke.test.js";
 var clientCode = "src/client/**";
 
+function assertVagrantEnvironment() {
+    assert.ok(config.isVagrantEnvironment(), "Tasks expect a vagrant provider to be configured (use environment variable config-json to load a .json file).");
+}
+
 task = require("./build/jake-util.js").extendTask(task, jake);
 
 task("default", ["verifyNodeVersion", "lint", "writeSampleConfig", "test"], function() {});
 
 task("verifyClientCode", ["lint", "testClient"], function() {});
-
 
 desc("lint");
 task("lint", function() {
@@ -95,26 +99,6 @@ function runTestsWithNodeunit(testList) {
 
     return Q()
     .then(function() {
-        if (config.isVagrantEnvironment()) {
-
-            var deferred = Q.defer();
-
-            var taskToRun = jake.Task.forwardTestPorts;
-
-            taskToRun.addListener('complete', function() {
-                deferred.resolve();
-            });
-
-            taskToRun.addListener('error', function(err) {
-                deferred.reject(err);
-            });
-
-            taskToRun.invoke();
-
-            return deferred.promise;
-        }
-    })
-    .then(function() {
 
         var deferred = Q.defer();
 
@@ -131,7 +115,7 @@ function runTestsWithNodeunit(testList) {
     });
 }
 
-task("commonTestPrequisites", ["lint", "prepareTestDatabase", "buildClientBundle"], function() {});
+task("commonTestPrequisites", ["lint", "prepareTestDatabase", "buildClientBundle", "forwardTestPorts"], function() {});
 
 task("testSlow", ["commonTestPrequisites"], function() {
 
@@ -269,6 +253,8 @@ function listNonImportedFiles() {
 
 task("deploySiteToVirtualMachine", function() {
 
+    assertVagrantEnvironment();
+
     var commitToDeploy;
 
     return gitUtil.getGitCurrentCommit()
@@ -294,7 +280,15 @@ task("deploySiteToVirtualMachine", function() {
             return vagrant.executeSshCommand(connection, 'git clone /vagrant /cumulonimbus/sites/letscodejavascript');
         })
         .then(function() {
-            return vagrant.executeSshCommand(connection, 'cd /cumulonimbus; ./link-config-folder.sh letscodejavascript /cumulonimbus/sites/letscodejavascript.config');
+            return vagrant.executeSshCommand(connection, 'cd /cumulonimbus; ./scripts/link-config-folder.sh letscodejavascript /cumulonimbus/sites/letscodejavascript.config');
+        })
+        .then(function() {
+            return vagrant.executeSshCommand(connection, 
+                util.format('sudo cumulonimbus-listen-hostname.sh %s %s %s %s', 
+                    config.get('server_hostname'), 
+                    config.get('server_external_port'), 
+                    'localhost', 
+                    config.get('server_internal_port')));
         })
         .then(function() {
 
@@ -315,113 +309,108 @@ task("deploySiteToVirtualMachine", function() {
     });
 });
 
-task("rebootVirtualMachine", function() {
-
-    return vagrant.getSshConnection({})
-    .then(function(connection) {
-
-        return Q()
-        .then(function() {
-            return vagrant.executeSshCommand(connection, 'sudo reboot');
-        })
-        .fin(function() {
-            connection.end();
-        });
-    })
-    .then(function() {
-        
-        //  Let the next connection reset, waiting until the VM is done accepting connections before reboot
-        
-        return vagrant.getSshConnection({
-        })
-        .then(function(connection) {
-            connection.end();
-        })
-        .fail(function(err) {
-            if (err.code != 'ECONNRESET') {
-                throw err;
-            }
-        });
-    })
-    .then(function() {
-
-        // Wait for the VM to boot back up
-
-        return vagrant.getSshConnection({
-            readyTimeout: 10 * 60 * 1000
-        })
-        .then(function(connection) {
-            connection.end();
-        });
-    }); 
-});
-
-task("recreateVirtualMachine", function() {
+function parseVagrantStatusResult(vagrantStatus) {
 
     var statuses = {};
 
     var statusRegex = /^([^\s]+)\s+(.+)\s\(([^\s]+)\)$/;
 
+    vagrantStatus.forEach(function(line) {
+        var regexResults = statusRegex.exec(line);
+        if (regexResults) {
+            statuses[regexResults[1]] = {
+                status: regexResults[2],
+                provider: regexResults[3]
+            };
+        }
+    });
+
+    return statuses;
+}
+
+task("recreateVirtualMachine", function() {
+
+    assertVagrantEnvironment();
+
     return Q.ninvoke(vagrant, "status")
     .then(function(result) {
-        result.forEach(function(line) {
-            var regexResults = statusRegex.exec(line);
-            if (regexResults) {
-                statuses[regexResults[1]] = {
-                    status: regexResults[2],
-                    provider: regexResults[3]
-                };
+
+        console.log("verifying vagrant usage is virtualbox only");
+
+        var statuses = parseVagrantStatusResult(result);
+
+        _.forOwn(statuses, function(value) {
+            if (value.provider != 'virtualbox') {
+                throw new Error("To prevent wiping release, recreate only allowed in environments using virtualbox provider.");
             }
         });
-
-        if (!statuses['default'] || statuses['default'].provider != 'virtualbox') {
-            console.log(result.join("\n"));
-            throw new Error("Expected default vagrant box to be using virtualbox provider");
-        }
-        console.log("Verified vagrant is running on virtualbox");
     })
     .then(function() {
-        console.log("Destroying current vagrant environment");
-        return Q.ninvoke(vagrant, "destroy", "-f");
+        console.log("Running vagrant destroy -f");
+        return Q.ninvoke(vagrant, "destroy", ["-f"]);
     })
     .then(function() {
 
         return vagrant.truncateLogFile();
     })
     .then(function() {
-        console.log("Creating current vagrant environment");
+        console.log("Running vagrant up");
         return Q.ninvoke(vagrant, "up");
+    })
+    .then(function() {
+        return Q.ninvoke(vagrant, "reload");
     });
 });
 
-task("forwardTestPorts", ["requireVagrantHost"], function() {
+task("newVagrantDeploy", function() {
 
-    var portsToForward = [
-        [config.get("smtp_host"), config.get("smtp_port")], 
-        [config.get("fakeServer_hostName"), config.get("fakeServer_port")]
-    ];
+    assertVagrantEnvironment();
 
-    var commands = portsToForward.map(function(entry) {
-        return vagrant.openSshTunnel(entry[1] + ":" + entry[0] + ":" + entry[1]);
+    return Q.ninvoke(vagrant, "status")
+    .then(function(result) {
+
+        console.log("verifying no existing vagrant environments exist");
+
+        var statuses = parseVagrantStatusResult(result);
+
+        _.forOwn(statuses, function(value) {
+            if (value.status != 'not created') {
+                throw new Error("Please clean up existing vagrant environments first..");
+            }
+        });
+    })
+    .then(function() {
+
+        return vagrant.truncateLogFile();
+    })
+    .then(function() {
+        return exec("vagrant plugin install vagrant-digitalocean");
+    })
+    .then(function() {
+        console.log("Running vagrant up");
+        return Q.ninvoke(vagrant, "up", ["--provider", config.get("vagrant_provider")]);
     });
+});
 
-    return commands.reduce(Q.when, Q());
+task("forwardTestPorts", function() {
+
+    if (config.isVagrantEnvironment()) {
+        var portsToForward = [
+            [config.get("smtp_host"), config.get("smtp_port")], 
+            [config.get("fakeServer_hostName"), config.get("fakeServer_port")]
+        ];
+
+        var commands = portsToForward.map(function(entry) {
+            return vagrant.openSshTunnel(entry[1] + ":" + entry[0] + ":" + entry[1]);
+        });
+
+        return commands.reduce(Q.when, Q());
+    }
 });
 
 
 task("deploySite", ["lint", "recreateVirtualMachine", "deploySiteToVirtualMachine"], function() {
 });
-
-task("requireVagrantHost", function() {
-
-    // should we be checking isProduction?
-
-    if (!config.isVagrantEnvironment()) {
-        throw new Error("Task expected to run against a vagrant environment (load alternative config via config-json=<configFile>)");
-    }
-});
-
-task("vagrantTest", ["requireVagrantHost", "testSmoke","test"]);
 
 task("mergeIntoRelease", ["verifyEmptyGitStatus"], function() {
 
@@ -467,12 +456,5 @@ task("mergeIntoRelease", ["verifyEmptyGitStatus"], function() {
     });        
 });
 
-task("doFinalTest", ["requireVagrantHost", "deploySite", "rebootVirtualMachine", "vagrantTest", "mergeIntoRelease"], function() {
-});
-
-task("deployDigitalOcean", [], function() {
-    return Q()
-    .then(function() {
-        return exec("vagrant plugin install vagrant-digitalocean");
-    });
+task("doFinalTest", ["deploySite", "testSmoke", "test", "mergeIntoRelease"], function() {
 });

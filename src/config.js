@@ -41,12 +41,15 @@ function getDefaults() {
         "fakeServer_hostName": "localhost",
         "fakeServer_port": 8084,
 
-        "vagrant_provisioner": null,
+        "vagrant_provider": null,
 
         "vagrant_hostGitUrl": "https://github.com/fschwiet/cumulonimbus-host",
         "vagrant_hostGitCommit": "master",
         "vagrant_wwwuserUsername": "wwwuser",
-        "vagrant_wwwuserPassword": "password"
+        "vagrant_wwwuserPassword": "password",
+
+        "digitalOceanPrivateKeyPath": null,
+        "digitalOceanProviderToken": null
     };
 }
 
@@ -72,7 +75,7 @@ config.get = function() {
 };
 
 config.isVagrantEnvironment = function() {
-    return config.get("vagrant_provisioner") !== null;
+    return config.get("vagrant_provider") !== null;
 };
 
 function commonUrlParameters(path, query) {

@@ -11,7 +11,7 @@ MethodLength:
   Enabled: false
 
 LineLength:
-  Max: 330
+  Enabled: false
 
 HashSyntax:
   EnforcedStyle: hash_rockets
@@ -19,5 +19,11 @@ HashSyntax:
 Documentation:
   Enabled: false
 
+PerceivedComplexity:
+  Enabled: false
+
 CyclomaticComplexity:
-  Max: 12
+  Enabled: false
+
+Style/FileName:
+  Enabled: false
