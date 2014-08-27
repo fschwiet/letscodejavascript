@@ -36,6 +36,8 @@ nginxRuleFilepath=$(echo $nginxRuleFilepath | sed "s/IPADDRESS_AWKWARD/$ipAddres
 #note: need quotes on "$nginxRuleContent" to preserve newlines, though its not sufficient w/ vagrant provisioner for some reason
 echo "$nginxRuleContent" > $nginxRuleFilepath
 
+sudo service nginx reload
+
 #  open up the firewall
 #  
 #  The outgoing port is opened up for debugging purposes
