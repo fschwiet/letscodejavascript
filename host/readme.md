@@ -1,10 +1,6 @@
-ENVIRONMENT VARIABLES
+See top of Vagrantfile for environment variables to set
 
-	syncedFolder = File.absolute_path(ENV["SyncedFolder"] || "..")
-	hostGitUrl = ENV["HostGitUrl"] || "https://github.com/fschwiet/cumulonimbus-host"
-	hostGitCommit = ENV["HostGitCommit"] || "master"
-	wwwuser = ENV["wwwuserUsername"] || "wwwuser"
-	wwwuserPassword = ENV["wwwuserPassword"] || "password"
+Note: vagrant reload is required by nginx and mysql config changes take effect
 
 COOKBOOKS USED:
 
