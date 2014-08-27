@@ -280,7 +280,15 @@ task("deploySiteToVirtualMachine", function() {
             return vagrant.executeSshCommand(connection, 'git clone /vagrant /cumulonimbus/sites/letscodejavascript');
         })
         .then(function() {
-            return vagrant.executeSshCommand(connection, 'cd /cumulonimbus; ./link-config-folder.sh letscodejavascript /cumulonimbus/sites/letscodejavascript.config');
+            return vagrant.executeSshCommand(connection, 'cd /cumulonimbus; ./scripts/link-config-folder.sh letscodejavascript /cumulonimbus/sites/letscodejavascript.config');
+        })
+        .then(function() {
+            return vagrant.executeSshCommand(connection, 
+                util.format('sudo cumulonimbus-listen-hostname.sh %s %s %s %s', 
+                    config.get('server_hostname'), 
+                    config.get('server_external_port'), 
+                    'localhost', 
+                    config.get('server_internal_port')));
         })
         .then(function() {
 
@@ -370,7 +378,7 @@ task("recreateVirtualMachine", function() {
     return Q.ninvoke(vagrant, "status")
     .then(function(result) {
 
-        console.log("verifying vagrant usage is virtualbox only")
+        console.log("verifying vagrant usage is virtualbox only");
 
         var statuses = parseVagrantStatusResult(result);
 
@@ -378,7 +386,7 @@ task("recreateVirtualMachine", function() {
             if (value.provider != 'virtualbox') {
                 throw new Error("To prevent wiping release, recreate only allowed in environments using virtualbox provider.");
             }
-        })
+        });
     })
     .then(function() {
         console.log("Running vagrant destroy -f");
@@ -401,7 +409,7 @@ task("newVagrantDeploy", function() {
     return Q.ninvoke(vagrant, "status")
     .then(function(result) {
 
-        console.log("verifying no existing vagrant environments exist")
+        console.log("verifying no existing vagrant environments exist");
 
         var statuses = parseVagrantStatusResult(result);
 
@@ -409,7 +417,7 @@ task("newVagrantDeploy", function() {
             if (value.status != 'not created') {
                 throw new Error("Please clean up existing vagrant environments first..");
             }
-        })
+        });
     })
     .then(function() {
 
