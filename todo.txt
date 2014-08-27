@@ -115,6 +115,9 @@ MUCH LATER:
 
 
 HMMM
+    vagrant-digitalocean doesn't support private_network
+    vagrant-digitalocean doesn't support forwarding ports (reverse-forwarded ports may work)
+ 
     didn't catch bug with automated tests when request parameters used in client-side didn't match what was used in server-side tests
       end-to-end test for this functionality was being painful to write
 
