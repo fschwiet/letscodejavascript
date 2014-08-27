@@ -98,34 +98,3 @@ def installNginx(vm)
 	end
 end
 
-def writeNginxProxyRule(vm, incomingHost, incomingPort, outgoingHost, outgoingPort)
-
-	nginxConfig = <<-EOS
-		server {
-				listen %{incomingHost}:%{incomingPort};
-
-				location ~ ^/ {
-				    proxy_pass http://%{outgoingHost}:%{outgoingPort};
-
-			        proxy_http_version 1.1;
-			        proxy_set_header Upgrade \\$http_upgrade;
-			        proxy_set_header Connection 'upgrade';
-			        proxy_set_header Host \\$host;
-			        proxy_cache_bypass \\$http_upgrade;
-				}
-			}
-		EOS
-
-	nginxConfig = nginxConfig % {
-		incomingHost: incomingHost,
-		incomingPort: incomingPort,
-		outgoingHost: outgoingHost,
-		outgoingPort: outgoingPort
-	}
-
-	vm.provision "shell", 
-		inline: "echo -e $1 > /etc/nginx/conf.d/#{incomingHost}.#{incomingPort}.conf", args: [ nginxConfig ]
-
-	# vm.provision "shell", inline: 'sudo nginx -s reload'
-end
-
