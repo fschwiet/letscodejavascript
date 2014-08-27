@@ -309,49 +309,6 @@ task("deploySiteToVirtualMachine", function() {
     });
 });
 
-task("rebootVirtualMachine", function() {
-
-    assertVagrantEnvironment();
-
-    return vagrant.getSshConnection({})
-    .then(function(connection) {
-
-        return Q()
-        .then(function() {
-            return vagrant.executeSshCommand(connection, 'sudo reboot');
-        })
-        .fin(function() {
-            connection.end();
-        });
-    })
-    .then(function() {
-        
-        //  Let the next connection reset, waiting until the VM is done accepting connections before reboot
-        
-        return vagrant.getSshConnection({
-        })
-        .then(function(connection) {
-            connection.end();
-        })
-        .fail(function(err) {
-            if (err.code != 'ECONNRESET') {
-                throw err;
-            }
-        });
-    })
-    .then(function() {
-
-        // Wait for the VM to boot back up
-
-        return vagrant.getSshConnection({
-            readyTimeout: 10 * 60 * 1000
-        })
-        .then(function(connection) {
-            connection.end();
-        });
-    }); 
-});
-
 function parseVagrantStatusResult(vagrantStatus) {
 
     var statuses = {};
@@ -399,6 +356,9 @@ task("recreateVirtualMachine", function() {
     .then(function() {
         console.log("Running vagrant up");
         return Q.ninvoke(vagrant, "up");
+    })
+    .then(function() {
+        return Q.ninvoke(vagrant, "reload");
     });
 });
 
@@ -449,7 +409,7 @@ task("forwardTestPorts", function() {
 });
 
 
-task("deploySite", ["lint", "recreateVirtualMachine", "rebootVirtualMachine", "deploySiteToVirtualMachine"], function() {
+task("deploySite", ["lint", "recreateVirtualMachine", "deploySiteToVirtualMachine"], function() {
 });
 
 task("mergeIntoRelease", ["verifyEmptyGitStatus"], function() {
