@@ -6,8 +6,10 @@ hostGitUrl = ENV["HostGitUrl"] || "https://github.com/fschwiet/cumulonimbus-host
 hostGitCommit = ENV["HostGitCommit"] || "master"
 wwwuser = ENV["wwwuserUsername"] || "wwwuser"
 wwwuserPassword = ENV["wwwuserPassword"] || "password"
+mysqlRootPassword = ENV["mysqlRootPassword"] || ""
 
 require "./util.rb"
+require "./fschwiet.rb"
 
 
 Vagrant.configure("2") do |config|
@@ -22,6 +24,7 @@ Vagrant.configure("2") do |config|
 	config.vm.synced_folder syncedFolder, "/vagrant"
 
 	enableFirewall config.vm, [
+		"3306/tcp",  #mysql
 		"21/tcp",    #ftp, used by wget during some provisioning
 		"22/tcp"     #ssh
 	]
@@ -39,6 +42,8 @@ Vagrant.configure("2") do |config|
 	config.vm.provision "shell", inline: "sudo npm install pm2 -g --unsafe-perm"
 
 	installNginx config.vm
+
+	installMysql config.vm, mysqlRootPassword	
 
 	config.vm.provision "file", source: "./scripts/cumulonimbus-listen-hostname.sh", destination: "/tmp/cumulonimbus-listen-hostname.sh"
 	config.vm.provision "shell", inline: "mv /tmp/cumulonimbus-listen-hostname.sh /usr/local/bin; chmod +x /usr/local/bin/cumulonimbus-listen-hostname.sh"
