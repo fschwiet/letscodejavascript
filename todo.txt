@@ -1,5 +1,6 @@
-
-
+nginx rule isn't working on digital ocean if hostname is present
+  - asking why here: https://www.digitalocean.com/community/questions/nginx-rule-doesn-t-work-when-listening-to-specific-hostname
+  - probably because digital ocean isn't managing the DNS entry for me
 
 
 
@@ -68,24 +69,22 @@ MUCH LATER:
 
 HMMM
 
-    lessons learned about digital ocean:
-        - IP address isn't available until VM is created.
-        - vagrant private_network doesn't work
-        - port forwarding doesn't work
-    implications:
-        - lots of challenges to run tests as they are against digital ocean environment
+  didn't catch bug with automated tests when request parameters used in client-side didn't match what was used in server-side tests
+    end-to-end test for this functionality was being painful to write
 
- 
-    didn't catch bug with automated tests when request parameters used in client-side didn't match what was used in server-side tests
-      end-to-end test for this functionality was being painful to write
-
-    use git read-tree --prefix=testhack master to project deployment instead of checking out
-
+  use git read-tree --prefix=testhack master to project deployment instead of checking out
 
 
 SOME LESSONS LEARNED:
+
+  lessons learned about digital ocean:
+    - IP address isn't available until VM is created.
+    - vagrant private_network doesn't work
+    - port forwarding doesn't work
+  implications:
+    - lots of challenges to run tests as they are against digital ocean environment
   
-  Set SQL collation when you create a database.  The default probably isn't utf8.  Mysqldump will not take care of the default collation setting, you need to set default collation before importing
+  Set SQL collation when you create a database.  The default probably isn't utf8.  Mysqldump will not take care of the default collation setting, you need to set default collation before importing (ALTER DATABASE <name> DEFAULT COLLATE utf8_general_ci)
 
   Table names by default are case sensitive on Unix, but not Windows.  
 
