@@ -85,7 +85,8 @@ HMMM
 
 SOME LESSONS LEARNED:
   
-  Set SQL collation when you create a database.  The default probably isn't utf8.
+  Set SQL collation when you create a database.  The default probably isn't utf8.  Mysqldump will not take care of the default collation setting, you need to set default collation before importing
+
   Table names by default are case sensitive on Unix, but not Windows.  
 
   node-mysql will treat incoming dates as being in the local timezone, set the timezone to Z to disable that.
