@@ -12,10 +12,11 @@ set -e
 nginxRuleContent="
 
 server {
-	listen ${incomingHost}:${incomingPort};
+    listen ${incomingPort};
+    server_name ${incomingHost};
 
-	location ~ ^/ {
-	    proxy_pass http://${outgoingHost}:${outgoingPort};
+    location ~ ^/ {
+        proxy_pass http://${outgoingHost}:${outgoingPort};
 
         proxy_http_version 1.1;
         proxy_set_header Upgrade \$http_upgrade;
