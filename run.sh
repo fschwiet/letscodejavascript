@@ -17,7 +17,7 @@ old_ids=$(pm2 jlist | node -e "var pm2List = JSON.parse(require('fs').readFileSy
 	});
 ")
 
-if pm2 start ./src/hello-server.js --name "$app_name"
+if pm2 start ./src/server/runServer.js --name "$app_name"
 then 
 	for old_id in $old_ids
 	do
