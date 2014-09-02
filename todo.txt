@@ -1,16 +1,8 @@
-nginx rule isn't working on digital ocean if hostname is present
-  - asking why here: https://www.digitalocean.com/community/questions/nginx-rule-doesn-t-work-when-listening-to-specific-hostname
-  - probably because digital ocean isn't managing the DNS entry for me
+  auto-deploy on new commits
+    - email on completion
 
-
-
-auto-deploy on new commits
-  - email on completion
-
-  
-
-environment variables bad place for secret strings?  
-  http://stackoverflow.com/questions/14786072/keep-secret-keys-out-with-environment-variables
+  environment variables bad place for secret strings?  
+    http://stackoverflow.com/questions/14786072/keep-secret-keys-out-with-environment-variables
 
 
   it would be nice for the homepage to have links to view posts for a particular subscription
@@ -19,7 +11,6 @@ environment variables bad place for secret strings?
 
   status page should indicate if email settings are working
      - watch http://stackoverflow.com/questions/18774630/how-can-i-validate-smtp-hostname-port-username-password-is-working-on-node-js
-
 
   ugh, 5 second wait in login.js
 
@@ -32,8 +23,6 @@ environment variables bad place for secret strings?
       - data-access
       - migrations
 
-      
-
 
   info notification on /feeds should have better layout
 
@@ -42,13 +31,6 @@ environment variables bad place for secret strings?
   should have post preview
 
 
-  should have a way to kill karma server+client processes, use it for deployToIIS
-
-
-    -> add jake task that verifies that hostname resolves to local machine (127.0.0.1)
-      in error message, recommend the hosts file be modified.
-      
-
   should have better error output when migrations fail when database not found
 
   should have automated rollback
@@ -56,11 +38,7 @@ environment variables bad place for secret strings?
   reduce personal information requested from google (only using email, displayName)
     
 LATER:
-    allow users to add a feed by non-RSS url
-
     log at info level if an rss feed can't be loaded?  (maybe this should be a feed status)
-
-    open an issue on iisnode because it was failing get requests with a content-type (node.js from the command-line was more graceful)
 
 
 MUCH LATER:
