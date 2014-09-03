@@ -356,9 +356,6 @@ task("recreateVirtualMachine", function() {
     .then(function() {
         console.log("Running vagrant up");
         return Q.ninvoke(vagrant, "up");
-    })
-    .then(function() {
-        return Q.ninvoke(vagrant, "reload");
     });
 });
 
