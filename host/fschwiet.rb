@@ -17,4 +17,6 @@ def installMysql(vm, rootPassword)
             }
         }
     end     
+
+    vm.provision :shell, inline: "service mysql restart";  #
 end
