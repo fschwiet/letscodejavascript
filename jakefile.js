@@ -362,36 +362,6 @@ task("recreateVirtualMachine", function() {
     });
 });
 
-task("newVagrantDeploy", function() {
-
-    assertVagrantEnvironment();
-
-    return Q.ninvoke(vagrant, "status")
-    .then(function(result) {
-
-        console.log("verifying no existing vagrant environments exist");
-
-        var statuses = parseVagrantStatusResult(result);
-
-        _.forOwn(statuses, function(value) {
-            if (value.status != 'not created') {
-                throw new Error("Please clean up existing vagrant environments first..");
-            }
-        });
-    })
-    .then(function() {
-
-        return vagrant.truncateLogFile();
-    })
-    .then(function() {
-        return exec("vagrant plugin install vagrant-digitalocean");
-    })
-    .then(function() {
-        console.log("Running vagrant up");
-        return Q.ninvoke(vagrant, "up", ["--provider", config.get("vagrant_provider")]);
-    });
-});
-
 task("forwardTestPorts", function() {
 
     if (config.isVagrantEnvironment()) {
