@@ -23,6 +23,5 @@ module.exports = {
         location: './clientLib/require-less',
         main: 'less'
       }
-    ],
-    out: "./temp/main-built.js"
+    ]
 };

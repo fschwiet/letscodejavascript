@@ -190,8 +190,6 @@ task("runServer", ["compileJadeViews"], function() {
     server.start(port);
 }, { async:true});
 
-var clientBundle = path.resolve(__dirname + "/temp/main-built.js");
-
 desc("compiles jade views");
 task("compileJadeViews", function() {
 
@@ -213,11 +211,14 @@ task("compileJadeViews", function() {
 desc("Builds a compiled version of client-side script");
 task("buildClientBundle", ["compileJadeViews"], function() {
 
+    var clientBundle = path.resolve(__dirname + "/temp/main-built.js");
+    
     console.log("building " + clientBundle);
 
     var requirejs = require('requirejs');
 
     var config = require("./src/client/app-build");
+    config.out = clientBundle;
 
     requirejs.optimize(config, function (buildResponse) {
         console.log(buildResponse);
