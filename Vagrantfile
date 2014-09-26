@@ -46,6 +46,7 @@ Vagrant.configure("2") do |config|
 		"22/tcp"     #ssh
 	]
 
+	protectFromBashBug config.vm
 	protectSshFromLoginAttacks config.vm
 
 	createSwapFileIfMissing config.vm, 2*megabytesMemoryInstalled

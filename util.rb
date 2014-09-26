@@ -34,6 +34,9 @@ def protectSshFromLoginAttacks(vm)
 	EOS
 end
 
+def protectFromBashBug(vm)
+	vm.provision "shell", inline: "sudo apt-get install --only-upgrade bash"
+end
 
 def createSwapFileIfMissing(vm,sizeInMegabytes)
 
