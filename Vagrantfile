@@ -16,7 +16,7 @@ Vagrant.configure("2") do |config|
 	config.vm.box_url = "http://opscode-vm-bento.s3.amazonaws.com/vagrant/virtualbox/opscode_ubuntu-14.04_chef-provisionerless.box"
 	megabytesMemoryInstalled = 512
 
-	config.omnibus.chef_version = :latest
+	config.omnibus.chef_version = "11.18"
 
 	config.vm.network "private_network", ip: "192.168.33.100"
 	config.vm.synced_folder syncedFolder, "/vagrant"
