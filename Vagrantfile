@@ -35,7 +35,7 @@ Vagrant.configure("2") do |config|
 		provider.size = '512mb'
 	end
 
-	config.omnibus.chef_version = :latest
+	config.omnibus.chef_version = "11.18"
 
 	config.vm.network "private_network", ip: "192.168.33.100"
 	config.vm.synced_folder syncedFolder, "/vagrant"
