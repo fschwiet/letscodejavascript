@@ -27,7 +27,9 @@ server {
 }
 "
 
-nginxRuleFilepath="/etc/nginx/conf.d/${incomingHost}_port${incomingPort}_to_${outgoingHost}_port${outgoingPort}.conf"
+# filename reflects incoming url parameters only so the same file is overwritten
+# if a different target is speccified
+nginxRuleFilepath="/etc/nginx/conf.d/${incomingHost}_port${incomingPort}_redirects_to_internal_port.conf"
 
 ipAddress=$(ip addr show eth0 | grep 'state UP' -A2 | tail -n1 | awk '{print $2}' | cut -f1  -d'/')
 

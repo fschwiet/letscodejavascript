@@ -39,6 +39,7 @@ Vagrant.configure("2") do |config|
 
 	config.vm.network "private_network", ip: "192.168.33.100"
 	config.vm.synced_folder syncedFolder, "/vagrant"
+	config.vm.synced_folder ".", "/vagrant2"
 
 	enableFirewall config.vm, [
 		"3306/tcp",  #mysql
@@ -66,9 +67,6 @@ Vagrant.configure("2") do |config|
 	installNginx config.vm
 
 	installMysql config.vm, mysqlRootPassword	
-
-	config.vm.provision "file", source: "./scripts/cumulonimbus-listen-hostname.sh", destination: "/tmp/cumulonimbus-listen-hostname.sh"
-	config.vm.provision "shell", inline: "mv /tmp/cumulonimbus-listen-hostname.sh /usr/local/bin; chmod +x /usr/local/bin/cumulonimbus-listen-hostname.sh"
 
 	config.vm.provision "file", destination: "/tmp/cumulonimbus.sudoers", source: "./resources/cumulonimbus.sudoers"
 	config.vm.provision "shell", inline: "visudo -f /tmp/cumulonimbus.sudoers -c"
