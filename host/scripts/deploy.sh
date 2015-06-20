@@ -46,15 +46,15 @@ then
 fi
 
 
-if ! [ -s $src_to_deploy/prerun.sh ]
+if ! [ -s $src_to_deploy/prerun.sh -o -s $config_to_deploy/prerun.sh ]
 then
-	echo "Expected to find file $src_to_deploy/prerun.sh"
+	echo "Expected to find file $src_to_deploy/prerun.sh or $config_to_deploy/prerun.sh"
 	exit 1
 fi
 
-if ! [ -s $src_to_deploy/run.sh ]
+if ! [ -s $src_to_deploy/run.sh -o  -s $config_to_deploy/run.sh ]
 then
-	echo "Expected to find file $src_to_deploy/run.sh"
+	echo "Expected to find file $src_to_deploy/run.sh or $config_to_deploy/run.sh"
 	exit 1
 fi
 
