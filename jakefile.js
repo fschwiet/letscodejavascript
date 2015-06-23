@@ -281,11 +281,11 @@ task("deploySiteToVirtualMachine", function() {
             return vagrant.executeSshCommand(connection, 'git clone /vagrant /cumulonimbus/sites/letscodejavascript');
         })
         .then(function() {
-            return vagrant.executeSshCommand(connection, 'cd /cumulonimbus; ./scripts/link-config-folder.sh letscodejavascript /cumulonimbus/sites/letscodejavascript.config');
+            return vagrant.executeSshCommand(connection, 'cd /cumulonimbus; /cumulonimbus/scripts/link-config-folder.sh letscodejavascript /cumulonimbus/sites/letscodejavascript.config');
         })
         .then(function() {
             return vagrant.executeSshCommand(connection, 
-                util.format('sudo cumulonimbus-listen-hostname.sh %s %s %s %s', 
+                util.format('sudo /cumulonimbus/scripts/map-hostname.sh %s %s %s %s', 
                     config.get('server_hostname'), 
                     config.get('server_external_port'), 
                     'localhost', 
@@ -302,7 +302,7 @@ task("deploySiteToVirtualMachine", function() {
             return vagrant.executeSshCommand(connection, 'mysql -u "root" ' + passwordInsert +' -e "CREATE DATABASE TESTTEMP"');
         })
         .then(function() {
-            return vagrant.executeSshCommand(connection, 'cd /cumulonimbus; ./deploy.sh letscodejavascript ' + commitToDeploy);
+            return vagrant.executeSshCommand(connection, 'cd /cumulonimbus; /cumulonimbus/scripts/deploy.sh letscodejavascript ' + commitToDeploy);
         })
         .fin(function() {
             connection.end();
