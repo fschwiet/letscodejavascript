@@ -5,6 +5,7 @@
 * install PhantomJS
 * install virtualbox
 * install vagrant
+* vagrant plugin install vagrant-omnibus
 * clone the repo
 * create a config.json file
   1.  copy sample.config.json to config.json

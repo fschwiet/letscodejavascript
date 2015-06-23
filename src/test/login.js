@@ -38,9 +38,10 @@ var selectors = {
 
 
     //  Selectors used for google login
-    googleLoginEmail: "input[type=email][name=Email]",
-    googleLoginPassword: "input[name=Passwd]",
-    googleLoginSubmit: "input[type=submit][name=signIn]",
+    googleLoginEmail: "input#Email[type=email]",
+    googleLoginNext: "input#next",
+    googleLoginPassword: "input#Passwd[type=password]",
+    googleLoginSubmit: "input#signIn",
 
     googleNoThanksButton: "form#recoveryPromptForm input#cancel",
 
@@ -91,13 +92,16 @@ function handleGoogleAuth(page) {
         return page.evaluate(function(selectors) {
 
             var isGooglePage = window.location.toString().indexOf("google.com") > -1;
-
+            
             function hasElement(s) {
                 return document.querySelector(s) !== null;
             }
 
             return {
-                needLogin: isGooglePage && hasElement(selectors.googleLoginEmail),
+                url: window.location.toString(),
+                hash: window.location.hash.toString(),
+                needLogin: isGooglePage && window.location.hash == "#identifier",
+                needPassword: isGooglePage && window.location.hash == "#password",
                 needSkip: isGooglePage && hasElement(selectors.googleNoThanksButton),
                 needAllow: isGooglePage && hasElement(selectors.googleAllowSubmit),
                 ready: !isGooglePage && hasElement(selectors.logoutButtonSelector)
@@ -117,28 +121,54 @@ function handleGoogleAuth(page) {
         return getPageState()
             .then(function(state) {
 
-                if (state.needLogin) {
-                    return page.evaluate(function(selectors, username, password) {
-                        document.querySelector(selectors.googleLoginEmail).value = username;
-                        document.querySelector(selectors.googleLoginPassword).value = password;
-                    }, selectors, googleUsername, googlePassword)
-                        .then(function() {
-                            return page.clickElement(selectors.googleLoginSubmit);
-                        })
-                        .then(function() {
-                            return waitUntil("done logging into google", function() {
-                                return getPageState()
-                                    .then(function(state) {
-                                        return !state.needLogin;
-                                    });
-                            }, {
-                                msTimeout: 2000,
-                                noTimeoutError: true
-                            });
-                        })
-                        .then(function() {
-                            return false;
+                if (state.needPassword) {
+                    return Q()
+                    .then(function() {
+                        return page.evaluate(function(selectors, username, password) {
+                                document.querySelector(selectors.googleLoginPassword).value = password;
+                            }, selectors, googleUsername, googlePassword);
+                    })
+                    .then(function() {
+                        return page.clickElement(selectors.googleLoginSubmit);
+                    })
+                    .then(function() {
+                        return waitUntil("done submitting google password", function() {
+                            return getPageState()
+                                .then(function(state) {
+                                    return !state.needPassword;
+                                });
+                        }, {
+                            msTimeout: 2000,
+                            noTimeoutError: true
                         });
+                    })
+                    .then(function() {
+                        return false;
+                    });
+                } else if (state.needLogin) {
+                    return Q()
+                    .then(function() {
+                        return page.evaluate(function(selectors, username, password) {
+                                document.querySelector(selectors.googleLoginEmail).value = username;
+                            }, selectors, googleUsername, googlePassword);
+                    })
+                    .then(function() {
+                        return page.clickElement(selectors.googleLoginNext);
+                    })
+                    .then(function() {
+                        return waitUntil("done submitting google username", function() {
+                            return getPageState()
+                                .then(function(state) {
+                                    return !state.needLogin;
+                                });
+                        }, {
+                            msTimeout: 2000,
+                            noTimeoutError: true
+                        });
+                    })
+                    .then(function() {
+                        return false;
+                    });
                 } else if (state.needSkip) {
                     return page.clickElement(selectors.googleNoThanksButton)
                         .then(function() {
