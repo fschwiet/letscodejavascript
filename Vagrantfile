@@ -61,7 +61,6 @@ Vagrant.configure("2") do |config|
 	installNodejs config.vm
 
 	config.vm.provision "shell", inline: "sudo apt-get install -y realpath"
-	config.vm.provision "shell", inline: "sudo apt-get install -y realpath"
 	config.vm.provision "shell", inline: "sudo npm install pm2 -g --unsafe-perm"
 
 	installNginx config.vm
