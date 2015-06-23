@@ -1,0 +1,34 @@
+driver:
+  name: vagrant
+
+provisioner:
+  name: chef_zero
+
+platforms:
+  - name: centos-5.10
+  - name: centos-6.5
+  - name: fedora-19
+
+suites:
+  - name: default
+    run_list:
+      - recipe[rsyslog::default]
+  - name: relp
+    run_list:
+      - recipe[rsyslog::default]
+    attributes:
+      rsyslog:
+        use_relp: true
+    # CentOS and OmniOS do not support relp
+    excludes:
+      - centos-5.8
+      - omnios-r151006c
+  - name: client
+    run_list:
+      - recipe[rsyslog::client]
+    attributes:
+      rsyslog:
+        server_ip: 10.0.0.50
+  - name: server
+    run_list:
+      - recipe[rsyslog::server]
