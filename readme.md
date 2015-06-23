@@ -30,6 +30,10 @@ The tests will fail if the google username/password hasn't been used to authenti
 
 ## Random notes
 
+To merge latest cumulonimbus-machine/fschwiet changes, run:
+
+  	git merge -X subtree=host cumulonimbus-machine/fschwiet
+
 The PhantomJS process leaked for client tests may be holding onto host->ip mappings, and thereby requiring a reset if hosts file is changed.  
 
 Phantom or sometimes keep a file open in the temp directory, preventing the test run from clearing it.
